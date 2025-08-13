@@ -1,13 +1,16 @@
 ﻿using AutoMapper;
+using BusinessLogicalLayer.ApiConsumer.AnimeApi;
+using BusinessLogicalLayer.ApiConsumer.CategoryApi;
+using BusinessLogicalLayer.ApiConsumer.MangaApi;
 using Microsoft.AspNetCore.Mvc;
+using MvcPresentationLayer.Models.AnimeModel;
+using MvcPresentationLayer.Models.HomePage;
+using MvcPresentationLayer.Models.MangaModels;
+using MvcPresentationLayer.Utilities;
+using Shared.Models.Manga;
 using Shared.Responses;
 using System.Diagnostics;
 using WebMangaProject.Models;
-using MvcPresentationLayer.Models.AnimeModel;
-using MvcPresentationLayer.Models.MangaModels;
-using MvcPresentationLayer.Models.HomePage;
-using Shared.Models.Manga;
-using MvcPresentationLayer.Utilities;
 
 namespace MvcPresentationLayer.Controllers
 {
@@ -15,15 +18,28 @@ namespace MvcPresentationLayer.Controllers
     {
         private readonly IMapper _mapper;
         private readonly ICacheService _cacheService;
+        private readonly IAnimeApiConnect _AnimeApi;
+        private readonly IApiConnect _ApiConnect;
+        private readonly ICategoryApiConnect _CategoryApiConnect;
 
-        public HomeController(IMapper mapper, ICacheService cacheService)
+        
+        public HomeController(IMapper mapper, ICacheService cacheService, IAnimeApiConnect AnimeApi, 
+            IApiConnect ApiConnect, ICategoryApiConnect CategoryApiConnect)
         {
             this._mapper = mapper;
             this._cacheService = cacheService;
+            this._ApiConnect = ApiConnect;
+            this._AnimeApi = AnimeApi;
+            this._CategoryApiConnect = CategoryApiConnect;
         }
 
         public async Task<IActionResult> Index()
-        {
+         {
+            await _CategoryApiConnect.CovertiCatego();
+            await _AnimeApi.ConsumeAnime();
+            await _ApiConnect.Consume();
+
+
             var responseAnimesFavorites = await _cacheService.GetTop7AnimesCatalogByFavorites();
             var responseAnimesByCount = await _cacheService.GetTop7AnimesCatalogByUserCount();
             var responseAnimesByRating = await _cacheService.GetTop7AnimesCatalogByRating();
