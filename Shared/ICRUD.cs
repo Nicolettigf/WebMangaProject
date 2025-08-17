@@ -1,10 +1,12 @@
-﻿using Shared.Responses;
+﻿using Entities.AnimeS;
+using Shared.Responses;
 
 namespace Shared
 {
     public interface ICRUD<T>
     {
         Task<Response> Insert(T Item);
+        Task<Response> InsertRange(IEnumerable<T> items);
         Task<SingleResponse<T>> Get(int id);
         Task<DataResponse<T>> Get(int skip, int take);
         Task<Response> Update(T Item);

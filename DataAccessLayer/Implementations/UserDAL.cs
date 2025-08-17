@@ -245,5 +245,10 @@ namespace DataAccessLayer.Implementations
         {
             throw new NotImplementedException();
         }
+
+        public Task<Response> InsertRange(IEnumerable<User> items)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -24,6 +24,16 @@ namespace BusinessLogicalLayer.Implementations
             return await _unitOfWork.Commit();
         }
 
+        public async Task<Response> InsertRange(IEnumerable<Anime> items)
+        {
+            foreach (var item in items)
+            {
+                item.EnableEntity(); // aplica validações em todos
+            }
+            await _unitOfWork.AnimeRepository.InsertRange(items);
+            return await _unitOfWork.Commit();
+        }
+
         public async Task<Response> Update(Anime Item)
         {
             await _unitOfWork.AnimeRepository.Update(Item);
@@ -89,5 +99,6 @@ namespace BusinessLogicalLayer.Implementations
         {
             return await _unitOfWork.AnimeRepository.GetByPopularity(skip, take);
         }
+
     }
 }

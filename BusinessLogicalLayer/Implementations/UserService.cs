@@ -149,5 +149,10 @@ namespace BusinessLogicalLayer.Implementations
             await _unitOfWork.UserRepository.Update(user);
             return await _unitOfWork.CommitForUser();
         }
+
+        public Task<Response> InsertRange(IEnumerable<User> items)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

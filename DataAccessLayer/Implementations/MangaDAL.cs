@@ -252,5 +252,10 @@ namespace DataAccessLayer.Implementations
                 return ResponseFactory.CreateInstance().CreateFailedDataResponse<MangaCatalog>(ex);
             }
         }
+
+        public Task<Response> InsertRange(IEnumerable<Manga> items)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

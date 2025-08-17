@@ -96,5 +96,10 @@ namespace BusinessLogicalLayer.Implementations
         {
             return await _unitOfWork.MangaRepository.GetByPopularity(skip, take);
         }
+
+        public Task<Response> InsertRange(IEnumerable<Manga> items)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

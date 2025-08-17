@@ -6,7 +6,6 @@ using Shared;
 using Shared.Models.Anime;
 using Shared.Responses;
 
-
 namespace DataAccessLayer.Implementations
 {
     public class AnimeDAL : IAnimeDAL
@@ -243,6 +242,35 @@ namespace DataAccessLayer.Implementations
             catch (Exception ex)
             {
                 return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(ex);
+            }
+        }
+
+        public async Task<Response> InsertRange(IEnumerable<Anime> items)
+        {
+            try
+            {
+                foreach (var anime in items)
+                {
+                    List<Category> cate = new();
+                    if (anime.Categories != null)
+                    {
+                        foreach (var item in anime.Categories)
+                        {
+                            var category = await _db.Categories.FindAsync(item.ID);
+                            if (category != null)
+                                cate.Add(category);
+                        }
+                    }
+                    anime.Categories = cate;
+                    _db.Animes.Add(anime);
+                }
+
+                await _db.SaveChangesAsync();
+                return ResponseFactory.CreateInstance().CreateSuccessResponse();
+            }
+            catch (Exception ex)
+            {
+                return ResponseFactory.CreateInstance().CreateFailedResponse(ex);
             }
         }
     }

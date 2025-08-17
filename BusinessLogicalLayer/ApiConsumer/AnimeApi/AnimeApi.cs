@@ -2,19 +2,21 @@
 using BusinessLogicalLayer.ApiConsumer.CategoryToItemApi;
 using BusinessLogicalLayer.Interfaces.IAnimeInterfaces;
 using Entities.AnimeS;
+using Entities.Enums;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Shared.Responses;
 using System.Collections.Concurrent;
+using System.Net.NetworkInformation;
 
 namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
 {
     public class AnimeApi : IAnimeApiConnect
     {
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly Uri baseAddress = new Uri("https://kitsu.io/api/edge/");
+        private readonly Uri baseAddress = new Uri("https://api.jikan.moe/v4/");
         private readonly int LimiteAnimes = 50000;
-        private readonly int LoteTamanho = 50; // quantidade de animes processados em paralelo
+        private readonly int LoteTamanho = 1; // quantidade de animes processados em paralelo
 
         public AnimeApi(IServiceScopeFactory scopeFactory)
         {
@@ -23,75 +25,75 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
 
         public async Task ConsumeAnime()
         {
-            int last;
+            int lastPage;
             using (var scope = _scopeFactory.CreateScope())
             {
                 var animeService = scope.ServiceProvider.GetRequiredService<IAnimeService>();
-                last = await animeService.GetLastIndex();
+                lastPage = await animeService.GetLastIndex(); // Pode ser último ID ou última página salva
             }
 
-            if (last >= LimiteAnimes)
-                return;
+            const int pageSize = 25; // Máximo que o Jikan permite
+            const int totalAnimes = 50000;
+            int totalPages = (int)Math.Ceiling(totalAnimes / (double)pageSize);
 
-            Console.WriteLine($"📡 Começando do ID {last + 1} até {LimiteAnimes}...");
-
+            Console.WriteLine($"📡 Começando da página {lastPage + 1} até {totalPages}...");
             using (var httpClient = new HttpClient { BaseAddress = baseAddress })
             {
-                for (int i = last + 1; i <= LimiteAnimes; i += LoteTamanho)
+                for (int page = lastPage + 1; page <= totalPages; page++)
                 {
-                    var tasks = new List<Task<Anime?>>();
+                    var animes = await BuscarPagina(httpClient, page, pageSize);
 
-                    // cria as tasks para pegar animes em paralelo
-                    for (int id = i; id < i + LoteTamanho && id <= LimiteAnimes; id++)
+                    if (animes.Count > 0)
                     {
-                        tasks.Add(BuscarAnime(httpClient, id));
-                    }
-
-                    var resultados = await Task.WhenAll(tasks);
-                    var animesValidos = resultados.Where(a => a != null).ToList();
-
-                    if (animesValidos.Count > 0)
-                    {
-                        // insere o lote no banco
                         using (var scope = _scopeFactory.CreateScope())
                         {
                             var animeService = scope.ServiceProvider.GetRequiredService<IAnimeService>();
-                            foreach (var anime in animesValidos)
+
+                            var animeEntities = new List<Anime>();
+
+                            foreach (var animeDto in animes)
                             {
-                                await animeService.Insert(anime!);
+                                var anime = AnimeConverter.ConvertDTOToAnime(new RootAni { data = animeDto });
+                                animeEntities.Add(anime);
                             }
+
+                            await animeService.InsertRange(animeEntities); // chama tudo de uma vez
                         }
                     }
 
-                    Console.WriteLine($"✅ Processados até ID {i + LoteTamanho - 1}");
+                    Console.WriteLine($"✅ Página {page} processada ({animes.Count} animes)");
+
+                    // Delay para evitar rate limit
+                    await Task.Delay(350);
                 }
             }
 
             Console.WriteLine("🏁 Finalizado!");
         }
 
-        private async Task<Anime?> BuscarAnime(HttpClient httpClient, int id)
+        private async Task<List<DataAni>> BuscarPagina(HttpClient httpClient, int page, int limit)
         {
             try
             {
-                var response = await httpClient.GetAsync($"anime/{id}");
+                var response = await httpClient.GetAsync($"anime?page={page}&limit={limit}");
                 var jsonString = await response.Content.ReadAsStringAsync();
 
-                if (jsonString.Contains("errors"))
-                    return null;
+                if (jsonString.Contains("errors") || jsonString.Contains("BadResponseException"))
+                    return new List<DataAni>();
 
-                var dto = JsonConvert.DeserializeObject<RootANI>(jsonString);
-                if (dto == null)
-                    return null;
-
-                var anime = AnimeConverter.ConvertDTOToAnime(dto);
-                anime.Categories = await CategoryToAnime.AnimeCategory(Convert.ToInt32(anime.Id));
-                return anime;
+                var dto = JsonConvert.DeserializeObject<RootAniPage>(jsonString);
+                return dto?.data ?? new List<DataAni>();
             }
             catch
             {
-                return null; // ignora erros individuais
+                return new List<DataAni>();
             }
+        }
+
+        // Novo modelo para o endpoint de página
+        public class RootAniPage
+        {
+            public List<DataAni> data { get; set; }
         }
     }
 }

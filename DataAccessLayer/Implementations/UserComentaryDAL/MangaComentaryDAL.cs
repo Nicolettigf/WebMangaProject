@@ -101,6 +101,11 @@ namespace DataAccessLayer.Implementations.UserComentaryDAL
             }
         }
 
+        public Task<Response> InsertRange(IEnumerable<MangaComentary> items)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Response> Update(MangaComentary Item)
         {
             try

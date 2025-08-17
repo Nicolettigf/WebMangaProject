@@ -46,6 +46,11 @@ namespace BusinessLogicalLayer.Implementations.UserComentaryService
             return await _unitOfWork.Commit();
         }
 
+        public Task<Response> InsertRange(IEnumerable<MangaComentary> items)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<Response> Update(MangaComentary mangaComentary)
         {
             await _unitOfWork.MangaComentaryRepository.Update(mangaComentary);

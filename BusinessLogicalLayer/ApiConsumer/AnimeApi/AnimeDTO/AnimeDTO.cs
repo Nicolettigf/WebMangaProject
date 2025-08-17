@@ -1,239 +1,207 @@
-﻿public class AnimeCharacters
+﻿// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
+public class Aired
 {
-    public LinksANI? links { get; set; }
+    public string? from { get; set; }
+    public string? to { get; set; }
+    public Prop? prop { get; set; }
 }
 
-public class AnimeProductions
+public class Broadcast
 {
-    public LinksANI? links { get; set; }
+    public string? day { get; set; }
+    public string? time { get; set; }
+    public string? timezone { get; set; }
+    public string? @string { get; set; }
 }
 
-public class AnimeStaff
+public class DataAni
 {
-    public LinksANI? links { get; set; }
-}
-
-public class AttributesANI
-{
-    public DateTime? createdAt { get; set; }
-    public DateTime? updatedAt { get; set; }
-    public string? slug { get; set; }
-    public string? synopsis { get; set; }
-    public string? description { get; set; }
-    public int? coverImageTopOffset { get; set; }
-    public TitlesANI? titles { get; set; }
-    public string? canonicalTitle { get; set; }
-    public List<string?> abbreviatedTitles { get; set; }
-    public string? averageRating { get; set; }
-    public ratingFrequencies? ratingFrequencies { get; set; }
-    public int? userCount { get; set; }
-    public int? favoritesCount { get; set; }
-    public string? startDate { get; set; }
-    public string? endDate { get; set; }
-    public object? nextRelease { get; set; }
-    public int? popularityRank { get; set; }
-    public int? ratingRank { get; set; }
-    public string? ageRating { get; set; }
-    public string? ageRatingGuide { get; set; }
-    public string? subtype { get; set; }
-    public string? status { get; set; }
-    public string? tba { get; set; }
-    public PosterImage? posterImage { get; set; }
-    public CoverImage? coverImage { get; set; }
-    public int? episodeCount { get; set; }
-    public int? episodeLength { get; set; }
-    public int? totalLength { get; set; }
-    public string? youtubeVideoId { get; set; }
-    public string? showType { get; set; }
-    public bool? nsfw { get; set; }
-}
-
-public class CastingsANI
-{
-    public LinksANI? links { get; set; }
-}
-
-public class CategoriesANI
-{
-    public LinksANI? links { get; set; }
-}
-
-public class CharactersANI
-{
-    public LinksANI? links { get; set; }
-}
-
-public class CoverImageANI
-{
-    public string? tiny { get; set; }
-    public string? large { get; set; }
-    public string? small { get; set; }
-    public string? original { get; set; }
-    public Meta? meta { get; set; }
-}
-
-public class DataANI
-{
-    public string? id { get; set; }
+    public int? mal_id { get; set; }
+    public string? url { get; set; }
+    public Images? images { get; set; }
+    public Trailer? trailer { get; set; }
+    public bool? approved { get; set; }
+    public List<Title>? titles { get; set; }
+    public string? title { get; set; }
+    public string? title_english { get; set; }
+    public string? title_japanese { get; set; }
+    public List<string?> title_synonyms { get; set; }
     public string? type { get; set; }
-    public LinksANI? links { get; set; }
-    public AttributesANI? attributes { get; set; }
-    public RelationshipsANI? relationships { get; set; }
+    public string? source { get; set; }
+    public int? episodes { get; set; }
+    public string? status { get; set; }
+    public bool? airing { get; set; }
+    public Aired? aired { get; set; }
+    public string? duration { get; set; }
+    public string? rating { get; set; }
+    public double? score { get; set; }
+    public int? scored_by { get; set; }
+    public int? rank { get; set; }
+    public int? popularity { get; set; }
+    public int? members { get; set; }
+    public int? favorites { get; set; }
+    public string? synopsis { get; set; }
+    public string? background { get; set; }
+    public string? season { get; set; }
+    public int? year { get; set; }
+    public Broadcast? broadcast { get; set; }
+    public List<Producer>? producers { get; set; }
+    public List<Licensor>? licensors { get; set; }
+    public List<Studio>? studios { get; set; }
+    public List<Genre>? genres { get; set; }
+    public List<ExplicitGenre>? explicit_genres { get; set; }
+    public List<Theme>? themes { get; set; }
+    public List<Demographic>? demographics { get; set; }
+    public List<Relation>? relations { get; set; }
+    public Theme? theme { get; set; }
+    public List<External>? external { get; set; }
+    public List<Streaming>? streaming { get; set; }
 }
 
-public class DimensionsANI
+public class Demographic
 {
-    public TinyANI? tiny { get; set; }
-    public LargeANI? large { get; set; }
-    public SmallANI? small { get; set; }
-    public MediumANI? medium { get; set; }
+    public int? mal_id { get; set; }
+    public string? type { get; set; }
+    public string? name { get; set; }
+    public string? url { get; set; }
 }
 
-public class Episodes
+public class Entry
 {
-    public LinksANI? links { get; set; }
+    public int? mal_id { get; set; }
+    public string? type { get; set; }
+    public string? name { get; set; }
+    public string? url { get; set; }
 }
 
-public class GenresANI
+public class ExplicitGenre
 {
-    public LinksANI? links { get; set; }
+    public int? mal_id { get; set; }
+    public string? type { get; set; }
+    public string? name { get; set; }
+    public string? url { get; set; }
 }
 
-public class InstallmentsANI
+public class External
 {
-    public LinksANI? links { get; set; }
+    public string? name { get; set; }
+    public string? url { get; set; }
 }
 
-public class LargeANI
+public class From
 {
-    public int? width { get; set; }
-    public int? height { get; set; }
+    public int? day { get; set; }
+    public int? month { get; set; }
+    public int? year { get; set; }
 }
 
-public class LinksANI
+public class Genre
 {
-    public string? self { get; set; }
-    public string? related { get; set; }
+    public int? mal_id { get; set; }
+    public string? type { get; set; }
+    public string? name { get; set; }
+    public string? url { get; set; }
 }
 
-public class MappingsANI
+public class Images
 {
-    public LinksANI? links { get; set; }
+    public Jpg jpg { get; set; }
+    public Webp webp { get; set; }
 }
 
-public class MediaRelationshipsANI
+public class Jpg
 {
-    public LinksANI? links { get; set; }
+    public string? image_url { get; set; }
+    public string? small_image_url { get; set; }
+    public string? large_image_url { get; set; }
 }
 
-public class MediumANI
+public class Licensor
 {
-    public int? width { get; set; }
-    public int? height { get; set; }
+    public int? mal_id { get; set; }
+    public string? type { get; set; }
+    public string? name { get; set; }
+    public string? url { get; set; }
 }
 
-public class MetaANI
+public class Producer
 {
-    public DimensionsANI? dimensions { get; set; }
+    public int? mal_id { get; set; }
+    public string? type { get; set; }
+    public string? name { get; set; }
+    public string? url { get; set; }
 }
 
-public class PosterImageANI
+public class Prop
 {
-    public string? tiny { get; set; }
-    public string? large { get; set; }
-    public string? small { get; set; }
-    public string? medium { get; set; }
-    public string? original { get; set; }
-    public MetaANI? meta { get; set; }
+    public From? from { get; set; }
+    public To? to { get; set; }
+    public string? @string { get; set; }
 }
 
-public class ProductionsANI
+public class Relation
 {
-    public LinksANI? links { get; set; }
+    public string? relation { get; set; }
+    public List<Entry>? entry { get; set; }
 }
 
-public class QuotesANI
+public class RootAni
 {
-    public LinksANI? links { get; set; }
+    public DataAni? data { get; set; }
 }
 
-public class ratingFrequencies
+public class Streaming
 {
-    public string? _2 { get; set; }
-    public string? _3 { get; set; }
-    public string? _4 { get; set; }
-    public string? _5 { get; set; }
-    public string? _6 { get; set; }
-    public string? _7 { get; set; }
-    public string? _8 { get; set; }
-    public string? _9 { get; set; }
-    public string? _10 { get; set; }
-    public string? _11 { get; set; }
-    public string? _12 { get; set; }
-    public string? _13 { get; set; }
-    public string? _14 { get; set; }
-    public string? _15 { get; set; }
-    public string? _16 { get; set; }
-    public string? _17 { get; set; }
-    public string? _18 { get; set; }
-    public string? _19 { get; set; }
-    public string? _20 { get; set; }
+    public string? name { get; set; }
+    public string? url { get; set; }
 }
 
-public class RelationshipsANI
+public class Studio
 {
-    public GenresANI? genres { get; set; }
-    public CategoriesANI? categories { get; set; }
-    public CastingsANI? castings { get; set; }
-    public InstallmentsANI? installments { get; set; }
-    public MappingsANI? mappings { get; set; }
-    public ReviewsANI? reviews { get; set; }
-    public MediaRelationshipsANI? mediaRelationships { get; set; }
-    public CharactersANI? characters { get; set; }
-    public StaffANI? staff { get; set; }
-    public ProductionsANI? productions { get; set; }
-    public QuotesANI? quotes { get; set; }
-    public Episodes? episodes { get; set; }
-    public StreamingLinksANI? streamingLinks { get; set; }
-    public AnimeProductions? animeProductions { get; set; }
-    public AnimeCharacters? animeCharacters { get; set; }
-    public AnimeStaff? animeStaff { get; set; }
+    public int? mal_id { get; set; }
+    public string? type { get; set; }
+    public string? name { get; set; }
+    public string? url { get; set; }
 }
 
-public class ReviewsANI
+public class Theme
 {
-    public LinksANI links { get; set; }
+    public int? mal_id { get; set; }
+    public string? type { get; set; }
+    public string? name { get; set; }
+    public string? url { get; set; }
 }
 
-public class RootANI
+public class Theme2
 {
-    public DataANI data { get; set; }
+    public List<string?> openings { get; set; }
+    public List<string?> endings { get; set; }
 }
 
-public class SmallANI
+public class Title
 {
-    public int? width { get; set; }
-    public int? height { get; set; }
+    public string? type { get; set; }
+    public string? title { get; set; }
 }
 
-public class StaffANI
+public class To
 {
-    public LinksANI links { get; set; }
+    public int? day { get; set; }
+    public int? month { get; set; }
+    public int? year { get; set; }
 }
 
-public class StreamingLinksANI
+public class Trailer
 {
-    public LinksANI links { get; set; }
+    public string? youtube_id { get; set; }
+    public string? url { get; set; }
+    public string? embed_url { get; set; }
 }
 
-public class TinyANI
+public class Webp
 {
-    public int? width { get; set; }
-    public int? height { get; set; }
+    public string? image_url { get; set; }
+    public string? small_image_url { get; set; }
+    public string? large_image_url { get; set; }
 }
 
-public class TitlesANI
-{
-    public string? en_jp { get; set; }
-    public string? ja_jp { get; set; }
-}
