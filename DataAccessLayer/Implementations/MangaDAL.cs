@@ -253,9 +253,39 @@ namespace DataAccessLayer.Implementations
             }
         }
 
-        public Task<Response> InsertRange(IEnumerable<Manga> items)
+        public async Task<Response> InsertRange(IEnumerable<Manga> items)
         {
-            throw new NotImplementedException();
+            try
+            {
+                foreach (var manga in items)
+                {
+                    if (manga.Genres != null && manga.Genres.Any())
+                    {
+                        var updatedGenres = new List<Genre>(manga.Genres.Count);
+
+                        foreach (var item in manga.Genres)
+                        {
+                            // Tenta buscar no banco sem rastrear (mais leve)
+                            var category = await _db.Categories
+                                                    .AsNoTracking()
+                                                    .FirstOrDefaultAsync(c => c.MalId == item.MalId);
+
+                            updatedGenres.Add(category ?? item);
+                        }
+
+                        manga.Genres = updatedGenres;
+                    }
+
+                    _db.Mangas.Add(manga);
+                }
+
+                await _db.SaveChangesAsync();
+                return ResponseFactory.CreateInstance().CreateSuccessResponse();
+            }
+            catch (Exception ex)
+            {
+                return ResponseFactory.CreateInstance().CreateFailedResponse(ex);
+            }
         }
     }
 }

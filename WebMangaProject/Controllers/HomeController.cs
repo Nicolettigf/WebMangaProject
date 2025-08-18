@@ -36,8 +36,8 @@ namespace MvcPresentationLayer.Controllers
         public async Task<IActionResult> Index()
         {
             await _CategoryApiConnect.CovertiCatego();
-            await _AnimeApi.ConsumeAnime();
             await _ApiConnect.Consume();
+            await _AnimeApi.ConsumeAnime();
 
 
             var responseAnimesFavorites = await _cacheService.GetTop7AnimesCatalogByFavorites();

@@ -48,7 +48,7 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
 
                             foreach (var dto in dtos)
                             {
-                                var manga = ConverterToCategory.ConvertDTOToManga(dto);
+                                var manga = MangaConverter.ConvertDTOToManga(dto);
                                 if (!string.IsNullOrWhiteSpace(manga.Synopsis))
                                     mangaEntities.Add(manga);
                             }
@@ -58,7 +58,7 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                     }
 
                     Console.WriteLine($"✅ Página {page} processada ({dtos.Count} mangas)");
-                    await Task.Delay(350);
+                    await Task.Delay(500);
                 }
             }
 

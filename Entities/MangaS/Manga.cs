@@ -4,8 +4,8 @@
     {
         public int? Chapters { get; set; }
         public int? Volumes { get; set; }
-        public bool Publishing { get; set; }
-        public DateTime PublishedFrom { get; set; }
+        public bool? Publishing { get; set; }
+        public DateTime? PublishedFrom { get; set; }
         public DateTime? PublishedTo { get; set; }
         public ICollection<MangaComentary>? Comentaries { get; set; }
         public List<Serialization> Serializations { get; set; }

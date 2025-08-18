@@ -17,10 +17,10 @@ namespace BusinessLogicalLayer.ApiConsumer
         }
         public class Genre
         {
-            public int mal_id { get; set; }
-            public string type { get; set; }
-            public string name { get; set; }
-            public string url { get; set; }
+            public int? mal_id { get; set; }
+            public string? type { get; set; }
+            public string? name { get; set; }
+            public string? url { get; set; }
         }
         public class ExplicitGenre
         {
@@ -37,8 +37,8 @@ namespace BusinessLogicalLayer.ApiConsumer
         }
         public class Images
         {
-            public Jpg jpg { get; set; }
-            public Webp webp { get; set; }
+            public Jpg? jpg { get; set; }
+            public Webp? webp { get; set; }
         }
         public class Jpg
         {
@@ -87,39 +87,39 @@ namespace BusinessLogicalLayer.ApiConsumer
         }
         public class Items
         {
-            public int count { get; set; }
-            public int total { get; set; }
-            public int per_page { get; set; }
+            public int? count { get; set; }
+            public int? total { get; set; }
+            public int? per_page { get; set; }
         }
 
         public class Author
         {
-            public int mal_id { get; set; }
-            public string type { get; set; }
-            public string name { get; set; }
-            public string url { get; set; }
+            public int? mal_id { get; set; }
+            public string? type { get; set; }
+            public string? name { get; set; }
+            public string? url { get; set; }
         }
         public class Pagination
         {
-            public int last_visible_page { get; set; }
-            public bool has_next_page { get; set; }
-            public int current_page { get; set; }
-            public Items items { get; set; }
+            public int? last_visible_page { get; set; }
+            public bool? has_next_page { get; set; }
+            public int? current_page { get; set; }
+            public Items? items { get; set; }
         }
         public class Published
         {
-            public DateTime from { get; set; }
+            public DateTime? from { get; set; }
             public DateTime? to { get; set; }
-            public Prop prop { get; set; }
-            public string @string { get; set; }
+            public Prop? prop { get; set; }
+            public string? @string { get; set; }
         }
         
         public class Serialization
         {
-            public int mal_id { get; set; }
-            public string type { get; set; }
-            public string name { get; set; }
-            public string url { get; set; }
+            public int? mal_id { get; set; }
+            public string? type { get; set; }
+            public string? name { get; set; }
+            public string? url { get; set; }
         }
         public class Aired
         {

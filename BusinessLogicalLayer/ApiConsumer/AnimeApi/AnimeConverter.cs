@@ -212,7 +212,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
 
             anime.Genres = item.genres?.Select(g => new Entities.MediaBase.Genre
             {
-                Id = g.mal_id,
+                Id = Convert.ToInt32(g.mal_id),
                 AnimeId = anime.MalId,
                 Anime = anime,
                 MalId = g.mal_id,

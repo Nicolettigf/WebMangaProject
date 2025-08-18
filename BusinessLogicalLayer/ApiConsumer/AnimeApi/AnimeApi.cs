@@ -15,8 +15,6 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
     {
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly Uri baseAddress = new Uri("https://api.jikan.moe/v4/");
-        private readonly int LimiteAnimes = 50000;
-        private readonly int LoteTamanho = 1; // quantidade de animes processados em paralelo
 
         public AnimeApi(IServiceScopeFactory scopeFactory)
         {
@@ -64,10 +62,9 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                     Console.WriteLine($"✅ Página {page} processada ({animes.Count} animes)");
 
                     // Delay para evitar rate limit
-                    await Task.Delay(350);
+                    await Task.Delay(500);
                 }
             }
-
             Console.WriteLine("🏁 Finalizado!");
         }
 
