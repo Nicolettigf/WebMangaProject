@@ -1,7 +1,5 @@
 ﻿using Entities.AnimeS;
 using Entities.MangaS;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities
@@ -49,6 +47,9 @@ namespace Entities
 
         public class Genre : BaseClassesApi
         {
+            public int Count { get; set; }
+
+
             [NotMapped]
             public ICollection<Manga>? MangasID { get; set; }
 

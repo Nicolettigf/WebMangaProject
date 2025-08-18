@@ -1,56 +1,73 @@
 ﻿using BusinessLogicalLayer.Interfaces.IMangaInterfaces;
+using DataAccessLayer;
 using DataAccessLayer.Interfaces.IMangaInterfaces;
-using Entities;
+using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Shared.Responses;
 using static Entities.MediaBase;
 
 namespace BusinessLogicalLayer.ApiConsumer.CategoryApi
 {
     public class CategoryApiConnect : ICategoryApiConnect
     {
-        Uri baseAddress = new Uri("https://kitsu.io/api/edge/");
-
+        private readonly MangaProjectDbContext _db;
         private readonly IMangaService _mangaService;
         private readonly IMangaDAL _mangaDAL;
-        public CategoryApiConnect(IMangaService mangaService, IMangaDAL mangaDAL)
+        private readonly Uri _baseAddress = new("https://api.jikan.moe/v4/");
+
+        public CategoryApiConnect(IMangaService mangaService, IMangaDAL mangaDAL, MangaProjectDbContext db)
         {
-            this._mangaDAL = mangaDAL;
-            this._mangaService = mangaService;
+            _mangaService = mangaService;
+            _mangaDAL = mangaDAL;
+            _db = db;
         }
+
         public async Task CovertiCatego()
         {
-            int LimitesCategory = 246;
-            int Last = await _mangaDAL.GetLastIndexCategory();
-            if (LimitesCategory == Last)
-            {
-                return;
-            }
-            Last++;
-            using (var httpClient = new HttpClient { BaseAddress = baseAddress })
-            {
+            await PopularGenerosAsync("anime");
+            await PopularGenerosAsync("manga");
+        }
 
-                for (int i = Last; i <= LimitesCategory; i++)
+        private async Task PopularGenerosAsync(string type)
+        {
+            using var httpClient = new HttpClient { BaseAddress = _baseAddress };
+
+            var response = await httpClient.GetAsync($"genres/{type}");
+            if (!response.IsSuccessStatusCode) return;
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+            var genresRoot = JsonConvert.DeserializeObject<RootCate>(jsonString);
+
+            if (genresRoot?.data == null) return;
+
+            foreach (var datum in genresRoot.data)
+            {
+                var exists = await _db.Categories.AnyAsync(c => c.MalId == datum.mal_id);
+                if (exists) continue;
+
+                var genre = new Genre
                 {
-                    using (var response = await httpClient.GetAsync($"categories/{i}"))
-                    {
+                    Id = datum.mal_id,
+                    MalId = datum.mal_id,
+                    Name = datum.name,
+                    Count = datum.count
+                };
 
-                        string jsonString = await response.Content.ReadAsStringAsync();
-                        if (jsonString.Contains("errors"))
-                        {
-                        }
-                        else
-                        {
-                            RootCate? mangaRootDTO = JsonConvert.DeserializeObject<RootCate>(jsonString);
-                            //Ou pegar em lista ou convert um por um pois ta fazendo lista de um so sempre
-                            Genre c = Convertercate.CovertiCatego(mangaRootDTO);
-                            //BLL
-                            Response responseManga = await _mangaService.InsertCategory(c);
-                        }
-                    }
-                }
-                return;
+                await _mangaService.InsertCategory(genre);
             }
         }
+    }
+
+    // DTOs
+    public class Datum
+    {
+        public int mal_id { get; set; }
+        public string name { get; set; }
+        public string url { get; set; }
+        public int count { get; set; }
+    }
+
+    public class RootCate
+    {
+        public List<Datum> data { get; set; }
     }
 }

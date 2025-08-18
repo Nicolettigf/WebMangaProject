@@ -34,8 +34,8 @@ namespace MvcPresentationLayer.Controllers
         }
 
         public async Task<IActionResult> Index()
-         {
-            //await _CategoryApiConnect.CovertiCatego();
+        {
+            await _CategoryApiConnect.CovertiCatego();
             await _AnimeApi.ConsumeAnime();
             await _ApiConnect.Consume();
 

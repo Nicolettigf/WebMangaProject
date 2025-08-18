@@ -23,9 +23,6 @@ namespace DataAccessLayer.UnitOfWork
         private IMangaComentaryDAL mangaComentaryRepository = null;
         private IAnimeComentaryDAL animeComentaryRepository = null;
 
-
-
-
         public UnitOfWork(MangaProjectDbContext dbContext, IUserDAL userDAL)
         {
             this._dbContext = dbContext;

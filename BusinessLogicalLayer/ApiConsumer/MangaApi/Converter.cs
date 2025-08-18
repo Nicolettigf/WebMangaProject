@@ -17,20 +17,13 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 #region deletar
                 Id = Convert.ToInt32(item.mal_id),
                 CanonicalTitle = item.title,
-                AverageRating = item.score.ToString(),
                 RatingRank = item.rank,
                 PopularityRank = item.popularity,
                 UserCount = item.members,
-                VolumeCount = item.volumes,
-                Serialization = item.serializations?.FirstOrDefault()?.name,
                 PosterImageLink = item.images?.jpg?.image_url,
                 CoverImageLink = item.images?.jpg?.large_image_url,
-                Subtype = item.type,
-                ChapterCount = item.chapters,
                 #endregion
 
-                StartDate = item.published.from.ToString(),
-                EndDate = item.published.to.ToString(),
                 Status = item.status,
                 Score = item.score,
                 ScoredBy = item.scored_by,
@@ -100,21 +93,6 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                     Name = t.name,
                     Url = t.url
                 }).ToList() ?? new List<Entities.MediaBase.Theme>();
-
-                // Imagens herdadas do MediaBase
-                manga.Imagens = item.images != null
-                    ? new Entities.MediaBase.Images
-                    {
-                        MangaId = manga.MalId,
-                        Manga = manga,
-                        JpgImageUrl = item.images.jpg?.image_url,
-                        JpgSmallImageUrl = item.images.jpg?.small_image_url,
-                        JpgLargeImageUrl = item.images.jpg?.large_image_url,
-                        WebpImageUrl = item.images.webp?.image_url,
-                        WebpSmallImageUrl = item.images.webp?.small_image_url,
-                        WebpLargeImageUrl = item.images.webp?.large_image_url
-                    }
-                    : null;
 
                 manga.ExplicitGenres = item.explicit_genres?.Select(e => new Entities.MediaBase.ExplicitGenre
                 {

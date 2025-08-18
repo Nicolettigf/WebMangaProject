@@ -4,6 +4,7 @@ using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(MangaProjectDbContext))]
-    partial class MangaProjectDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250818072358_countdogenre")]
+    partial class countdogenre
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -38,6 +40,9 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<bool?>("Airing")
                         .HasColumnType("bit");
+
+                    b.Property<string>("AnimeCoverImage")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("AnimePosterImage")
                         .HasColumnType("nvarchar(max)");
@@ -165,7 +170,28 @@ namespace DataAccessLayer.Migrations
                     b.Property<string>("Youtubeurl")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("ageRating")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ageRatingGuide")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("averageRating")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("canonicalTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("endDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("episodeCount")
+                        .HasColumnType("int");
+
+                    b.Property<string>("episodeLength")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("favoritesCount")
@@ -180,8 +206,20 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("ratingRank")
                         .HasColumnType("int");
 
+                    b.Property<string>("showType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("startDate")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("subtype")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int?>("userCount")
                         .HasColumnType("int");
+
+                    b.Property<string>("youtubeVideoId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -508,11 +546,17 @@ namespace DataAccessLayer.Migrations
                     b.Property<bool?>("Approved")
                         .HasColumnType("bit");
 
+                    b.Property<string>("AverageRating")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Background")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("CanonicalTitle")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("ChapterCount")
+                        .HasColumnType("int");
 
                     b.Property<int?>("Chapters")
                         .HasColumnType("int");
@@ -522,6 +566,9 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("EndDate")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Favorites")
                         .HasColumnType("int");
@@ -581,7 +628,16 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("ScoredBy")
                         .HasColumnType("int");
 
+                    b.Property<string>("Serialization")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StartDate")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Subtype")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Synopsis")
@@ -609,6 +665,9 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("UserCount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("VolumeCount")
                         .HasColumnType("int");
 
                     b.Property<int?>("Volumes")

@@ -17,24 +17,12 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
             {
                 #region tirar
                 name = item.title,
-                description = item.background,
                 canonicalTitle = item.title,
-                averageRating = item.score?.ToString(),
                 userCount = item.members,
                 favoritesCount = item.favorites,
                 popularityRank = item.popularity,
-                startDate = item.aired?.from,
-                endDate = item.aired?.to,
                 ratingRank = item.rank,
-                ageRating = item.rating,
-                ageRatingGuide = item.rating,
-                subtype = item.type,
                 AnimePosterImage = item.images?.jpg?.large_image_url,
-                AnimeCoverImage = item.trailer?.embed_url,
-                episodeLength = item.duration,
-                youtubeVideoId = item.trailer?.youtube_id,
-                showType = item.type,
-                episodeCount = item.episodes,
                 #endregion
 
                 #region Anime
