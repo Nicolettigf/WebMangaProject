@@ -2,6 +2,7 @@
 using Entities.MangaS;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Entities
 {
@@ -38,7 +39,15 @@ namespace Entities
 
         public class Demographic : BaseClassesApi { }
 
-        public class Genre : BaseClassesApi { }
+        public class Genre : BaseClassesApi
+        {
+            [NotMapped]
+            public ICollection<Manga>? MangasID { get; set; }
+
+            [NotMapped]
+            public ICollection<Anime>? AnimesID { get; set; }
+
+        }
 
         public class Theme : BaseClassesApi { }
 
@@ -60,9 +69,9 @@ namespace Entities
         public int? MangaId { get; set; }     // FK opcional
         public Manga? Manga { get; set; }
         public int? MalId { get; set; }   // mal_id da API
-        public string? type { get; set; }
-        public string? name { get; set; }
-        public string? url { get; set; }
+        public string? Type { get; set; }
+        public string? Name { get; set; }
+        public string? Url { get; set; }
 
     }
 }

@@ -3,6 +3,7 @@ using DataAccessLayer.Interfaces.IMangaInterfaces;
 using Entities;
 using Newtonsoft.Json;
 using Shared.Responses;
+using static Entities.MediaBase;
 
 namespace BusinessLogicalLayer.ApiConsumer.CategoryApi
 {
@@ -42,7 +43,7 @@ namespace BusinessLogicalLayer.ApiConsumer.CategoryApi
                         {
                             RootCate? mangaRootDTO = JsonConvert.DeserializeObject<RootCate>(jsonString);
                             //Ou pegar em lista ou convert um por um pois ta fazendo lista de um so sempre
-                            Category c = Convertercate.CovertiCatego(mangaRootDTO);
+                            Genre c = Convertercate.CovertiCatego(mangaRootDTO);
                             //BLL
                             Response responseManga = await _mangaService.InsertCategory(c);
                         }

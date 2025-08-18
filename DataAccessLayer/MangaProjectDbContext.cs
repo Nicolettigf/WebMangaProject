@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared;
 using Shared.Responses;
 using System.Reflection;
+using static Entities.MediaBase;
 
 namespace DataAccessLayer
 {
@@ -22,7 +23,7 @@ namespace DataAccessLayer
         public DbSet<RatingFrequencies> MangaRating { get; set; }
         public DbSet<AnimeRatingFrequencies> AnimeRating { get; set; }
 
-        public DbSet<Category> Categories { get; set; }
+        public DbSet<Genre> Categories { get; set; }
 
         public DbSet<AnimeComentary> AnimeComentaries { get; set; }
         public DbSet<MangaComentary> MangaComentaries { get; set; }
@@ -43,7 +44,7 @@ namespace DataAccessLayer
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Manga>().Property(c => c.Id).ValueGeneratedNever();
-            modelBuilder.Entity<Category>().Property(c => c.ID).ValueGeneratedNever();
+            modelBuilder.Entity<Genre>().Property(c => c.Id).ValueGeneratedNever();
             modelBuilder.Entity<Anime>().Property(c => c.Id).ValueGeneratedNever();
 
             modelBuilder.Entity<AnimeRatingFrequencies>().Property(c => c.Id).ValueGeneratedNever();

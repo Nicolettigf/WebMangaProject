@@ -1,26 +1,21 @@
-﻿using Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using static Entities.MediaBase;
 
 
 namespace BusinessLogicalLayer.ApiConsumer
 {
     public class Convertercate
     {
-        public static Category CovertiCatego(RootCate Cate)
+        public static Genre CovertiCatego(RootCate Cate)
         {
             if (Cate.data == null)
             {
-                return new Category();
+                return new Genre();
             }
 
-            Category c = new Category();
-            c.Name = Cate.data.attributes.title;
-            c.Description = Cate.data.attributes.description;
-            c.ID = Convert.ToInt32(Cate.data.id);
+             var c = new Genre();
+            //c.Name = Cate.data.attributes.title;
+            //c.Description = Cate.data.attributes.description;
+            //c.ID = Convert.ToInt32(Cate.data.id);
 
 
             return c;

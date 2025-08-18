@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Entities.Enums;
 using Entities.MangaS;
+using static Entities.MediaBase;
 
 namespace MvcPresentationLayer.Models.MangaModels
 {
@@ -26,7 +27,7 @@ namespace MvcPresentationLayer.Models.MangaModels
         public string? Serialization { get; set; } 
         public string? CoverImageLink { get; set; }
         public string? PosterImageLink { get; set; }
-        public ICollection<Category> Genres { get; set; }
+        public ICollection<Genre> Genres { get; set; }
         public ICollection<MangaComentary> Comentaries { get; set; }
         public string? Subtype { get; set; }
     }

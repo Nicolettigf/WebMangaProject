@@ -1,6 +1,7 @@
 ﻿using Entities;
 using Entities.AnimeS;
 using Entities.Enums;
+using static Entities.MediaBase;
 
 namespace MvcPresentationLayer.Models.AnimeModel
 {
@@ -33,7 +34,7 @@ namespace MvcPresentationLayer.Models.AnimeModel
         public int? TotalLength { get; set; }
         public string? YoutubeVideoId { get; set; }
         public string? ShowType { get; set; }
-        public ICollection<Category> Categories { get; set; }
+        public ICollection<Genre> Categories { get; set; }
         public ICollection<AnimeComentary> Comentaries { get; set; }
     }
 }

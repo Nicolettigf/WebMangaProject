@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared;
 using Shared.Models.Anime;
 using Shared.Responses;
+using static Entities.MediaBase;
 
 namespace DataAccessLayer.Implementations
 {
@@ -17,14 +18,14 @@ namespace DataAccessLayer.Implementations
         }
         public async Task<Response> Insert(Anime Anime)
         {
-            List<Category> Cate = new();
+            List<Genre> Cate = new();
             try
             {
-                foreach (var item in Anime.Categories)
+                foreach (var item in Anime.Genres)
                 {
-                    Cate.Add(await _db.Categories.FindAsync(item.ID));
+                    Cate.Add(await _db.Categories.FindAsync(item.Id));
                 }
-                Anime.Categories = Cate;
+                Anime.Genres = (ICollection<MediaBase.Genre>)Cate;
                 _db.Animes.Add(Anime);
                 await _db.SaveChangesAsync();
                 return ResponseFactory.CreateInstance().CreateSuccessResponse();
@@ -117,7 +118,7 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                Anime? Select = _db.Animes.Include(c => c.Categories).Include(t => t.AnimeTitles).Include(c => c.Comentaries).ThenInclude(u => u.User).Include(r => r.AnimeRatingFrequencies).FirstOrDefault(m => m.Id == ID);
+                Anime? Select = _db.Animes.Include(c => c.Genres).Include(t => t.AnimeTitles).Include(c => c.Comentaries).ThenInclude(u => u.User).Include(r => r.AnimeRatingFrequencies).FirstOrDefault(m => m.Id == ID);
                 return ResponseFactory.CreateInstance().CreateSuccessSingleResponse<Anime>(Select);
             }
             catch (Exception ex)
@@ -143,8 +144,8 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                Category? a = _db.Categories.OrderBy(c => c.ID).LastOrDefault();
-                return a.ID;
+                Genre? a = _db.Categories.OrderBy(c => c.Id).LastOrDefault();
+                return a.Id;
             }
             catch (Exception ex)
             {
@@ -216,7 +217,7 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                Category? Select = _db.Categories.Include(c => c.AnimesID).FirstOrDefault(m => m.ID == ID);
+                Genre? Select = _db.Categories.Include(c => c.AnimeId).FirstOrDefault(m => m.Id == ID);
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(Select.AnimesID.ToList());
             }
             catch (Exception ex)
@@ -251,17 +252,19 @@ namespace DataAccessLayer.Implementations
             {
                 foreach (var anime in items)
                 {
-                    List<Category> cate = new();
-                    if (anime.Categories != null)
+                    // Certifica que anime.Genres é do tipo ICollection<Genre>
+                    ICollection<Genre> cate = new List<Genre>();
+                    if (anime.Genres != null)
                     {
-                        foreach (var item in anime.Categories)
+                        foreach (var item in anime.Genres)
                         {
-                            var category = await _db.Categories.FindAsync(item.ID);
+                            var category = await _db.Categories.FindAsync(item.Id);
                             if (category != null)
                                 cate.Add(category);
                         }
                     }
-                    anime.Categories = cate;
+                    anime.Genres = (ICollection<MediaBase.Genre>?)cate;
+
                     _db.Animes.Add(anime);
                 }
 

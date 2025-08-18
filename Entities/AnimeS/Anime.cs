@@ -21,9 +21,7 @@ namespace Entities.AnimeS
 
 
         #region futuraexclusao
-        public ICollection<Category> Categories { get; set; }
         public string? name { get; set; }
-        public string? synopsis { get; set; }
         public string? description { get; set; }
         public string? canonicalTitle { get; set; }
         public string? averageRating { get; set; }

@@ -1,7 +1,6 @@
 ﻿using DataAccessLayer.Interfaces.IMangaInterfaces;
 using Entities;
 using Entities.MangaS;
-using Entities.UserS;
 using Microsoft.EntityFrameworkCore;
 using Shared;
 using Shared.Models.Manga;
@@ -152,7 +151,7 @@ namespace DataAccessLayer.Implementations
         }
 
 
-        public async Task<Response> InsertCategory(Category id)
+        public async Task<Response> InsertCategory(Genre id)
         {
             try
             {
@@ -170,8 +169,8 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                Category? a = _db.Categories.OrderBy(c => c.ID).LastOrDefault();
-                return a.ID;
+                Genre? a = _db.Categories.OrderBy(c => c.Id).LastOrDefault();
+                return a.Id;
             }
             catch (Exception ex)
             {
@@ -227,7 +226,7 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                Category? Select = _db.Categories.Include(c => c.MangasID).FirstOrDefault(m => m.ID == ID);
+                Genre? Select = _db.Categories.Include(c => c.MangasID).FirstOrDefault(m => m.Id == ID);
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(Select.MangasID.ToList());
             }
             catch (Exception ex)

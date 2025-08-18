@@ -15,6 +15,13 @@ namespace BusinessLogicalLayer.ApiConsumer
             public string? name { get; set; }
             public string? url { get; set; }
         }
+        public class Genre
+        {
+            public int mal_id { get; set; }
+            public string type { get; set; }
+            public string name { get; set; }
+            public string url { get; set; }
+        }
         public class ExplicitGenre
         {
             public int? mal_id { get; set; }
@@ -28,14 +35,6 @@ namespace BusinessLogicalLayer.ApiConsumer
             public int? month { get; set; }
             public int? year { get; set; }
         }
-        public class Genre
-        {
-            public int? mal_id { get; set; }
-            public string? type { get; set; }
-            public string? name { get; set; }
-            public string? url { get; set; }
-        }
-
         public class Images
         {
             public Jpg jpg { get; set; }

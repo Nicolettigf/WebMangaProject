@@ -1,16 +1,17 @@
 ﻿using Entities;
+using static Entities.MediaBase;
 
 namespace BusinessLogicalLayer.ApiConsumer.MangaApi.MangaCategoryApi
 {
-    public class ConverterCategoryToItem
+    public class ConverterGenreToItem
     {
-        public static List<Category> CovertiMangaCate(RootMA Cate)
+        public static List<Genre> CovertiMangaCate(RootMA Cate)
         {
-            List<Category> category = new();
+            List<Genre> category = new();
             foreach (var item in Cate.data)
             {
-                Category c = new Category();
-                c.ID = Convert.ToInt32(item.id);
+                Genre c = new Genre();
+                c.Id = Convert.ToInt32(item.id);
                 category.Add(c);
             }
             return category;

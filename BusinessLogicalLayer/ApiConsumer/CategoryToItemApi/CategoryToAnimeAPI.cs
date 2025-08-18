@@ -6,12 +6,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Entities.MediaBase;
 
 namespace BusinessLogicalLayer.ApiConsumer.CategoryToItemApi
 {
     public class CategoryToAnime
     {
-        public static async Task<List<Category>> AnimeCategory(int Id)
+        public static async Task<List<Genre>> AnimeCategory(int Id)
         {
             Uri baseAddress = new Uri("https://kitsu.io/api/edge/anime/");
             using (var httpClient = new HttpClient { BaseAddress = baseAddress })
@@ -26,7 +27,7 @@ namespace BusinessLogicalLayer.ApiConsumer.CategoryToItemApi
                     {
                         RootMA? mangaRootDTO = JsonConvert.DeserializeObject<RootMA>(jsonString);
                         //Ou pegar em lista ou convert um por um pois ta fazendo lista de um so sempre
-                        List<Category> CateReturn = ConverterCategoryToItem.CovertiMangaCate(mangaRootDTO);
+                        List<Genre> CateReturn = ConverterGenreToItem.CovertiMangaCate(mangaRootDTO);
                         //BLL
                         return CateReturn;
                     }

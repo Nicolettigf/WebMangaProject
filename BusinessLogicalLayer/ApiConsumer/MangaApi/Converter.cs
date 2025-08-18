@@ -80,9 +80,9 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                     MangaId = manga.MalId,
                     Manga = manga,
                     MalId = t.mal_id,
-                    type = t.type,
-                    name = t.name,
-                    url = t.url
+                    Type = t.type,
+                    Name = t.name,
+                    Url = t.url
                 }).ToList() ?? new List<Entities.MediaBase.Theme>();
 
                 // Imagens herdadas do MediaBase
@@ -105,8 +105,8 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                     MangaId = manga.MalId,
                     Manga = manga,
                     MalId = e.mal_id,
-                    type = e.type,
-                    name = e.name
+                    Type = e.type,
+                    Name = e.name
                 }).ToList() ?? new List<Entities.MediaBase.ExplicitGenre>();
 
                 manga.Demographics = item.demographics?.Select(d => new Entities.MediaBase.Demographic
@@ -114,8 +114,8 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                     MangaId = manga.MalId,
                     Manga = manga,
                     MalId = d.mal_id,
-                    type = d.type,
-                    name = d.name
+                    Type = d.type,
+                    Name = d.name
                 }).ToList() ?? new List<Entities.MediaBase.Demographic>();
 
                 manga.Genres = item.genres?.Select(g => new Entities.MediaBase.Genre
@@ -123,8 +123,8 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                     MangaId = manga.MalId,
                     Manga = manga,
                     MalId = g.mal_id,
-                    type = g.type,
-                    name = g.name
+                    Type = g.type,
+                    Name = g.name
                 }).ToList() ?? new List<Entities.MediaBase.Genre>();
 
             #endregion

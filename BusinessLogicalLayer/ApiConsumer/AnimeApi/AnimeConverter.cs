@@ -29,7 +29,6 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
             {
                 #region tirar
                 //Id = Convert.ToInt32(item.mal_id),
-                synopsis = item.synopsis,
                 name = item.title,
                 description = item.background,
                 canonicalTitle = item.title,
@@ -62,6 +61,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
 
                 #region mediabase
 
+                Synopsis = item.synopsis,
                 MalId = Convert.ToInt32(item.mal_id),
                 Url = item.url,
                 Approved = item.approved,
@@ -76,7 +76,6 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 Popularity = item.popularity,
                 Members = item.members,
                 Favorites = item.favorites,
-                Synopsis = item.synopsis,
                 Background = item.background,
                 From = item.aired?.from,
                 To = item.aired?.to,
@@ -136,13 +135,12 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
 
 
 
-            anime.external = item.explicit_genres?.Select(e => new Entities.AnimeS.External
+            anime.external = item.external?.Select(e => new Entities.AnimeS.External
             {
                 AnimeId = anime.MalId,
                 Anime = anime,
-                mal_id = e.mal_id,
-                type = e.type,
-                name = e.name
+                name = e.name, 
+                url = e.url
             }).ToList() ?? new List<Entities.AnimeS.External>();
 
             // Studios
@@ -212,9 +210,9 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 AnimeId = anime.MalId,
                 Anime = anime,
                 MalId = t.mal_id,
-                type = t.type,
-                name = t.name,
-                url = t.url
+                Type = t.type,
+                Name = t.name,
+                Url = t.url
             }).ToList() ?? new List<Entities.MediaBase.Theme>();
 
             // Imagens herdadas do MediaBase
@@ -237,8 +235,8 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 AnimeId = anime.MalId,
                 Anime = anime,
                 MalId = e.mal_id,
-                type = e.type,
-                name = e.name
+                Type = e.type,
+                Name = e.name
             }).ToList() ?? new List<Entities.MediaBase.ExplicitGenre>();
 
             anime.Demographics = item.demographics?.Select(d => new Entities.MediaBase.Demographic
@@ -246,8 +244,8 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 AnimeId = anime.MalId,
                 Anime = anime,
                 MalId = d.mal_id,
-                type = d.type,
-                name = d.name
+                Type = d.type,
+                Name = d.name
             }).ToList() ?? new List<Entities.MediaBase.Demographic>();
 
             anime.Genres = item.genres?.Select(g => new Entities.MediaBase.Genre
@@ -255,8 +253,8 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 AnimeId = anime.MalId,
                 Anime = anime,
                 MalId = g.mal_id,
-                type = g.type,
-                name = g.name
+                Type = g.type,
+                Name = g.name
             }).ToList() ?? new List<Entities.MediaBase.Genre>();
             #endregion
 

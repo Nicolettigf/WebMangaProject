@@ -1,11 +1,10 @@
-﻿using Entities;
-using Entities.MangaS;
-using Shared.Responses;
+﻿using Shared.Responses;
+using static Entities.MediaBase;
 
 namespace DataAccessLayer.Interfaces.IMangaInterfaces
 {
     public interface IMangaPost
     {
-        Task<Response> InsertCategory(Category id);
+        Task<Response> InsertCategory(Genre id);
     }
 }

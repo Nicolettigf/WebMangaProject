@@ -22,21 +22,6 @@ namespace DataAccessLayer.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder, 1L, 1);
 
-            modelBuilder.Entity("AnimeCategory", b =>
-                {
-                    b.Property<int>("AnimesIDId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("CategoriesID")
-                        .HasColumnType("int");
-
-                    b.HasKey("AnimesIDId", "CategoriesID");
-
-                    b.HasIndex("CategoriesID");
-
-                    b.ToTable("AnimeCategory");
-                });
-
             modelBuilder.Entity("Entities.AnimeS.Anime", b =>
                 {
                     b.Property<int>("Id")
@@ -551,24 +536,6 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("Studio");
                 });
 
-            modelBuilder.Entity("Entities.Category", b =>
-                {
-                    b.Property<int>("ID")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("ID");
-
-                    b.ToTable("Category", (string)null);
-                });
-
             modelBuilder.Entity("Entities.MangaS.Author", b =>
                 {
                     b.Property<int>("Id")
@@ -624,9 +591,6 @@ namespace DataAccessLayer.Migrations
 
                     b.Property<string>("CanonicalTitle")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("CategoryID")
-                        .HasColumnType("int");
 
                     b.Property<int?>("ChapterCount")
                         .HasColumnType("int");
@@ -745,8 +709,6 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CategoryID");
 
                     b.HasIndex("RatingFrequenciesId");
 
@@ -879,13 +841,13 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("MangaId")
                         .HasColumnType("int");
 
-                    b.Property<string>("name")
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("type")
+                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("url")
+                    b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -914,13 +876,13 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("MangaId")
                         .HasColumnType("int");
 
-                    b.Property<string>("name")
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("type")
+                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("url")
+                    b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -935,10 +897,7 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("Entities.MediaBase+Genre", b =>
                 {
                     b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int?>("AnimeId")
                         .HasColumnType("int");
@@ -949,13 +908,13 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("MangaId")
                         .HasColumnType("int");
 
-                    b.Property<string>("name")
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("type")
+                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("url")
+                    b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -964,7 +923,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("MangaId");
 
-                    b.ToTable("Genre");
+                    b.ToTable("Genre", (string)null);
                 });
 
             modelBuilder.Entity("Entities.MediaBase+Images", b =>
@@ -993,6 +952,15 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("MangaId")
                         .HasColumnType("int");
 
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("WebpImageUrl")
                         .HasColumnType("nvarchar(max)");
 
@@ -1000,15 +968,6 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("WebpSmallImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("type")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("url")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1041,13 +1000,13 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("MangaId")
                         .HasColumnType("int");
 
-                    b.Property<string>("name")
+                    b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("type")
+                    b.Property<string>("Type")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("url")
+                    b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -1275,21 +1234,6 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("UserMangaItem", (string)null);
                 });
 
-            modelBuilder.Entity("AnimeCategory", b =>
-                {
-                    b.HasOne("Entities.AnimeS.Anime", null)
-                        .WithMany()
-                        .HasForeignKey("AnimesIDId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Entities.Category", null)
-                        .WithMany()
-                        .HasForeignKey("CategoriesID")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Entities.AnimeS.Anime", b =>
                 {
                     b.HasOne("Entities.AnimeS.AnimeRatingFrequencies", "AnimeRatingFrequencies")
@@ -1421,10 +1365,6 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("Entities.MangaS.Manga", b =>
                 {
-                    b.HasOne("Entities.Category", null)
-                        .WithMany("MangasID")
-                        .HasForeignKey("CategoryID");
-
                     b.HasOne("Entities.MangaS.RatingFrequencies", "RatingFrequencies")
                         .WithMany()
                         .HasForeignKey("RatingFrequenciesId");
@@ -1615,11 +1555,6 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("Entities.AnimeS.Relation", b =>
                 {
                     b.Navigation("entry");
-                });
-
-            modelBuilder.Entity("Entities.Category", b =>
-                {
-                    b.Navigation("MangasID");
                 });
 
             modelBuilder.Entity("Entities.MangaS.Manga", b =>

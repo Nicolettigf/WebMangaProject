@@ -1,19 +1,14 @@
-﻿using Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using static Entities.MediaBase;
 
 namespace DataAccessLayer.Mappings
 {
-    public class CategoryMapConfig : IEntityTypeConfiguration<Category>
+    public class GenreMapConfig : IEntityTypeConfiguration<Genre>
     {
-        public void Configure(EntityTypeBuilder<Category> builder)
+        public void Configure(EntityTypeBuilder<Genre> builder)
         {
-            builder.ToTable("Category");
+            builder.ToTable("Genre");
         }
     }
 }
