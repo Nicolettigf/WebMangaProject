@@ -9,152 +9,31 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
         {
             var item = animeRootDTO.data;
 
+            if (item == null)
+                return null;
+
             // Títulos
             AnimeSTitles titles = new()
             {
                 En_jp = item.title_english,
                 Ja_jp = item.title_japanese,
             };
-
             // Rating
             AnimeRatingFrequencies rating = new()
             {
                 Id = Convert.ToInt32(item.mal_id)
             };
 
-            // Broadcast
-            Entities.AnimeS.Broadcast? broadcast = null;
-            if (item.broadcast != null)
-            {
-                broadcast = new Entities.AnimeS.Broadcast
-                {
-                    Day = item.broadcast.day,
-                    Time = item.broadcast.time,
-                    Timezone = item.broadcast.timezone,
-                    AnimeId = Convert.ToInt32(item.mal_id) // FK
-                };
-            }
-
-            // Images
-            Entities.AnimeS.Images? images = null;
-            if (item.images != null)
-            {
-                images = new Entities.AnimeS.Images
-                {
-                    AnimeId = Convert.ToInt32(item.mal_id),
-                    Jpg = new Entities.AnimeS.Jpg
-                    {
-                        ImageUrl = item.images.jpg.image_url,
-                        SmallImageUrl = item.images.jpg.small_image_url,
-                        LargeImageUrl = item.images.jpg.large_image_url
-                    },
-                    Webp = new Entities.AnimeS.Webp
-                    {
-                        ImageUrl = item.images.webp.image_url,
-                        SmallImageUrl = item.images.webp.small_image_url,
-                        LargeImageUrl = item.images.webp.large_image_url
-                    }
-                };
-            }
-            // Studios
-            List<Entities.AnimeS.Studio> studios = new();
-            if (item.studios != null)
-            {
-                studios = item.studios.Select(s => new Entities.AnimeS.Studio
-                {
-                    AnimeId = Convert.ToInt32(item.mal_id),
-                    mal_id = s.mal_id,
-                    type = s.type,
-                    name = s.name,
-                    url = s.url
-                }).ToList();
-            }
-
-            // Themes
-            List<Entities.AnimeS.Theme> themes = new();
-            if (item.themes != null)
-            {
-                themes = item.themes.Select(t => new Entities.AnimeS.Theme
-                {
-                    AnimeId = Convert.ToInt32(item.mal_id),
-                    mal_id = t.mal_id,
-                    type = t.type,
-                    name = t.name,
-                    url = t.url
-                }).ToList();
-            }
-
-            // Licensors
-            List<Entities.AnimeS.Licensor> licensors = new();
-            if (item.licensors != null)
-            {
-                licensors = item.licensors.Select(l => new Entities.AnimeS.Licensor
-                {
-                    AnimeId = Convert.ToInt32(item.mal_id),
-                    mal_id = l.mal_id,
-                    type = l.type,
-                    name = l.name,
-                    url = l.url
-                }).ToList();
-            }
-
-            // Producers
-            List<Entities.AnimeS.Producer> producers = new();
-            if (item.producers != null)
-            {
-                producers = item.producers.Select(p => new Entities.AnimeS.Producer
-                {
-                    AnimeId = Convert.ToInt32(item.mal_id),
-                    mal_id = p.mal_id,
-                    type = p.type,
-                    name = p.name,
-                    url = p.url
-                }).ToList();
-            }
-
-            // Relations
-            List<Entities.AnimeS.Relation> relations = new();
-            if (item.relations != null)
-            {
-                relations = item.relations.Select(r => new Entities.AnimeS.Relation
-                {
-                    AnimeId = Convert.ToInt32(item.mal_id),
-                    relation = r.relation,
-                    entry = r.entry?.Select(e => new Entities.AnimeS.Entry
-                    {
-                        mal_id = e.mal_id,
-                        type = e.type,
-                        name = e.name,
-                        url = e.url
-                    }).ToList()
-                }).ToList();
-            }
-            // Streaming
-            List<Entities.AnimeS.Streaming> streaming = new();
-            if (item.streaming != null)
-            {
-                streaming = item.streaming.Select(s => new Entities.AnimeS.Streaming
-                {
-                    AnimeId = Convert.ToInt32(item.mal_id),
-                    name = s.name,
-                    url = s.url
-                }).ToList();
-            }
-
-            
-
-
             // Criando Anime
             Anime anime = new()
             {
-                Id = Convert.ToInt32(item.mal_id),
+                #region tirar
+                //Id = Convert.ToInt32(item.mal_id),
+                synopsis = item.synopsis,
                 name = item.title,
                 description = item.background,
-                synopsis = item.synopsis,
-                AnimeTitles = titles,
                 canonicalTitle = item.title,
                 averageRating = item.score?.ToString(),
-                AnimeRatingFrequencies = rating,
                 userCount = item.members,
                 favoritesCount = item.favorites,
                 popularityRank = item.popularity,
@@ -166,23 +45,220 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 subtype = item.type,
                 AnimePosterImage = item.images?.jpg?.large_image_url,
                 AnimeCoverImage = item.trailer?.embed_url,
-                episodeCount = item.episodes,
                 episodeLength = item.duration,
                 youtubeVideoId = item.trailer?.youtube_id,
                 showType = item.type,
-                status = item.status,
-                broadcast = broadcast,
-                images = images
+                episodeCount = item.episodes,
+                #endregion
 
-                
+                #region Anime
+                Source = item.source,
+                Episodes = item.episodes,
+                Airing = item.airing,
+                Duration = item.duration,
+                Rating = item.rating,
+                Season = item.season,
+                #endregion
+
+                #region mediabase
+
+                MalId = Convert.ToInt32(item.mal_id),
+                Url = item.url,
+                Approved = item.approved,
+                TitleEnglish = item.title_english,
+                TitleJapanese = item.title_japanese,
+                Type = item.type,
+                Score = item.score,
+                Status = item.status,
+                Title = item.title,
+                ScoredBy = item.scored_by,
+                Rank = item.rank,
+                Popularity = item.popularity,
+                Members = item.members,
+                Favorites = item.favorites,
+                Synopsis = item.synopsis,
+                Background = item.background,
+                From = item.aired?.from,
+                To = item.aired?.to,
+
+                #endregion
+
+                AnimeRatingFrequencies = rating,
+                AnimeTitles = titles,
+
+                //theme
+                Themename = item.theme?.name,
+                Themetype = item.theme?.type,
+                Themeurl = item.theme?.url,
+
+                //Youtube
+                Youtubeembed_url = item.trailer?.embed_url,
+                 Youtubeurl = item.trailer?.url,
+                 Youtube_id = item.trailer?.youtube_id,
+
+                // Broadcast
+                BroadcastDay = item.broadcast?.day,
+                BroadcastTime = item.broadcast?.time,
+                BroadcastTimezone = item.broadcast?.timezone,
             };
-            // Finalmente atribuindo ao Anime
-            anime.studios = studios;
-            anime.themes = themes;
-            anime.licensors = licensors;
-            anime.producers = producers;
-            anime.relations = relations;
-            anime.streaming = streaming;
+
+            #region Anime Collections
+
+            anime.ThemeSongs = new List<AnimeThemeSong>();
+            if (item.theme2 != null)
+            {
+                if (item.theme2.openings != null)
+                {
+                    anime.ThemeSongs.AddRange(
+                        item.theme2.openings.Select(o => new AnimeThemeSong
+                        {
+                            AnimeId = Convert.ToInt32(item.mal_id),
+                            Anime = anime,
+                            type = "opening",
+                            url = o,
+                        })
+                    );
+                }
+
+                if (item.theme2.endings != null)
+                {
+                    anime.ThemeSongs.AddRange(
+                        item.theme2.endings.Select(e => new AnimeThemeSong
+                        {
+                            AnimeId = Convert.ToInt32(item.mal_id),
+                            Anime = anime,
+                            type = "ending",
+                            url = e
+                        })
+                    );
+                }
+            }
+
+
+
+            anime.external = item.explicit_genres?.Select(e => new Entities.AnimeS.External
+            {
+                AnimeId = anime.MalId,
+                Anime = anime,
+                mal_id = e.mal_id,
+                type = e.type,
+                name = e.name
+            }).ToList() ?? new List<Entities.AnimeS.External>();
+
+            // Studios
+            anime.studios = item.studios?.Select(s => new Entities.AnimeS.Studio
+            {
+                AnimeId = anime.MalId,
+                Anime = anime,
+                mal_id = s.mal_id,
+                type = s.type,
+                name = s.name,
+                url = s.url
+            }).ToList() ?? new List<Entities.AnimeS.Studio>();
+
+            // Licensors
+            anime.licensors = item.licensors?.Select(l => new Entities.AnimeS.Licensor
+            {
+                AnimeId = anime.MalId,
+                Anime = anime,
+                mal_id = l.mal_id,
+                type = l.type,
+                name = l.name,
+                url = l.url
+            }).ToList() ?? new List<Entities.AnimeS.Licensor>();
+
+            // Producers
+            anime.producers = item.producers?.Select(p => new Entities.AnimeS.Producer
+            {
+                AnimeId = anime.MalId,
+                Anime = anime,
+                mal_id = p.mal_id,
+                type = p.type,
+                name = p.name,
+                url = p.url
+            }).ToList() ?? new List<Entities.AnimeS.Producer>();
+
+            // Relations
+            anime.relations = item.relations?.Select(r => new Entities.AnimeS.Relation
+            {
+                AnimeId = anime.MalId,
+                Anime = anime,
+                relation = r.relation,
+                entry = r.entry?.Select(e => new Entities.AnimeS.Entry
+                {
+                    mal_id = e.mal_id,
+                    type = e.type,
+                    name = e.name,
+                    url = e.url
+                }).ToList()
+            }).ToList() ?? new List<Entities.AnimeS.Relation>();
+
+            // Streaming
+            anime.streaming = item.streaming?.Select(s => new Entities.AnimeS.Streaming
+            {
+                AnimeId = anime.MalId,
+                Anime = anime,
+                name = s.name,
+                url = s.url
+            }).ToList() ?? new List<Entities.AnimeS.Streaming>();
+
+            #endregion
+
+            #region MediaBase Collections
+
+            // Themes
+            anime.Themes = item.themes?.Select(t => new Entities.MediaBase.Theme
+            {
+                AnimeId = anime.MalId,
+                Anime = anime,
+                MalId = t.mal_id,
+                type = t.type,
+                name = t.name,
+                url = t.url
+            }).ToList() ?? new List<Entities.MediaBase.Theme>();
+
+            // Imagens herdadas do MediaBase
+            anime.Imagens = item.images != null
+                ? new Entities.MediaBase.Images
+                {
+                    AnimeId = anime.MalId,
+                    Anime = anime,
+                    JpgImageUrl = item.images.jpg?.image_url,
+                    JpgSmallImageUrl = item.images.jpg?.small_image_url,
+                    JpgLargeImageUrl = item.images.jpg?.large_image_url,
+                    WebpImageUrl = item.images.webp?.image_url,
+                    WebpSmallImageUrl = item.images.webp?.small_image_url,
+                    WebpLargeImageUrl = item.images.webp?.large_image_url
+                }
+                : null;
+
+            anime.ExplicitGenres = item.explicit_genres?.Select(e => new Entities.MediaBase.ExplicitGenre
+            {
+                AnimeId = anime.MalId,
+                Anime = anime,
+                MalId = e.mal_id,
+                type = e.type,
+                name = e.name
+            }).ToList() ?? new List<Entities.MediaBase.ExplicitGenre>();
+
+            anime.Demographics = item.demographics?.Select(d => new Entities.MediaBase.Demographic
+            {
+                AnimeId = anime.MalId,
+                Anime = anime,
+                MalId = d.mal_id,
+                type = d.type,
+                name = d.name
+            }).ToList() ?? new List<Entities.MediaBase.Demographic>();
+
+            anime.Genres = item.genres?.Select(g => new Entities.MediaBase.Genre
+            {
+                AnimeId = anime.MalId,
+                Anime = anime,
+                MalId = g.mal_id,
+                type = g.type,
+                name = g.name
+            }).ToList() ?? new List<Entities.MediaBase.Genre>();
+            #endregion
 
             return anime;
         }

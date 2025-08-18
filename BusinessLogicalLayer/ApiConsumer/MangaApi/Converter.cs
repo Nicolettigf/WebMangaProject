@@ -13,7 +13,6 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 En = item.attributes.titles.en,
                 En_jp = item.attributes.titles.en_jp,
                 Ja_jp = item.attributes.titles.ja_jp,
-
             };
 
             MangaStatus status;

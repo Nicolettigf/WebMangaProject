@@ -14,5 +14,5 @@ public class LinksMA
 public class RootMA
 {
     public List<DatumMA> data { get; set; }
-    public Links linksMA { get; set; }
+    public LinksMA linksMA { get; set; }
 }
