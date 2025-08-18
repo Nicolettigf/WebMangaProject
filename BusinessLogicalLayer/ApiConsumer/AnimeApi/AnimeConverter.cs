@@ -12,12 +12,6 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
             if (item == null)
                 return null;
 
-            // Títulos
-            AnimeSTitles titles = new()
-            {
-                En_jp = item.title_english,
-                Ja_jp = item.title_japanese,
-            };
             // Rating
             AnimeRatingFrequencies rating = new()
             {
@@ -83,7 +77,6 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 #endregion
 
                 AnimeRatingFrequencies = rating,
-                AnimeTitles = titles,
 
                 //theme
                 Themename = item.theme?.name,

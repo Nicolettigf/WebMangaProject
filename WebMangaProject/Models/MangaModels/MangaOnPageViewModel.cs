@@ -10,7 +10,6 @@ namespace MvcPresentationLayer.Models.MangaModels
         public int Id { get; set; }
         public string Name { get; set; }
         public string Synopsis { get; set; }
-        public MangaTitles? Titles { get; set; }
         public string? CanonicalTitle { get; set; }
         public string? AverageRating { get; set; }
         public int? RatingRank { get; set; }

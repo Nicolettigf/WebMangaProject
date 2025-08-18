@@ -16,23 +16,12 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
             {
                 #region deletar
                 Id = Convert.ToInt32(item.mal_id),
-                Synopsis = item.synopsis,
-                Titles = new MangaTitles
-                {
-                    En = item.title_english,
-                    En_jp = item.titles?.FirstOrDefault(t => t.type == "en_jp")?.title,
-                    Ja_jp = item.title_japanese
-                },
                 CanonicalTitle = item.title,
                 AverageRating = item.score.ToString(),
                 RatingFrequencies = new RatingFrequencies { Id = Convert.ToInt32(item.mal_id) },
                 RatingRank = item.rank,
                 PopularityRank = item.popularity,
                 UserCount = item.members,
-                FavoritesCount = item.favorites,
-                StartDate = item.published?.from.ToString(),
-                EndDate = item.published?.to?.ToString(),
-                Status = item.status,
                 VolumeCount = item.volumes,
                 Serialization = item.serializations?.FirstOrDefault()?.name,
                 PosterImageLink = item.images?.jpg?.image_url,
@@ -40,6 +29,29 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 Subtype = item.type,
                 ChapterCount = item.chapters,
                 #endregion
+
+                StartDate = item.published.from.ToString(),
+                EndDate = item.published.to.ToString(),
+                Status = item.status,
+                Score = item.score,
+                ScoredBy = item.scored_by,
+                Rank = item.rank,
+                Popularity = item.popularity,
+                Members = item.members,
+                FavoritesCount = item.favorites,
+                Synopsis = item.synopsis,
+                Background = item.background,
+                Title = item.title,
+                TitleEnglish = item.title_english,
+                TitleJapanese = item.title_japanese,
+                Type = item.type,
+                Url = item.url,
+
+
+
+
+
+
 
                 Chapters = item.chapters,
                 Volumes = item.volumes,

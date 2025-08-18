@@ -16,7 +16,6 @@ namespace Entities.MangaS
         #region deletar
 
         public string? CanonicalTitle { get; set; }
-        public MangaTitles? Titles { get; set; }
         public string Synopsis { get; set; }
         public string? AverageRating { get; set; }
         public int? RatingRank { get; set; }

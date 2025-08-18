@@ -16,7 +16,6 @@ namespace Entities.AnimeS
         public string? Season { get; set; }
 
         public AnimeRatingFrequencies? AnimeRatingFrequencies { get; set; }
-        public AnimeSTitles? AnimeTitles { get; set; }
         public ICollection<AnimeComentary?> Comentaries { get; set; }
 
 
