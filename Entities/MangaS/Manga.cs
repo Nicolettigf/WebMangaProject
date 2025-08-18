@@ -8,20 +8,6 @@
         public DateTime PublishedFrom { get; set; }
         public DateTime? PublishedTo { get; set; }
         public ICollection<MangaComentary>? Comentaries { get; set; }
-
-        #region deletar
-
-        public string PosterImageLink { get; set; }
-        public string? CoverImageLink { get; set; }
-        public string? CanonicalTitle { get; set; }
-        public int? RatingRank { get; set; }
-        public int? PopularityRank { get; set; }
-        public int? UserCount { get; set; }
-        public int? FavoritesCount { get; set; }
-      
-
-        #endregion
-
         public List<Serialization> Serializations { get; set; }
         public List<Author> Authors { get; set; }
 

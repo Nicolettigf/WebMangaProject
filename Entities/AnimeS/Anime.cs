@@ -9,17 +9,6 @@
         public string? Rating { get; set; }
         public string? Season { get; set; }
         public ICollection<AnimeComentary?> Comentaries { get; set; }
-
-        #region futuraexclusao
-        public string? canonicalTitle { get; set; }
-        public string? AnimePosterImage { get; set; }
-        public int? userCount { get; set; }
-        public int? favoritesCount { get; set; }
-        public int? popularityRank { get; set; }
-        public int? ratingRank { get; set; }
-        public string? name { get; set; }
-        #endregion
-
         public string? BroadcastDay { get; set; }
         public string? BroadcastTime { get; set; }
         public string? BroadcastTimezone { get; set; }

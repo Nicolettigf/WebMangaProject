@@ -102,7 +102,7 @@ namespace DataAccessLayer.Implementations
             try
             {
                 List<MangaCatalog> mangas = await _db.Mangas
-                    .OrderByDescending(m => m.UserCount)
+                    .OrderByDescending(m => m.Members)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)
@@ -122,7 +122,7 @@ namespace DataAccessLayer.Implementations
             try
             {
                 List<MangaCatalog> mangas = await _db.Mangas
-                    .OrderByDescending(m => m.FavoritesCount)
+                    .OrderByDescending(m => m.Favorites)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)
@@ -141,7 +141,7 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                List<Manga> mangas = await _db.Mangas.AsNoTracking().Where(M => M.CanonicalTitle.Contains(name)).ToListAsync();
+                List<Manga> mangas = await _db.Mangas.AsNoTracking().Where(M => M.Title.Contains(name)).ToListAsync();
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData<Manga>(mangas);
             }
             catch (Exception ex)
@@ -183,7 +183,7 @@ namespace DataAccessLayer.Implementations
             try
             {
                 List<MangaCatalog> mangas = await _db.Mangas
-                    .OrderByDescending(m => m.RatingRank)
+                    .OrderByDescending(m => m.Rank)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)
@@ -239,7 +239,7 @@ namespace DataAccessLayer.Implementations
             try
             {
                 List<MangaCatalog> mangas = await _db.Mangas
-                    .OrderBy(m => m.PopularityRank)
+                    .OrderBy(m => m.Popularity)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)

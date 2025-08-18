@@ -16,12 +16,6 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
             {
                 #region deletar
                 Id = Convert.ToInt32(item.mal_id),
-                CanonicalTitle = item.title,
-                RatingRank = item.rank,
-                PopularityRank = item.popularity,
-                UserCount = item.members,
-                PosterImageLink = item.images?.jpg?.image_url,
-                CoverImageLink = item.images?.jpg?.large_image_url,
                 #endregion
 
                 Status = item.status,
@@ -30,7 +24,6 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 Rank = item.rank,
                 Popularity = item.popularity,
                 Members = item.members,
-                FavoritesCount = item.favorites,
                 Synopsis = item.synopsis,
                 Background = item.background,
                 Title = item.title,

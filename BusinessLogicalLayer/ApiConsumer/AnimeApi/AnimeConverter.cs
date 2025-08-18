@@ -15,16 +15,6 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
             // Criando Anime
             Anime anime = new()
             {
-                #region tirar
-                name = item.title,
-                canonicalTitle = item.title,
-                userCount = item.members,
-                favoritesCount = item.favorites,
-                popularityRank = item.popularity,
-                ratingRank = item.rank,
-                AnimePosterImage = item.images?.jpg?.large_image_url,
-                #endregion
-
                 #region Anime
                 Source = item.source,
                 Episodes = item.episodes,

@@ -1,9 +1,4 @@
 ﻿using FluentValidation;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace BusinessLogicalLayer.Validators.Manga
 {
@@ -11,8 +6,8 @@ namespace BusinessLogicalLayer.Validators.Manga
     {
         public void ValidateImages()
         {
-            RuleFor(c => c.CoverImageLink).NotNull().WithMessage("CoverImageLink deve ser informado.");
-            RuleFor(c => c.PosterImageLink).NotNull().WithMessage("PosterImageLink deve ser informado.");
+            //RuleFor(c => c.CoverImageLink).NotNull().WithMessage("CoverImageLink deve ser informado.");
+            //RuleFor(c => c.PosterImageLink).NotNull().WithMessage("PosterImageLink deve ser informado.");
         }
         //Nome, desc...
     }
