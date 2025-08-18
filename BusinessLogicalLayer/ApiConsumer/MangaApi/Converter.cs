@@ -46,7 +46,12 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 Type = item.type,
                 Url = item.url,
 
-
+                JpgImageUrl = item.images.jpg?.image_url,
+                JpgSmallImageUrl = item.images.jpg?.small_image_url,
+                JpgLargeImageUrl = item.images.jpg?.large_image_url,
+                WebpImageUrl = item.images.webp?.image_url,
+                WebpSmallImageUrl = item.images.webp?.small_image_url,
+                WebpLargeImageUrl = item.images.webp?.large_image_url,
 
 
 

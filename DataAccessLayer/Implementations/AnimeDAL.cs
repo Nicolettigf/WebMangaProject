@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared;
 using Shared.Models.Anime;
 using Shared.Responses;
+using System.Xml.Linq;
 using static Entities.MediaBase;
 
 namespace DataAccessLayer.Implementations
@@ -131,7 +132,7 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                Anime? a = _db.Animes.OrderBy(c => c.Id).LastOrDefault();
+                Anime? a = _db.Animes.OrderBy(c => c.Id).AsNoTracking().LastOrDefault();
                 return a.Id;
             }
             catch (Exception ex)
@@ -252,19 +253,30 @@ namespace DataAccessLayer.Implementations
             {
                 foreach (var anime in items)
                 {
-                    // Certifica que anime.Genres é do tipo ICollection<Genre>
+                    // Certifica que anime.Genres é do tipo ICollection<MediaBase.Genre>
                     ICollection<Genre> cate = new List<Genre>();
+
                     if (anime.Genres != null)
                     {
                         foreach (var item in anime.Genres)
                         {
-                            var category = await _db.Categories.FindAsync(item.Id);
+                            // Busca a categoria no banco pelo MalId (opcional)
+                            var category = await _db.Categories.FirstOrDefaultAsync(c => c.MalId == item.MalId);
                             if (category != null)
+                            {
+                                // Associa com os dados do banco
                                 cate.Add(category);
+                            }
+                            else
+                            {
+                                cate.Add(item);
+                            }
                         }
                     }
-                    anime.Genres = (ICollection<MediaBase.Genre>?)cate;
 
+                    anime.Genres = cate;
+
+                    // Adiciona o anime
                     _db.Animes.Add(anime);
                 }
 
@@ -276,5 +288,6 @@ namespace DataAccessLayer.Implementations
                 return ResponseFactory.CreateInstance().CreateFailedResponse(ex);
             }
         }
+
     }
 }

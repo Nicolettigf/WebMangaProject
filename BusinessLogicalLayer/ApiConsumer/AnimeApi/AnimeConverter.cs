@@ -16,7 +16,6 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
             Anime anime = new()
             {
                 #region tirar
-                //Id = Convert.ToInt32(item.mal_id),
                 name = item.title,
                 description = item.background,
                 canonicalTitle = item.title,
@@ -48,7 +47,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 #endregion
 
                 #region mediabase
-
+                Id = Convert.ToInt32(item.mal_id),
                 Synopsis = item.synopsis,
                 MalId = Convert.ToInt32(item.mal_id),
                 Url = item.url,
@@ -67,6 +66,12 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 Background = item.background,
                 From = item.aired?.from,
                 To = item.aired?.to,
+                JpgImageUrl = item.images.jpg?.image_url,
+                JpgSmallImageUrl = item.images.jpg?.small_image_url,
+                JpgLargeImageUrl = item.images.jpg?.large_image_url,
+                WebpImageUrl = item.images.webp?.image_url,
+                WebpSmallImageUrl = item.images.webp?.small_image_url,
+                WebpLargeImageUrl = item.images.webp?.large_image_url,
 
                 #endregion
 
@@ -131,6 +136,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
             // Studios
             anime.studios = item.studios?.Select(s => new Entities.AnimeS.Studio
             {
+                //Id = Convert.ToInt32(s.mal_id),
                 AnimeId = anime.MalId,
                 Anime = anime,
                 mal_id = s.mal_id,
@@ -142,6 +148,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
             // Licensors
             anime.licensors = item.licensors?.Select(l => new Entities.AnimeS.Licensor
             {
+                //Id = Convert.ToInt32(l.mal_id),
                 AnimeId = anime.MalId,
                 Anime = anime,
                 mal_id = l.mal_id,
@@ -153,6 +160,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
             // Producers
             anime.producers = item.producers?.Select(p => new Entities.AnimeS.Producer
             {
+                //Id = Convert.ToInt32(p.mal_id),
                 AnimeId = anime.MalId,
                 Anime = anime,
                 mal_id = p.mal_id,
@@ -164,6 +172,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
             // Relations
             anime.relations = item.relations?.Select(r => new Entities.AnimeS.Relation
             {
+                //Id = Convert.ToInt32(item.mal_id),
                 AnimeId = anime.MalId,
                 Anime = anime,
                 relation = r.relation,
@@ -192,6 +201,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
             // Themes
             anime.Themes = item.themes?.Select(t => new Entities.MediaBase.Theme
             {
+                //Id = Convert.ToInt32(t.mal_id),
                 AnimeId = anime.MalId,
                 Anime = anime,
                 MalId = t.mal_id,
@@ -200,23 +210,11 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 Url = t.url
             }).ToList() ?? new List<Entities.MediaBase.Theme>();
 
-            // Imagens herdadas do MediaBase
-            anime.Imagens = item.images != null
-                ? new Entities.MediaBase.Images
-                {
-                    AnimeId = anime.MalId,
-                    Anime = anime,
-                    JpgImageUrl = item.images.jpg?.image_url,
-                    JpgSmallImageUrl = item.images.jpg?.small_image_url,
-                    JpgLargeImageUrl = item.images.jpg?.large_image_url,
-                    WebpImageUrl = item.images.webp?.image_url,
-                    WebpSmallImageUrl = item.images.webp?.small_image_url,
-                    WebpLargeImageUrl = item.images.webp?.large_image_url
-                }
-                : null;
+           
 
             anime.ExplicitGenres = item.explicit_genres?.Select(e => new Entities.MediaBase.ExplicitGenre
             {
+                //Id = Convert.ToInt32(e.mal_id),
                 AnimeId = anime.MalId,
                 Anime = anime,
                 MalId = e.mal_id,
@@ -226,6 +224,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
 
             anime.Demographics = item.demographics?.Select(d => new Entities.MediaBase.Demographic
             {
+                //Id = Convert.ToInt32(d.mal_id),
                 AnimeId = anime.MalId,
                 Anime = anime,
                 MalId = d.mal_id,
@@ -235,6 +234,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
 
             anime.Genres = item.genres?.Select(g => new Entities.MediaBase.Genre
             {
+                Id = g.mal_id,
                 AnimeId = anime.MalId,
                 Anime = anime,
                 MalId = g.mal_id,

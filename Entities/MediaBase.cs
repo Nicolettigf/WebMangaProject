@@ -28,8 +28,14 @@ namespace Entities
         public string? From { get; set; }
         public string? To { get; set; }
 
+        public string? JpgImageUrl { get; set; }
+        public string? JpgSmallImageUrl { get; set; }
+        public string? JpgLargeImageUrl { get; set; }
+        public string? WebpImageUrl { get; set; }
+        public string? WebpSmallImageUrl { get; set; }
+        public string? WebpLargeImageUrl { get; set; }
+
         public MediaRatingFrequency? MediaRatingFrequency { get; set; }
-        public Images? Imagens { get; set; }
 
         //public List<string>? TitleSynonyms { get; set; }
         public ICollection<ExplicitGenre>? ExplicitGenres { get; set; }
@@ -53,15 +59,7 @@ namespace Entities
 
         public class Theme : BaseClassesApi { }
 
-        public class Images : BaseClassesApi
-        {
-            public string? JpgImageUrl { get; set; }
-            public string? JpgSmallImageUrl { get; set; }
-            public string? JpgLargeImageUrl { get; set; }
-            public string? WebpImageUrl { get; set; }
-            public string? WebpSmallImageUrl { get; set; }
-            public string? WebpLargeImageUrl { get; set; }
-        }
+       
     }
     public abstract class BaseClassesApi
     {
