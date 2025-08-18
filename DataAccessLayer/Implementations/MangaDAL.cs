@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Shared;
 using Shared.Models.Manga;
 using Shared.Responses;
+using static Entities.MediaBase;
 
 namespace DataAccessLayer.Implementations
 {
@@ -19,14 +20,14 @@ namespace DataAccessLayer.Implementations
 
         public async Task<Response> Insert(Manga manga)
         {
-            List<Category> Cate = new();
+            //List<Genre> Cate = new();
             try
             {
-                foreach (var item in manga.Genres)
-                {
-                   Cate.Add(await _db.Categories.FindAsync(item.ID));
-                }
-                manga.Genres = Cate;
+                //foreach (var item in manga.Genres)
+                //{
+                //   Cate.Add(await _db.Categories.FindAsync(item.MalId));
+                //}
+                //manga.Genres = Cate;
                 _db.Mangas.Add(manga);
                 return ResponseFactory.CreateInstance().CreateSuccessResponse();
             }

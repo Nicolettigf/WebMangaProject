@@ -15,10 +15,10 @@ namespace MvcPresentationLayer.Controllers
     {
         private readonly IMangaProjectApiMangaService _mangaApiService;
         private readonly IMapper _mapper;
-        private readonly IApiConnect _apiService;
+        private readonly IMangaApi _apiService;
         private readonly ICategoryApiConnect _CateApi;
         private readonly IAnimeApiConnect _animeApi;
-        public MangaDbController(IMangaProjectApiMangaService svc, IMapper mapper, IApiConnect connect, ICategoryApiConnect CateApi, IAnimeApiConnect animeApi)
+        public MangaDbController(IMangaProjectApiMangaService svc, IMapper mapper, IMangaApi connect, ICategoryApiConnect CateApi, IAnimeApiConnect animeApi)
         {
             this._animeApi = animeApi;
             this._CateApi = CateApi;

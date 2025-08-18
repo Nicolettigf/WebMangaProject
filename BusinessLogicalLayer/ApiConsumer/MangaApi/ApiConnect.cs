@@ -1,105 +1,86 @@
 ﻿using BusinessLogicalLayer.Interfaces.IMangaInterfaces;
 using Entities.MangaS;
-using Newtonsoft.Json;
-using Shared.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using System.Net.Http;
 
 namespace BusinessLogicalLayer.ApiConsumer.MangaApi
 {
-    public class ApiConnect : IApiConnect
+    public class MangaApi : IMangaApi
     {
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly Uri baseAddress = new Uri("https://kitsu.io/api/edge/");
+        private readonly Uri baseAddress = new Uri("https://api.jikan.moe/v4/");
         private readonly int LimiteManga = 64595;
-        private readonly int LoteTamanho = 50; // quantos mangas pegar por vez
+        private readonly int LoteTamanho = 25; // Máximo permitido pelo Jikan
 
-        public ApiConnect(IServiceScopeFactory scopeFactory)
+        public MangaApi(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
         }
 
         public async Task Consume()
         {
-            int last;
+            int lastPage;
             using (var scope = _scopeFactory.CreateScope())
             {
                 var mangaService = scope.ServiceProvider.GetRequiredService<IMangaService>();
-                last = await mangaService.GetLastIndex();
+                lastPage = await mangaService.GetLastIndex(); // pode ser última página salva
             }
 
-            if (last >= LimiteManga)
-                return;
+            const int pageSize = 25;
+            int totalPages = (int)Math.Ceiling(LimiteManga / (double)pageSize);
 
-            Console.WriteLine($"📚 Começando do ID {last + 1} até {LimiteManga}...");
+            Console.WriteLine($"📚 Começando da página {lastPage + 1} até {totalPages}...");
 
             using (var httpClient = new HttpClient { BaseAddress = baseAddress })
             {
-                for (int i = last + 1; i <= LimiteManga; i += LoteTamanho)
+                for (int page = lastPage + 1; page <= totalPages; page++)
                 {
-                    var tasks = new List<Task<Manga?>>();
+                    var dtos = await BuscarPagina(httpClient, page, pageSize);
 
-                    // cria tasks para buscar mangas em paralelo
-                    for (int id = i; id < i + LoteTamanho && id <= LimiteManga; id++)
-                    {
-                        tasks.Add(BuscarManga(httpClient, id));
-                    }
-
-                    var resultados = await Task.WhenAll(tasks);
-                    var mangasValidos = resultados.Where(m => m != null).ToList();
-
-                    if (mangasValidos.Count > 0)
+                    if (dtos.Count > 0)
                     {
                         using (var scope = _scopeFactory.CreateScope())
                         {
                             var mangaService = scope.ServiceProvider.GetRequiredService<IMangaService>();
-                            foreach (var manga in mangasValidos)
-                            {
-                                if (string.IsNullOrWhiteSpace(manga.PosterImageLink))
-                                    continue; // pula esse manga e vai pro próximo
 
-                                await mangaService.Insert(manga!);
+                            var mangaEntities = new List<Manga>();
+
+                            foreach (var dto in dtos)
+                            {
+                                var manga = ConverterToCategory.ConvertDTOToManga(dto);
+                                if (!string.IsNullOrWhiteSpace(manga.Synopsis))
+                                    mangaEntities.Add(manga);
                             }
+
+                            await mangaService.InsertRange(mangaEntities);
                         }
                     }
 
-                    Console.WriteLine($"✅ Processados até ID {i + LoteTamanho - 1}");
+                    Console.WriteLine($"✅ Página {page} processada ({dtos.Count} mangas)");
+                    await Task.Delay(350);
                 }
             }
 
             Console.WriteLine("🏁 Finalizado!");
         }
 
-        private async Task<Manga?> BuscarManga(HttpClient httpClient, int id)
+        private async Task<List<Datum>> BuscarPagina(HttpClient httpClient, int page, int limit)
         {
             try
             {
-                var response = await httpClient.GetAsync($"manga/{id}");
+                var response = await httpClient.GetAsync($"manga?page={page}&limit={limit}");
                 var jsonString = await response.Content.ReadAsStringAsync();
 
-                if (jsonString.Contains("errors"))
-                    return null;
+                if (string.IsNullOrWhiteSpace(jsonString) || jsonString.Contains("errors"))
+                    return new List<Datum>();
 
                 var dto = JsonConvert.DeserializeObject<Root>(jsonString);
-                if (dto == null)
-                    return null;
-
-                var manga = ConverterToCategory.ConvertDTOToManga(dto);
-                manga.Genres = await CategoryToMangaApi.MangaCategory(Convert.ToInt32(manga.Id));
-
-                // só salva se tiver sinopse
-                if (string.IsNullOrWhiteSpace(manga.Synopsis))
-                    return null;
-
-                return manga;
+                return dto?.data ?? new List<Datum>();
             }
             catch
             {
-                return null;
+                return new List<Datum>();
             }
         }
     }

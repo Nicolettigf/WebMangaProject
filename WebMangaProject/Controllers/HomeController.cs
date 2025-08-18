@@ -19,12 +19,12 @@ namespace MvcPresentationLayer.Controllers
         private readonly IMapper _mapper;
         private readonly ICacheService _cacheService;
         private readonly IAnimeApiConnect _AnimeApi;
-        private readonly IApiConnect _ApiConnect;
+        private readonly IMangaApi _ApiConnect;
         private readonly ICategoryApiConnect _CategoryApiConnect;
 
         
-        public HomeController(IMapper mapper, ICacheService cacheService, IAnimeApiConnect AnimeApi, 
-            IApiConnect ApiConnect, ICategoryApiConnect CategoryApiConnect)
+        public HomeController(IMapper mapper, ICacheService cacheService, IAnimeApiConnect AnimeApi,
+            IMangaApi ApiConnect, ICategoryApiConnect CategoryApiConnect)
         {
             this._mapper = mapper;
             this._cacheService = cacheService;

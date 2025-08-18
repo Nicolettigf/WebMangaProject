@@ -15,12 +15,10 @@ namespace Entities.AnimeS
         public string? Rating { get; set; }
         public string? Season { get; set; }
 
-
-
-
         public AnimeRatingFrequencies? AnimeRatingFrequencies { get; set; }
         public AnimeSTitles? AnimeTitles { get; set; }
         public ICollection<AnimeComentary?> Comentaries { get; set; }
+
 
         #region futuraexclusao
         public ICollection<Category> Categories { get; set; }
@@ -46,12 +44,15 @@ namespace Entities.AnimeS
         public string? youtubeVideoId { get; set; }
         public string? showType { get; set; }
         #endregion
+
         public string? BroadcastDay { get; set; }
         public string? BroadcastTime { get; set; }
         public string? BroadcastTimezone { get; set; }
+
         public string? Youtube_id { get; set; }
         public string? Youtubeurl { get; set; }
         public string? Youtubeembed_url { get; set; }
+
         public string? Themetype { get; set; }
         public string? Themename { get; set; }
         public string? Themeurl { get; set; }
@@ -64,7 +65,6 @@ namespace Entities.AnimeS
         public ICollection<External>? external { get; set; }
         public ICollection<Streaming>? streaming { get; set; }
     }
-
     public class Producer : AnimeBaseReference { }
     public class Licensor : AnimeBaseReference { }
     public class Studio : AnimeBaseReference { }
@@ -76,7 +76,6 @@ namespace Entities.AnimeS
         public string? relation { get; set; }
         public List<Entry>? entry { get; set; }
     }
-
     public class Entry
     {
         public int? relationID { get; set; }
@@ -86,8 +85,6 @@ namespace Entities.AnimeS
         public string? name { get; set; }
         public string? url { get; set; }
     }
-
-
     public abstract class AnimeBaseReference
     {
         public int Id { get; set; }               // PK

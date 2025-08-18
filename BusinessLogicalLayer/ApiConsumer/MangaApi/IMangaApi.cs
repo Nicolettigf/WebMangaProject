@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace BusinessLogicalLayer.ApiConsumer.MangaApi
 {
-    public interface IApiConnect
+    public interface IMangaApi
     {
         /// <summary>
         /// Consome mangas da API exerna kitsu, e insere na DB(DAL)

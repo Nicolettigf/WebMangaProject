@@ -71,7 +71,123 @@ namespace BusinessLogicalLayer.ApiConsumer
             public string? type { get; set; }
             public string? title { get; set; }
         }
+        public class Entry
+        {
+            public int? mal_id { get; set; }
+            public string? type { get; set; }
+            public string? name { get; set; }
+            public string? url { get; set; }
+        }
+
+
+
+        public class External
+        {
+            public string? name { get; set; }
+            public string? url { get; set; }
+        }
+        public class Items
+        {
+            public int count { get; set; }
+            public int total { get; set; }
+            public int per_page { get; set; }
+        }
+
+        public class Author
+        {
+            public int mal_id { get; set; }
+            public string type { get; set; }
+            public string name { get; set; }
+            public string url { get; set; }
+        }
+        public class Pagination
+        {
+            public int last_visible_page { get; set; }
+            public bool has_next_page { get; set; }
+            public int current_page { get; set; }
+            public Items items { get; set; }
+        }
+        public class Published
+        {
+            public DateTime from { get; set; }
+            public DateTime? to { get; set; }
+            public Prop prop { get; set; }
+            public string @string { get; set; }
+        }
+        
+        public class Serialization
+        {
+            public int mal_id { get; set; }
+            public string type { get; set; }
+            public string name { get; set; }
+            public string url { get; set; }
+        }
+        public class Aired
+        {
+            public string? from { get; set; }
+            public string? to { get; set; }
+            public Prop? prop { get; set; }
+        }
+
+        public class Broadcast
+        {
+            public string? day { get; set; }
+            public string? time { get; set; }
+            public string? timezone { get; set; }
+            public string? @string { get; set; }
+        }
+
+
+        public class Licensor
+        {
+            public int? mal_id { get; set; }
+            public string? type { get; set; }
+            public string? name { get; set; }
+            public string? url { get; set; }
+        }
+
+        public class Producer
+        {
+            public int? mal_id { get; set; }
+            public string? type { get; set; }
+            public string? name { get; set; }
+            public string? url { get; set; }
+        }
+
+
+
+        public class Relation
+        {
+            public string? relation { get; set; }
+            public List<Entry>? entry { get; set; }
+        }
+        public class Streaming
+        {
+            public string? name { get; set; }
+            public string? url { get; set; }
+        }
+
+
+        public class Theme2
+        {
+            public List<string?> openings { get; set; }
+            public List<string?> endings { get; set; }
+        }
+
+        public class Trailer
+        {
+            public string? youtube_id { get; set; }
+            public string? url { get; set; }
+            public string? embed_url { get; set; }
+        }
         public class Theme
+        {
+            public int? mal_id { get; set; }
+            public string? type { get; set; }
+            public string? name { get; set; }
+            public string? url { get; set; }
+        }
+        public class Studio
         {
             public int? mal_id { get; set; }
             public string? type { get; set; }

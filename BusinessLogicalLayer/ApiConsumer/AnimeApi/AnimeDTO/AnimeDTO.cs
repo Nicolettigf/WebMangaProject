@@ -1,18 +1,5 @@
 ﻿// Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse);
-public class Aired
-{
-    public string? from { get; set; }
-    public string? to { get; set; }
-    public Prop? prop { get; set; }
-}
-
-public class Broadcast
-{
-    public string? day { get; set; }
-    public string? time { get; set; }
-    public string? timezone { get; set; }
-    public string? @string { get; set; }
-}
+using static BusinessLogicalLayer.ApiConsumer.DTOBASE;
 
 public class DataAni
 {
@@ -54,100 +41,10 @@ public class DataAni
     public List<Producer>? producers { get; set; }
     public List<Licensor>? licensors { get; set; }
     public List<Relation>? relations { get; set; }
-
-
-
     public List<Studio>? studios { get; set; }
     public List<Theme>? themes { get; set; }
     public List<External>? external { get; set; }
     public List<Streaming>? streaming { get; set; }
-}
-
-public class Demographic
-{
-    public int? mal_id { get; set; }
-    public string? type { get; set; }
-    public string? name { get; set; }
-    public string? url { get; set; }
-}
-
-public class Entry
-{
-    public int? mal_id { get; set; }
-    public string? type { get; set; }
-    public string? name { get; set; }
-    public string? url { get; set; }
-}
-
-public class ExplicitGenre
-{
-    public int? mal_id { get; set; }
-    public string? type { get; set; }
-    public string? name { get; set; }
-    public string? url { get; set; }
-}
-
-public class External
-{
-    public string? name { get; set; }
-    public string? url { get; set; }
-}
-
-public class From
-{
-    public int? day { get; set; }
-    public int? month { get; set; }
-    public int? year { get; set; }
-}
-
-public class Genre
-{
-    public int? mal_id { get; set; }
-    public string? type { get; set; }
-    public string? name { get; set; }
-    public string? url { get; set; }
-}
-
-public class Images
-{
-    public Jpg jpg { get; set; }
-    public Webp webp { get; set; }
-}
-
-public class Jpg
-{
-    public string? image_url { get; set; }
-    public string? small_image_url { get; set; }
-    public string? large_image_url { get; set; }
-}
-
-public class Licensor
-{
-    public int? mal_id { get; set; }
-    public string? type { get; set; }
-    public string? name { get; set; }
-    public string? url { get; set; }
-}
-
-public class Producer
-{
-    public int? mal_id { get; set; }
-    public string? type { get; set; }
-    public string? name { get; set; }
-    public string? url { get; set; }
-}
-
-public class Prop
-{
-    public From? from { get; set; }
-    public To? to { get; set; }
-    public string? @string { get; set; }
-}
-
-public class Relation
-{
-    public string? relation { get; set; }
-    public List<Entry>? entry { get; set; }
 }
 
 public class RootAni
@@ -155,58 +52,6 @@ public class RootAni
     public DataAni? data { get; set; }
 }
 
-public class Streaming
-{
-    public string? name { get; set; }
-    public string? url { get; set; }
-}
 
-public class Studio
-{
-    public int? mal_id { get; set; }
-    public string? type { get; set; }
-    public string? name { get; set; }
-    public string? url { get; set; }
-}
 
-public class Theme
-{
-    public int? mal_id { get; set; }
-    public string? type { get; set; }
-    public string? name { get; set; }
-    public string? url { get; set; }
-}
-
-public class Theme2
-{
-    public List<string?> openings { get; set; }
-    public List<string?> endings { get; set; }
-}
-
-public class Title
-{
-    public string? type { get; set; }
-    public string? title { get; set; }
-}
-
-public class To
-{
-    public int? day { get; set; }
-    public int? month { get; set; }
-    public int? year { get; set; }
-}
-
-public class Trailer
-{
-    public string? youtube_id { get; set; }
-    public string? url { get; set; }
-    public string? embed_url { get; set; }
-}
-
-public class Webp
-{
-    public string? image_url { get; set; }
-    public string? small_image_url { get; set; }
-    public string? large_image_url { get; set; }
-}
 

@@ -80,7 +80,7 @@ builder.Services.AddSingleton<IMangaProjectApiMangaItem, MangaProjectApiMangaIte
 #endregion
 
 builder.Services.AddTransient<ICategoryApiConnect, CategoryApiConnect>();
-builder.Services.AddTransient<IApiConnect, ApiConnect>();
+builder.Services.AddTransient<IMangaApi, MangaApi>();
 builder.Services.AddTransient<IAnimeApiConnect, AnimeApi>();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
