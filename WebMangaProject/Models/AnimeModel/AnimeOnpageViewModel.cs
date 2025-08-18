@@ -15,7 +15,6 @@ namespace MvcPresentationLayer.Models.AnimeModel
         public string? Description { get; set; }
         public string? CanonicalTitle { get; set; }
         public string? AverageRating { get; set; }
-        public AnimeRatingFrequencies? AnimeRatingFrequencies { get; set; }
         public int? UserCount { get; set; }
         public int? FavoritesCount { get; set; }
         public string? StartDate { get; set; }

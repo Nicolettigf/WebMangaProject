@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.Interfaces.IUserItem;
+using Entities;
 using Entities.AnimeS;
 using Entities.UserS;
 using Microsoft.EntityFrameworkCore;
@@ -175,7 +176,7 @@ namespace DataAccessLayer.Implementations.UserItemDAL
                 return ResponseFactory.CreateInstance().CreateSuccessResponse();
             }
 
-            AnimeRatingFrequencies selec = _db.AnimeRating.Find(Item.AnimeId);
+            MediaRatingFrequency selec = _db.MediaRatingFrequency.Find(Item.AnimeId);
             switch (score)
             {
                 case 1:
@@ -194,7 +195,7 @@ namespace DataAccessLayer.Implementations.UserItemDAL
                     selec._5++;
                     break;
             }
-            _db.AnimeRating.Update(selec);
+            _db.MediaRatingFrequency.Update(selec);
             try
             {
                 _db.UserAnime.Add(Item);

@@ -12,12 +12,6 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
             if (item == null)
                 return null;
 
-            // Rating
-            AnimeRatingFrequencies rating = new()
-            {
-                Id = Convert.ToInt32(item.mal_id)
-            };
-
             // Criando Anime
             Anime anime = new()
             {
@@ -75,8 +69,6 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 To = item.aired?.to,
 
                 #endregion
-
-                AnimeRatingFrequencies = rating,
 
                 //theme
                 Themename = item.theme?.name,

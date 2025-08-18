@@ -14,10 +14,7 @@ namespace Entities.AnimeS
         public string? Duration { get; set; }
         public string? Rating { get; set; }
         public string? Season { get; set; }
-
-        public AnimeRatingFrequencies? AnimeRatingFrequencies { get; set; }
         public ICollection<AnimeComentary?> Comentaries { get; set; }
-
 
         #region futuraexclusao
         public string? name { get; set; }

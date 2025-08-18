@@ -10,13 +10,11 @@ namespace Entities.MangaS
         public bool Publishing { get; set; }
         public DateTime PublishedFrom { get; set; }
         public DateTime? PublishedTo { get; set; }
-        public RatingFrequencies? RatingFrequencies { get; set; }
         public ICollection<MangaComentary>? Comentaries { get; set; }
 
         #region deletar
 
         public string? CanonicalTitle { get; set; }
-        public string Synopsis { get; set; }
         public string? AverageRating { get; set; }
         public int? RatingRank { get; set; }
         public int? PopularityRank { get; set; }

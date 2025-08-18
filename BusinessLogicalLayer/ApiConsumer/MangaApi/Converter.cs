@@ -18,7 +18,6 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 Id = Convert.ToInt32(item.mal_id),
                 CanonicalTitle = item.title,
                 AverageRating = item.score.ToString(),
-                RatingFrequencies = new RatingFrequencies { Id = Convert.ToInt32(item.mal_id) },
                 RatingRank = item.rank,
                 PopularityRank = item.popularity,
                 UserCount = item.members,

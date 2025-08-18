@@ -27,6 +27,8 @@ namespace Entities
         public string? Background { get; set; }
         public string? From { get; set; }
         public string? To { get; set; }
+
+        public MediaRatingFrequency? MediaRatingFrequency { get; set; }
         public Images? Imagens { get; set; }
 
         //public List<string>? TitleSynonyms { get; set; }
