@@ -1,10 +1,8 @@
 ﻿using BusinessLogicalLayer.Interfaces.IMangaInterfaces;
 using DataAccessLayer.UnitOfWork;
-using Entities;
 using Entities.MangaS;
 using Shared.Models.Manga;
 using Shared.Responses;
-using static Entities.MediaBase;
 
 namespace BusinessLogicalLayer.Implementations
 {
@@ -54,7 +52,7 @@ namespace BusinessLogicalLayer.Implementations
             return await _unitOfWork.MangaRepository.Get(name);
         }
 
-        public async Task<Response> InsertCategory(Genre id)
+        public async Task<Response> InsertCategory(Entities.MediaBase.Genre id)
         {
             await _unitOfWork.MangaRepository.InsertCategory(id);
             return await _unitOfWork.Commit();

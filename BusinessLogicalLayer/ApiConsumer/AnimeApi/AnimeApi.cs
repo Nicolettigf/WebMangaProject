@@ -1,4 +1,5 @@
 ﻿using BusinessLogicalLayer.ApiConsumer.AnimeApi;
+using BusinessLogicalLayer.ApiConsumer.MangaApi;
 using BusinessLogicalLayer.Interfaces.IAnimeInterfaces;
 using Entities.AnimeS;
 using Microsoft.Extensions.DependencyInjection;
@@ -47,7 +48,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
 
                             foreach (var animeDto in animes)
                             {
-                                var anime = AnimeConverter.ConvertDTOToAnime(new RootAni { data = animeDto });
+                                var anime = AnimeConverter.ConvertDTOToAnime(new RootSingle { data = animeDto });
                                 animeEntities.Add(anime);
                             }
 
@@ -84,7 +85,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
 
                         if (animeDto != null)
                         {
-                            var anime = AnimeConverter.ConvertDTOToAnime(new RootAni { data = animeDto });
+                            var anime = AnimeConverter.ConvertDTOToAnime(new RootSingle { data = animeDto });
                             await animeService.Insert(anime);
 
                             Console.WriteLine($"✅ Anime {malId} inserido.");
@@ -108,7 +109,7 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
         }
 
         // 🔹 Busca por página
-        private async Task<List<DataAni>> BuscarPagina(HttpClient httpClient, int page, int limit)
+        private async Task<List<MediaDto>> BuscarPagina(HttpClient httpClient, int page, int limit)
         {
             try
             {
@@ -116,19 +117,18 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 var jsonString = await response.Content.ReadAsStringAsync();
 
                 if (jsonString.Contains("errors") || jsonString.Contains("BadResponseException"))
-                    return new List<DataAni>();
+                    return new List<MediaDto>();
 
                 var dto = JsonConvert.DeserializeObject<RootAniPage>(jsonString);
-                return dto?.data ?? new List<DataAni>();
+                return dto?.data ?? new List<MediaDto>();
             }
             catch
             {
-                return new List<DataAni>();
+                return new List<MediaDto>();
             }
         }
 
-        // 🔹 Busca unitária por MAL ID
-        private async Task<DataAni?> BuscarPorId(HttpClient httpClient, int malId)
+        private async Task<MediaDto?> BuscarPorId(HttpClient httpClient, int malId)
         {
             try
             {
@@ -138,19 +138,13 @@ namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
                 if (jsonString.Contains("errors") || jsonString.Contains("BadResponseException"))
                     return null;
 
-                var dto = JsonConvert.DeserializeObject<RootAni>(jsonString);
+                var dto = JsonConvert.DeserializeObject<RootSingle>(jsonString);
                 return dto?.data;
             }
             catch
             {
                 return null;
             }
-        }
-
-        // 🔹 Modelo para resposta de página
-        public class RootAniPage
-        {
-            public List<DataAni> data { get; set; }
         }
     }
 }

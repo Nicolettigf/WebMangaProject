@@ -1,12 +1,10 @@
-﻿using Entities;
-using Entities.Enums;
-using Entities.MangaS;
+﻿using Entities.MangaS;
 
 namespace BusinessLogicalLayer.ApiConsumer.MangaApi
 {
     public class MangaConverter
     {
-        public static Manga ConvertDTOToManga(Datum item)
+        public static Manga ConvertDTOToManga(MediaDto item)
         {
             if (item == null) return null;
 
@@ -45,7 +43,7 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
             #region Referências do Manga
 
             // Authors
-            manga.Authors = item.authors?.Select(a => new Author
+            manga.Authors = item.authors?.Select(a => new Entities.MangaS.Author
             {
                 MangaId = manga.MalId,
                 Manga = manga,
@@ -53,10 +51,10 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 type = a.type,
                 name = a.name,
                 url = a.url
-            }).ToList() ?? new List<Author>();
+            }).ToList() ?? new List<Entities.MangaS.Author>();
 
             // Serializations
-            manga.Serializations = item.serializations?.Select(s => new Serialization
+            manga.Serializations = item.serializations?.Select(s => new Entities.MangaS.Serialization
             {
                 MangaId = manga.MalId,
                 Manga = manga,
@@ -64,7 +62,7 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 type = s.type,
                 name = s.name,
                 url = s.url
-            }).ToList() ?? new List<Serialization>();
+            }).ToList() ?? new List<Entities.MangaS.Serialization>();
 
             #endregion
 

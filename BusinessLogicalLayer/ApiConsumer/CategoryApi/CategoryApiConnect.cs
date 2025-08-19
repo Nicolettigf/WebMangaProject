@@ -44,7 +44,7 @@ namespace BusinessLogicalLayer.ApiConsumer.CategoryApi
                 var exists = await _db.Categories.AnyAsync(c => c.MalId == datum.mal_id);
                 if (exists) continue;
 
-                var genre = new Genre
+                var genre = new Entities.MediaBase.Genre
                 {
                     Id = datum.mal_id,
                     MalId = datum.mal_id,
@@ -55,19 +55,5 @@ namespace BusinessLogicalLayer.ApiConsumer.CategoryApi
                 await _mangaService.InsertCategory(genre);
             }
         }
-    }
-
-    // DTOs
-    public class Datum
-    {
-        public int mal_id { get; set; }
-        public string name { get; set; }
-        public string url { get; set; }
-        public int count { get; set; }
-    }
-
-    public class RootCate
-    {
-        public List<Datum> data { get; set; }
     }
 }

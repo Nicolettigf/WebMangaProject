@@ -8,8 +8,8 @@
         public DateTime? PublishedFrom { get; set; }
         public DateTime? PublishedTo { get; set; }
         public ICollection<MangaComentary>? Comentaries { get; set; }
-        public List<Serialization> Serializations { get; set; }
-        public List<Author> Authors { get; set; }
+        public List<Serialization>? Serializations { get; set; }
+        public List<Author>? Authors { get; set; }
 
     }
     public class Serialization : MangaBaseReference { }

@@ -35,8 +35,8 @@ namespace MvcPresentationLayer.Controllers
 
         public async Task<IActionResult> Index()
         {
-            await _AnimeApi.ConsumeMissingAnimes();
             await _ApiConnect.ConsumeMissingMangas();
+            await _AnimeApi.ConsumeMissingAnimes();
             //await _CategoryApiConnect.CovertiCatego();
             //await _ApiConnect.Consume();
             //await _AnimeApi.ConsumeAnime();

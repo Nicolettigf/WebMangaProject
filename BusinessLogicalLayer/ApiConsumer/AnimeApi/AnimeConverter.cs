@@ -1,11 +1,12 @@
-﻿using Entities.AnimeS;
+﻿using BusinessLogicalLayer.ApiConsumer.MangaApi;
+using Entities.AnimeS;
 using Entities.Enums;
 
 namespace BusinessLogicalLayer.ApiConsumer.NovaPasta
 {
     public class AnimeConverter
     {
-        public static Anime ConvertDTOToAnime(RootAni animeRootDTO)
+        public static Anime ConvertDTOToAnime(RootSingle animeRootDTO)
         {
             var item = animeRootDTO.data;
 

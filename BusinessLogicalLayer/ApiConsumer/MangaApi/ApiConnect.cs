@@ -2,8 +2,6 @@
 using Entities.MangaS;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System.Net.Http;
-using static BusinessLogicalLayer.ApiConsumer.DTOBASE;
 
 namespace BusinessLogicalLayer.ApiConsumer.MangaApi
 {
@@ -66,7 +64,7 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
             Console.WriteLine("🏁 Finalizado!");
         }
 
-        private async Task<List<Datum>> BuscarPagina(HttpClient httpClient, int page, int limit)
+        private async Task<List<MediaDto>> BuscarPagina(HttpClient httpClient, int page, int limit)
         {
             try
             {
@@ -74,14 +72,14 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 var jsonString = await response.Content.ReadAsStringAsync();
 
                 if (string.IsNullOrWhiteSpace(jsonString) || jsonString.Contains("errors"))
-                    return new List<Datum>();
+                    return new List<MediaDto>();
 
                 var dto = JsonConvert.DeserializeObject<Root>(jsonString);
-                return dto?.data ?? new List<Datum>();
+                return dto?.data ?? new List<MediaDto>();
             }
             catch
             {
-                return new List<Datum>();
+                return new List<MediaDto>();
             }
         }
 
@@ -126,7 +124,7 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
             Console.WriteLine("🏁 Finalizado consumo unitário!");
         }
 
-        private async Task<Datum> BuscarPorId(HttpClient httpClient, int malId)
+        private async Task<MediaDto> BuscarPorId(HttpClient httpClient, int malId)
         {
             try
             {
@@ -144,18 +142,5 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 return null;
             }
         }
-
-
     }
-        // Para requisições Paginadas (lista)
-        public class RootList
-        {
-            public List<Datum>? data { get; set; }
-        }
-
-        // Para requisições Unitárias (por ID)
-        public class RootSingle
-        {
-            public Datum? data { get; set; }
-        }
 }
