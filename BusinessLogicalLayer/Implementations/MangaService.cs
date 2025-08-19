@@ -102,5 +102,10 @@ namespace BusinessLogicalLayer.Implementations
         {
             return await _unitOfWork.MangaRepository.InsertRange(items);
         }
+
+        public async Task<DataResponse<int>> GetMissingMalIds()
+        {
+            return await _unitOfWork.MangaRepository.GetMissingMalIds();
+        }
     }
 }

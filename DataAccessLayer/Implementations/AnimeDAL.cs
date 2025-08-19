@@ -289,5 +289,26 @@ namespace DataAccessLayer.Implementations
             }
         }
 
+        public async Task<DataResponse<int>> GetMissingMalIds()
+        {
+            // Pega todos os MalIds já salvos no banco
+            var existingIds = await _db.Animes
+                .Select(a => a.MalId)
+                .ToListAsync();
+
+            // Garante que não tenha null
+           // existingIds = existingIds.Where(id => id.HasValue).Select(id => id.Value).ToList();
+
+            // Descobre o maior MalId já salvo no banco
+            int maxMalId = existingIds.Count > 0 ? existingIds.Max() : 0;
+
+            // 🔹 Gera a lista de MalIds esperados (de 1 até o maior encontrado no banco ou até um limite pré-definido)
+            var expectedIds = Enumerable.Range(1, maxMalId).ToList();
+
+            // Faz a diferença entre o esperado e o existente
+            var missingIds = expectedIds.Except(existingIds).ToList();
+
+            return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(missingIds);
+        }
     }
 }

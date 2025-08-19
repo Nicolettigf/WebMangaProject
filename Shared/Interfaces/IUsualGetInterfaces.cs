@@ -10,6 +10,7 @@ namespace Shared.Interfaces
         Task<DataResponse<T>> GetByPopularity(int skip, int take);
         Task<DataResponse<W>> GetByCategory(int ID);
         Task<DataResponse<W>> Get(string name);
+        Task<DataResponse<int>> GetMissingMalIds();
         Task<SingleResponse<W>> GetComplete(int ID);
         Task<int> GetLastIndexCategory();
         Task<int> GetLastIndex();

@@ -3,6 +3,7 @@ using Entities.MangaS;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using System.Net.Http;
+using static BusinessLogicalLayer.ApiConsumer.DTOBASE;
 
 namespace BusinessLogicalLayer.ApiConsumer.MangaApi
 {
@@ -83,5 +84,78 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 return new List<Datum>();
             }
         }
+
+        public async Task ConsumeMissingMangas()
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var mangaService = scope.ServiceProvider.GetRequiredService<IMangaService>();
+
+            var missingMalIds = await mangaService.GetMissingMalIds();
+
+            Console.WriteLine($"📡 {missingMalIds.Data.Count} MAL IDs faltando. Iniciando consumo unitário...");
+
+            using (var httpClient = new HttpClient { BaseAddress = baseAddress })
+            {
+                foreach (var malId in missingMalIds.Data)
+                {
+                    try
+                    {
+                        var mangaDto = await BuscarPorId(httpClient, malId);
+
+                        if (mangaDto != null)
+                        {
+                            var manga = MangaConverter.ConvertDTOToManga(mangaDto);
+                            await mangaService.Insert(manga);
+
+                            Console.WriteLine($"✅ Manga {malId} inserido.");
+                        }
+                        else
+                        {
+                            Console.WriteLine($"⚠️ Nenhum dado retornado para MAL ID {malId}");
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"❌ Erro ao processar MAL ID {malId}: {ex.Message}");
+                    }
+
+                    await Task.Delay(1500); // respeitar rate limit
+                }
+            }
+
+            Console.WriteLine("🏁 Finalizado consumo unitário!");
+        }
+
+        private async Task<Datum> BuscarPorId(HttpClient httpClient, int malId)
+        {
+            try
+            {
+                var response = await httpClient.GetAsync($"manga/{malId}");
+                var jsonString = await response.Content.ReadAsStringAsync();
+
+                if (jsonString.Contains("errors") || jsonString.Contains("BadResponseException"))
+                    return null;
+
+                var dto = JsonConvert.DeserializeObject<RootSingle>(jsonString);
+                return dto?.data;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+
     }
+        // Para requisições Paginadas (lista)
+        public class RootList
+        {
+            public List<Datum>? data { get; set; }
+        }
+
+        // Para requisições Unitárias (por ID)
+        public class RootSingle
+        {
+            public Datum? data { get; set; }
+        }
 }

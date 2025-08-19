@@ -273,5 +273,10 @@ namespace MvcPresentationLayer.Apis.MangaProjectApi.Mangas
         {
             throw new NotImplementedException();
         }
+
+        public Task<DataResponse<int>> GetMissingMalIds()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

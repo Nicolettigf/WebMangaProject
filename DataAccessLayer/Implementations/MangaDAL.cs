@@ -1,10 +1,13 @@
 ﻿using DataAccessLayer.Interfaces.IMangaInterfaces;
 using Entities;
+using Entities.AnimeS;
 using Entities.MangaS;
 using Microsoft.EntityFrameworkCore;
 using Shared;
+using Shared.Interfaces;
 using Shared.Models.Manga;
 using Shared.Responses;
+using System;
 using static Entities.MediaBase;
 
 namespace DataAccessLayer.Implementations
@@ -19,14 +22,35 @@ namespace DataAccessLayer.Implementations
 
         public async Task<Response> Insert(Manga manga)
         {
-            //List<Genre> Cate = new();
+                ICollection<Genre> cate = new List<Genre>();
             try
             {
-                //foreach (var item in manga.Genres)
-                //{
-                //   Cate.Add(await _db.Categories.FindAsync(item.MalId));
-                //}
-                //manga.Genres = Cate;
+
+                foreach (var item in manga.Genres)
+                {
+                    // Tenta pegar do contexto já carregado
+                    var category = _db.ChangeTracker.Entries<Genre>()
+                                      .FirstOrDefault(e => e.Entity.MalId == item.MalId)?.Entity;
+
+                    if (category != null)
+                    {
+                        cate.Add(category); // já está sendo rastreado
+                    }
+                    else
+                    {
+                        // Busca no banco
+                        category = await _db.Categories.FirstOrDefaultAsync(c => c.MalId == item.MalId);
+                        if (category != null)
+                        {
+                            cate.Add(category); // associa entidade existente
+                        }
+                        else
+                        {
+                            cate.Add(item); // insere novo
+                        }
+                    }
+                }
+                manga.Genres = cate;
                 _db.Mangas.Add(manga);
                 return ResponseFactory.CreateInstance().CreateSuccessResponse();
             }
@@ -259,25 +283,37 @@ namespace DataAccessLayer.Implementations
             {
                 foreach (var manga in items)
                 {
-                    if (manga.Genres != null && manga.Genres.Any())
+                    ICollection<Genre> cate = new List<Genre>();
+
+                    foreach (var item in manga.Genres)
                     {
-                        var updatedGenres = new List<Genre>(manga.Genres.Count);
+                        // Tenta pegar do contexto já carregado
+                        var category = _db.ChangeTracker.Entries<Genre>()
+                                          .FirstOrDefault(e => e.Entity.MalId == item.MalId)?.Entity;
 
-                        foreach (var item in manga.Genres)
+                        if (category != null)
                         {
-                            // Tenta buscar no banco sem rastrear (mais leve)
-                            var category = await _db.Categories
-                                                    .AsNoTracking()
-                                                    .FirstOrDefaultAsync(c => c.MalId == item.MalId);
-
-                            updatedGenres.Add(category ?? item);
+                            cate.Add(category); // já está sendo rastreado
                         }
-
-                        manga.Genres = updatedGenres;
+                        else
+                        {
+                            // Busca no banco
+                            category = await _db.Categories.FirstOrDefaultAsync(c => c.MalId == item.MalId);
+                            if (category != null)
+                            {
+                                cate.Add(category); // associa entidade existente
+                            }
+                            else
+                            {
+                                cate.Add(item); // insere novo
+                            }
+                        }
                     }
 
+                    manga.Genres = cate;
                     _db.Mangas.Add(manga);
                 }
+                
 
                 await _db.SaveChangesAsync();
                 return ResponseFactory.CreateInstance().CreateSuccessResponse();
@@ -286,6 +322,28 @@ namespace DataAccessLayer.Implementations
             {
                 return ResponseFactory.CreateInstance().CreateFailedResponse(ex);
             }
+        }
+
+        public async Task<DataResponse<int>> GetMissingMalIds()
+        {
+            // Pega todos os MalIds já salvos no banco
+            var existingIds = await _db.Mangas
+                .Select(a => a.MalId)
+                .ToListAsync();
+
+            // Garante que não tenha null
+            //existingIds = existingIds.Where(id => id.HasValue).Select(id => id.Value).ToList();
+
+            // Descobre o maior MalId já salvo no banco
+            int maxMalId = existingIds.Count > 0 ? existingIds.Max() : 0;
+
+            // 🔹 Gera a lista de MalIds esperados (de 1 até o maior encontrado no banco ou até um limite pré-definido)
+            var expectedIds = Enumerable.Range(1, maxMalId).ToList();
+
+            // Faz a diferença entre o esperado e o existente
+            var missingIds = expectedIds.Except(existingIds).ToList();
+
+            return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(missingIds);
         }
     }
 }

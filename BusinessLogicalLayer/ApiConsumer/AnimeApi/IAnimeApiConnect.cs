@@ -8,6 +8,7 @@ namespace BusinessLogicalLayer.ApiConsumer.AnimeApi
 {
     public interface IAnimeApiConnect
     {
+        Task ConsumeMissingAnimes();
         Task ConsumeAnime();
     }
 }
