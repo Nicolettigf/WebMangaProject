@@ -1,10 +1,8 @@
-using BusinessLogicalLayer.ApiConsumer.AnimeApi;
-using BusinessLogicalLayer.ApiConsumer.CategoryApi;
 using BusinessLogicalLayer.ApiConsumer.MangaApi;
-using BusinessLogicalLayer.ApiConsumer.NovaPasta;
 using BusinessLogicalLayer.Implementations;
 using BusinessLogicalLayer.Implementations.UserComentaryService;
 using BusinessLogicalLayer.Implementations.UserItemService;
+using BusinessLogicalLayer.Interfaces;
 using BusinessLogicalLayer.Interfaces.IAnimeInterfaces;
 using BusinessLogicalLayer.Interfaces.IMangaInterfaces;
 using BusinessLogicalLayer.Interfaces.IUserComentaryService;
@@ -79,9 +77,8 @@ builder.Services.AddSingleton<IMangaProjectApiMangaItem, MangaProjectApiMangaIte
 
 #endregion
 
-builder.Services.AddTransient<ICategoryApiConnect, CategoryApiConnect>();
-builder.Services.AddTransient<IMangaApi, MangaApi>();
-builder.Services.AddTransient<IAnimeApiConnect, AnimeApi>();
+builder.Services.AddTransient<IJikanApi, JikanApi>();
+
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddDbContext<MangaProjectDbContext>(options => options.UseSqlServer("name=ConnectionStrings:SqlServerMangaProjectConnection"));

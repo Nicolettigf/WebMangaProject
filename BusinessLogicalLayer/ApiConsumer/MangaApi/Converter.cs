@@ -1,6 +1,6 @@
 ﻿using Entities.MangaS;
 
-namespace BusinessLogicalLayer.ApiConsumer.MangaApi
+namespace BusinessLogicalLayer.ApiConsumer.Converter
 {
     public class MangaConverter
     {
@@ -8,7 +8,6 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
         {
             if (item == null) return null;
 
-            // Criando Manga
             Manga manga = new()
             {
                 Id = Convert.ToInt32(item.mal_id),
@@ -28,22 +27,18 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 Chapters = item.chapters,
                 Volumes = item.volumes,
                 Publishing = item.publishing,
-                PublishedFrom = item.published?.from != null ? item.published.from : (DateTime?)null,
-                PublishedTo = item.published?.to != null ? item.published.to : (DateTime?)null,
+                PublishedFrom = item.published?.from,
+                PublishedTo = item.published?.to,
 
-                // Imagens
-                JpgImageUrl = item.images?.jpg?.image_url,
-                JpgSmallImageUrl = item.images?.jpg?.small_image_url,
-                JpgLargeImageUrl = item.images?.jpg?.large_image_url,
-                WebpImageUrl = item.images?.webp?.image_url,
-                WebpSmallImageUrl = item.images?.webp?.small_image_url,
-                WebpLargeImageUrl = item.images?.webp?.large_image_url
+                JpgImageUrl =       item.GetImageUrl("jpg", "default"),
+                JpgSmallImageUrl =  item.GetImageUrl("jpg", "small"),
+                JpgLargeImageUrl =  item.GetImageUrl("jpg", "large"),
+                WebpImageUrl =      item.GetImageUrl("webp", "default"),
+                WebpSmallImageUrl = item.GetImageUrl("webp", "small"),
+                WebpLargeImageUrl = item.GetImageUrl("webp", "large")
             };
 
-            #region Referências do Manga
-
-            // Authors
-            manga.Authors = item.authors?.Select(a => new Entities.MangaS.Author
+            manga.Authors = item.MapList(item.authors, a => new Entities.MangaS.Author
             {
                 MangaId = manga.MalId,
                 Manga = manga,
@@ -51,10 +46,9 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 type = a.type,
                 name = a.name,
                 url = a.url
-            }).ToList() ?? new List<Entities.MangaS.Author>();
+            });
 
-            // Serializations
-            manga.Serializations = item.serializations?.Select(s => new Entities.MangaS.Serialization
+            manga.Serializations = item.MapList(item.serializations, s => new Entities.MangaS.Serialization
             {
                 MangaId = manga.MalId,
                 Manga = manga,
@@ -62,14 +56,17 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 type = s.type,
                 name = s.name,
                 url = s.url
-            }).ToList() ?? new List<Entities.MangaS.Serialization>();
+            });
 
-            #endregion
+            MapMediaBaseReferences(item, manga);
 
-            #region MediaBase References
+            return manga;
+        }
 
-            // Themes
-            manga.Themes = item.themes?.Select(t => new Entities.MediaBase.Theme
+
+        private static void MapMediaBaseReferences(MediaDto item, Manga manga)
+        {
+            manga.Themes = item.MapList(item.themes, t => new Entities.MediaBase.Theme
             {
                 MangaId = manga.MalId,
                 Manga = manga,
@@ -77,41 +74,34 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                 Type = t.type,
                 Name = t.name,
                 Url = t.url
-            }).ToList() ?? new List<Entities.MediaBase.Theme>();
+            });
 
-            // ExplicitGenres
-            manga.ExplicitGenres = item.explicit_genres?.Select(e => new Entities.MediaBase.ExplicitGenre
-            {
-                MangaId = manga.MalId,
-                Manga = manga,
-                MalId = e.mal_id,
-                Type = e.type,
-                Name = e.name
-            }).ToList() ?? new List<Entities.MediaBase.ExplicitGenre>();
-
-            // Demographics
-            manga.Demographics = item.demographics?.Select(d => new Entities.MediaBase.Demographic
-            {
-                MangaId = manga.MalId,
-                Manga = manga,
-                MalId = d.mal_id,
-                Type = d.type,
-                Name = d.name
-            }).ToList() ?? new List<Entities.MediaBase.Demographic>();
-
-            // Genres
-            manga.Genres = item.genres?.Select(g => new Entities.MediaBase.Genre
+            manga.Genres = item.MapList(item.genres, g => new Entities.MediaBase.Genre
             {
                 MangaId = manga.MalId,
                 Manga = manga,
                 MalId = g.mal_id,
                 Type = g.type,
                 Name = g.name
-            }).ToList() ?? new List<Entities.MediaBase.Genre>();
+            });
 
-            #endregion
+            manga.ExplicitGenres = item.MapList(item.explicit_genres, e => new Entities.MediaBase.ExplicitGenre
+            {
+                MangaId = manga.MalId,
+                Manga = manga,
+                MalId = e.mal_id,
+                Type = e.type,
+                Name = e.name
+            });
 
-            return manga;
+            manga.Demographics = item.MapList(item.demographics, d => new Entities.MediaBase.Demographic
+            {
+                MangaId = manga.MalId,
+                Manga = manga,
+                MalId = d.mal_id,
+                Type = d.type,
+                Name = d.name
+            });
         }
     }
 }

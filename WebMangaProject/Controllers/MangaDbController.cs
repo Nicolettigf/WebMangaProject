@@ -1,8 +1,5 @@
 ﻿using AutoMapper;
-using BusinessLogicalLayer.ApiConsumer.AnimeApi;
-using BusinessLogicalLayer.ApiConsumer.CategoryApi;
-using BusinessLogicalLayer.ApiConsumer.MangaApi;
-using BusinessLogicalLayer.Interfaces.IMangaInterfaces;
+using BusinessLogicalLayer.Interfaces;
 using Entities.MangaS;
 using Microsoft.AspNetCore.Mvc;
 using MvcPresentationLayer.Apis.MangaProjectApi.Mangas;
@@ -15,16 +12,12 @@ namespace MvcPresentationLayer.Controllers
     {
         private readonly IMangaProjectApiMangaService _mangaApiService;
         private readonly IMapper _mapper;
-        private readonly IMangaApi _apiService;
-        private readonly ICategoryApiConnect _CateApi;
-        private readonly IAnimeApiConnect _animeApi;
-        public MangaDbController(IMangaProjectApiMangaService svc, IMapper mapper, IMangaApi connect, ICategoryApiConnect CateApi, IAnimeApiConnect animeApi)
+        private readonly IJikanApi _JikanApi;
+        public MangaDbController(IMangaProjectApiMangaService svc, IMapper mapper, IJikanApi JikanApi)
         {
-            this._animeApi = animeApi;
-            this._CateApi = CateApi;
             this._mangaApiService = svc;
             this._mapper = mapper;
-            this._apiService = connect;
+            this._JikanApi = JikanApi;
         }
         public async Task<IActionResult> Index()
         {
@@ -43,9 +36,9 @@ namespace MvcPresentationLayer.Controllers
         }
         public async Task<IActionResult> ConsumirApi()
         {
-            await _CateApi.CovertiCatego();
-            await _animeApi.ConsumeAnime();
-            await _apiService.Consume();
+            await _JikanApi.ConsumeGenre();
+            await _JikanApi.ConsumeAnime();
+            await _JikanApi.ConsumeManga();
             
             return RedirectToAction("Index");
         }

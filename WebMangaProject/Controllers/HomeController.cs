@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
-using BusinessLogicalLayer.ApiConsumer.AnimeApi;
-using BusinessLogicalLayer.ApiConsumer.CategoryApi;
-using BusinessLogicalLayer.ApiConsumer.MangaApi;
+using BusinessLogicalLayer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using MvcPresentationLayer.Models.AnimeModel;
 using MvcPresentationLayer.Models.HomePage;
@@ -18,28 +16,22 @@ namespace MvcPresentationLayer.Controllers
     {
         private readonly IMapper _mapper;
         private readonly ICacheService _cacheService;
-        private readonly IAnimeApiConnect _AnimeApi;
-        private readonly IMangaApi _ApiConnect;
-        private readonly ICategoryApiConnect _CategoryApiConnect;
-
+        private readonly IJikanApi _JikanApi;
         
-        public HomeController(IMapper mapper, ICacheService cacheService, IAnimeApiConnect AnimeApi,
-            IMangaApi ApiConnect, ICategoryApiConnect CategoryApiConnect)
+        public HomeController(IMapper mapper, ICacheService cacheService, IJikanApi JikanApi)
         {
             this._mapper = mapper;
             this._cacheService = cacheService;
-            this._ApiConnect = ApiConnect;
-            this._AnimeApi = AnimeApi;
-            this._CategoryApiConnect = CategoryApiConnect;
+            this._JikanApi = JikanApi;
         }
 
         public async Task<IActionResult> Index()
         {
-            await _ApiConnect.ConsumeMissingMangas();
-            await _AnimeApi.ConsumeMissingAnimes();
-            //await _CategoryApiConnect.CovertiCatego();
-            //await _ApiConnect.Consume();
-            //await _AnimeApi.ConsumeAnime();
+            await _JikanApi.ConsumeManga();
+            await _JikanApi.ConsumeAnime();
+            await _JikanApi.ConsumeMissingAnime();
+            await _JikanApi.ConsumeMissingMangas();
+            await _JikanApi.ConsumeGenre();
 
 
             var responseAnimesFavorites = await _cacheService.GetTop7AnimesCatalogByFavorites();

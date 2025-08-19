@@ -7,6 +7,38 @@ namespace Entities
     // Entidade base para elementos comuns entre Anime e Manga
     public abstract class MediaBase : Entity
     {
+        //public void PreencherBase(Shared.MediaDto dto)
+        //{
+        //    Themes = dto.MapList(dto.themes, t => new Theme
+        //    {
+        //        MalId = t.mal_id,
+        //        Type = t.type,
+        //        Name = t.name,
+        //        Url = t.url
+        //    });
+
+        //    Genres = dto.MapList(dto.genres, g => new Genre
+        //    {
+        //        MalId = g.mal_id,
+        //        Type = g.type,
+        //        Name = g.name
+        //    });
+
+        //    ExplicitGenres = dto.MapList(dto.explicit_genres, e => new ExplicitGenre
+        //    {
+        //        MalId = e.mal_id,
+        //        Type = e.type,
+        //        Name = e.name
+        //    });
+
+        //    Demographics = dto.MapList(dto.demographics, d => new Demographic
+        //    {
+        //        MalId = d.mal_id,
+        //        Type = d.type,
+        //        Name = d.name
+        //    });
+        //}
+
         public int MalId { get; set; }
         public string? Url { get; set; }
         public bool? Approved { get; set; }
@@ -60,7 +92,6 @@ namespace Entities
 
         public class Theme : BaseClassesApi { }
 
-       
     }
     public abstract class BaseClassesApi
     {
@@ -75,4 +106,6 @@ namespace Entities
         public string? Url { get; set; }
 
     }
+
+
 }

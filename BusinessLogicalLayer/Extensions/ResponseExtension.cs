@@ -9,7 +9,8 @@ using System.Threading.Tasks;
 
 namespace BLL.Extensions
 {
-    //MÉTODOS DE EXTENSÃO - UTILIDADE: Diminuir a quantidade de objetos que o programador precisa gravar, criando a ilusão que determinados objetos possuem métodos. (que na realidade não são deles)
+    //MÉTODOS DE EXTENSÃO - UTILIDADE: Diminuir a quantidade de objetos que o programador precisa gravar,
+    //criando a ilusão que determinados objetos possuem métodos. (que na realidade não são deles)
 
     //Regras: 1)O método deve estar em uma classe static
     //        2)O método deve ser static
