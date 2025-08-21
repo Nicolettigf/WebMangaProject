@@ -1,5 +1,4 @@
-﻿using BLL.Extensions;
-using BusinessLogicalLayer.Interfaces.IUserInterfaces;
+﻿using BusinessLogicalLayer.Interfaces.IUserInterfaces;
 using BusinessLogicalLayer.Utilities;
 using BusinessLogicalLayer.Validators.User;
 using DataAccessLayer.UnitOfWork;
@@ -8,6 +7,8 @@ using Entities.UserS;
 using Shared;
 using Shared.Models.User;
 using Shared.Responses;
+using Shared.Extensions;
+
 
 namespace BusinessLogicalLayer.Implementations
 {

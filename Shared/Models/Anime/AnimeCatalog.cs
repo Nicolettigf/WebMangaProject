@@ -7,13 +7,15 @@ namespace Shared.Models.Anime
     {
         public int Id { get; set; }
         public string canonicalTitle { get; set; }
-        public string? JpgLargeImageUrl { get; set; }
+        public string? WebpLargeImageUrl { get; set; }
+
+        public string ListType { get; set; }
 
         public static Expression<Func<Entities.AnimeS.Anime, AnimeCatalog>> Projection => x => new AnimeCatalog()
         {
             Id = x.Id,
             canonicalTitle = x.Title,
-            JpgLargeImageUrl = x.JpgLargeImageUrl
+            WebpLargeImageUrl = x.WebpLargeImageUrl
         };
     }
 

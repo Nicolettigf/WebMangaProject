@@ -1,13 +1,8 @@
 ﻿using FluentValidation.Results;
-using Shared;
 using Shared.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace BLL.Extensions
+namespace Shared.Extensions
 {
     //MÉTODOS DE EXTENSÃO - UTILIDADE: Diminuir a quantidade de objetos que o programador precisa gravar,
     //criando a ilusão que determinados objetos possuem métodos. (que na realidade não são deles)
@@ -16,7 +11,7 @@ namespace BLL.Extensions
     //        2)O método deve ser static
     //        3)O primeiro parâmetro do método deve conter a palavra "this" seguida do objeto que queremos estender
 
-    internal static class ResponseExtension
+    public static class ResponseExtension
     {
         public static Response ConvertToResponse(this ValidationResult result)
         {
@@ -38,6 +33,7 @@ namespace BLL.Extensions
             response.Message = builder.ToString();
             return response;
         }
-
     }
+
+    
 }

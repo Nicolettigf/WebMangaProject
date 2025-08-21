@@ -23,6 +23,10 @@ namespace BusinessLogicalLayer.Implementations
             await _unitOfWork.MangaRepository.Insert(manga);
             return await _unitOfWork.Commit();
         }
+        public async Task<Response> InsertRange(IEnumerable<Manga> items)
+        {
+            return await _unitOfWork.MangaRepository.InsertRange(items);
+        }
 
         public async Task<Response> Update(Manga manga)
         { 
@@ -96,10 +100,6 @@ namespace BusinessLogicalLayer.Implementations
             return await _unitOfWork.MangaRepository.GetByPopularity(skip, take);
         }
 
-        public async Task<Response> InsertRange(IEnumerable<Manga> items)
-        {
-            return await _unitOfWork.MangaRepository.InsertRange(items);
-        }
 
         public async Task<DataResponse<int>> GetMissingMalIds()
         {

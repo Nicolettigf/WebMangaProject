@@ -27,46 +27,41 @@ namespace MvcPresentationLayer.Controllers
 
         public async Task<IActionResult> Index()
         {
-            await _JikanApi.ConsumeManga();
-            await _JikanApi.ConsumeAnime();
-            await _JikanApi.ConsumeMissingAnime();
-            await _JikanApi.ConsumeMissingMangas();
-            await _JikanApi.ConsumeGenre();
+            //await _JikanApi.ConsumeManga();
+            //await _JikanApi.ConsumeAnime();
+            //await _JikanApi.ConsumeMissingAnime();
+            //await _JikanApi.ConsumeMissingMangas();
+            //await _JikanApi.ConsumeGenre();
+            var HomeAnimeEMangas = await _cacheService.GetTopAnimeMangaAsync(7,7);
+
+            //var responseAnimesFavorites = await _cacheService.GetTop7AnimesCatalogByFavorites();
+            //var responseAnimesByCount = await _cacheService.GetTop7AnimesCatalogByUserCount();
+            //var responseAnimesByRating = await _cacheService.GetTop7AnimesCatalogByRating();
 
 
-            var responseAnimesFavorites = await _cacheService.GetTop7AnimesCatalogByFavorites();
-            var responseAnimesByCount = await _cacheService.GetTop7AnimesCatalogByUserCount();
-            var responseAnimesByRating = await _cacheService.GetTop7AnimesCatalogByRating();
-
-            if (!responseAnimesFavorites.HasSuccess || !responseAnimesByCount.HasSuccess || !responseAnimesByRating.HasSuccess)
+            if (!HomeAnimeEMangas.HasSuccess)
             {
-                return BadRequest(responseAnimesFavorites);
+                return BadRequest(HomeAnimeEMangas);
             }
 
-            List<AnimeShortViewModel> animesFavorites =
-                _mapper.Map<List<AnimeShortViewModel>>(responseAnimesFavorites.Data);
+            List<AnimeShortViewModel> animesFavorites = _mapper.Map<List<AnimeShortViewModel>>(HomeAnimeEMangas.Item.TopAnimeByFavorites);
+            List<AnimeShortViewModel> animesByCount =_mapper.Map<List<AnimeShortViewModel>>(HomeAnimeEMangas.Item.TopAnimeByMembers);
+            List<AnimeShortViewModel> animesByRating = _mapper.Map<List<AnimeShortViewModel>>(HomeAnimeEMangas.Item.TopAnimeByRank);
 
-            List<AnimeShortViewModel> animesByCount =
-                _mapper.Map<List<AnimeShortViewModel>>(responseAnimesByCount.Data);
+            //DataResponse<MangaCatalog> responseMangaFavorites = await _cacheService.GetTop7MangasCatalogByFavorites();
+            //DataResponse<MangaCatalog> responseMangaCount = await _cacheService.GetTop7MangasCatalogByUserCount();
+            //DataResponse<MangaCatalog> responseMangaRating = await _cacheService.GetTop7MangasCatalogByRating();
 
-            List<AnimeShortViewModel> animesByRating = _mapper.Map<List<AnimeShortViewModel>>(responseAnimesByRating.Data);
-
-            DataResponse<MangaCatalog> responseMangaFavorites = await _cacheService.GetTop7MangasCatalogByFavorites();
-            DataResponse<MangaCatalog> responseMangaCount = await _cacheService.GetTop7MangasCatalogByUserCount();
-            DataResponse<MangaCatalog> responseMangaRating = await _cacheService.GetTop7MangasCatalogByRating();
-
-            if (!responseMangaFavorites.HasSuccess || !responseMangaCount.HasSuccess || !responseMangaRating.HasSuccess)
+            if (!HomeAnimeEMangas.HasSuccess)
             {
-                return BadRequest(responseMangaFavorites);
+                return BadRequest(HomeAnimeEMangas);
             }
 
-            List<MangaShortViewModel> MangaFavorite =
-                _mapper.Map<List<MangaShortViewModel>>(responseMangaFavorites.Data);
+            List<MangaShortViewModel> MangaFavorite = _mapper.Map<List<MangaShortViewModel>>(HomeAnimeEMangas.Item.TopMangaByFavorites);
 
-            List<MangaShortViewModel> MangaCount =
-                _mapper.Map<List<MangaShortViewModel>>(responseMangaCount.Data);
+            List<MangaShortViewModel> MangaCount = _mapper.Map<List<MangaShortViewModel>>(HomeAnimeEMangas.Item.TopMangaByMembers);
 
-            List<MangaShortViewModel> MangaRating = _mapper.Map<List<MangaShortViewModel>>(responseMangaRating.Data);
+            List<MangaShortViewModel> MangaRating = _mapper.Map<List<MangaShortViewModel>>(HomeAnimeEMangas.Item.TopMangaByRank);
 
             HomePageViewModel homePageViewModel = new()
             {

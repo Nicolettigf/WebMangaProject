@@ -17,6 +17,7 @@ namespace DataAccessLayer.Implementations
         {
             this._db = db;
         }
+
         public async Task<Response> Insert(Anime Anime)
         {
             List<Genre> Cate = new();
@@ -193,7 +194,6 @@ namespace DataAccessLayer.Implementations
                 return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(ex);
             }
         }
-
         public async Task<DataResponse<AnimeCatalog>> GetByUserCount(int skip, int take)
         {
             try
@@ -297,7 +297,7 @@ namespace DataAccessLayer.Implementations
                 .ToListAsync();
 
             // Garante que não tenha null
-           // existingIds = existingIds.Where(id => id.HasValue).Select(id => id.Value).ToList();
+            // existingIds = existingIds.Where(id => id.HasValue).Select(id => id.Value).ToList();
 
             // Descobre o maior MalId já salvo no banco
             int maxMalId = existingIds.Count > 0 ? existingIds.Max() : 0;

@@ -5,7 +5,7 @@
         public static readonly string IdNotNullMessage = "ID deve ser informado.";
         public static NicknameConstants Nickname = new(); 
         public static PasswordConstants Password = new(); 
-        public static CacheKey CacheKey  = new(); 
+        public static CacheKey CacheKey  = new();
 
         public const int EmailMaxLength = 256; // RFC 5321
 
@@ -16,6 +16,19 @@
         public MangaCacheKey Manga = new();
 
     }
+    public class GetTopAnimeMangaCacheKey
+    {
+        public readonly string Key;
+
+        public GetTopAnimeMangaCacheKey(int skip, int take)
+        {
+            // Cria uma chave única por skip/take
+            Key = $"GetTopAnimeMangaAsync_{skip}_{take}";
+        }
+
+        public override string ToString() => Key;
+    }
+
     public class AnimeCacheKey
     {
         public readonly string GetTop7AnimesCatalogByUserCount;

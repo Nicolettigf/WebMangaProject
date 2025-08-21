@@ -12,6 +12,7 @@ using DataAccessLayer;
 using DataAccessLayer.Implementations;
 using DataAccessLayer.Implementations.UserComentaryDAL;
 using DataAccessLayer.Implementations.UserItemDAL;
+using DataAccessLayer.Interfaces;
 using DataAccessLayer.Interfaces.IAnimeInterfaces;
 using DataAccessLayer.Interfaces.IMangaInterfaces;
 using DataAccessLayer.Interfaces.IUserComentary;
@@ -48,6 +49,8 @@ builder.Services.AddTransient<IUserMangaItemService, UserMangaItemService>();
 builder.Services.AddTransient<IUserAnimeItemService, UserAnimeItemService>();
 builder.Services.AddTransient<IMangaComentary, MangaComentaryService>();
 builder.Services.AddTransient<IAnimeComentary, AnimeComentaryService>();
+builder.Services.AddTransient<IHomeService, HomeService>();
+
 
 builder.Services.AddTransient<ICacheService, CacheService>();
 
@@ -55,7 +58,7 @@ builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 
 #endregion
 #region DAL
-
+builder.Services.AddTransient<IHomeDAL, HomeDal>();
 builder.Services.AddTransient<IMangaDAL, MangaDAL>();
 builder.Services.AddTransient<IUserDAL, UserDAL>();
 builder.Services.AddTransient<IAnimeDAL, AnimeDAL>();

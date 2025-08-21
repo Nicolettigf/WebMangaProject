@@ -7,6 +7,6 @@ namespace MvcPresentationLayer.Models.AnimeModel
     {
         public int Id { get; set; }
         public string canonicalTitle { get; set; }
-        public string? AnimePosterImage { get; set; }
+        public string? WebpLargeImageUrl { get; set; }
     }
 }

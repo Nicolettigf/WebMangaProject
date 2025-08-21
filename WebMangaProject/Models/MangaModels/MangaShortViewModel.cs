@@ -7,6 +7,6 @@ namespace MvcPresentationLayer.Models.MangaModels
     {
         public int Id { get; set; }
         public string CanonicalTitle { get; set; }
-        public string PosterImageLink { get; set; }
+        public string WebpLargeImageUrl { get; set; }
     }
 }

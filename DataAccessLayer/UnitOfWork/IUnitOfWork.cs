@@ -1,4 +1,5 @@
-﻿using DataAccessLayer.Interfaces.IAnimeInterfaces;
+﻿using DataAccessLayer.Interfaces;
+using DataAccessLayer.Interfaces.IAnimeInterfaces;
 using DataAccessLayer.Interfaces.IMangaInterfaces;
 using DataAccessLayer.Interfaces.IUserComentary;
 using DataAccessLayer.Interfaces.IUSerInterfaces;
@@ -11,6 +12,7 @@ namespace DataAccessLayer.UnitOfWork
     {
         IUserDAL UserRepository { get; }
         IMangaDAL MangaRepository { get; }
+        IHomeDAL HomeRepository { get; }
         IAnimeDAL AnimeRepository { get; }
 
         IUserMangaItemDAL UserMangaItemRepository { get; }

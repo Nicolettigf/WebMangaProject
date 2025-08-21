@@ -52,17 +52,7 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
 
                     if (dtos.Count > 0)
                     {
-                        using (var scope = _scopeFactory.CreateScope())
-                        {
-                            var mangaService = scope.ServiceProvider.GetRequiredService<IMangaService>();
-
-                            var mangaEntities = dtos.Select(dto => MangaConverter.ConvertDTOToManga(dto))
-                                                                                 .OfType<Manga>()
-                                                                                 .ToList();
-
-
-                            await mangaService.InsertRange(mangaEntities);
-                        }
+                        await _mangaService.InsertRange(mangaEntities);
                     }
 
                     Console.WriteLine($"✅ Página {page} processada ({dtos.Count} mangas)");

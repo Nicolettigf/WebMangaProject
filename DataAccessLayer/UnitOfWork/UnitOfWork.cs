@@ -2,6 +2,7 @@
 using DataAccessLayer.Implementations;
 using DataAccessLayer.Implementations.UserComentaryDAL;
 using DataAccessLayer.Implementations.UserItemDAL;
+using DataAccessLayer.Interfaces;
 using DataAccessLayer.Interfaces.IAnimeInterfaces;
 using DataAccessLayer.Interfaces.IMangaInterfaces;
 using DataAccessLayer.Interfaces.IUserComentary;
@@ -15,6 +16,7 @@ namespace DataAccessLayer.UnitOfWork
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly MangaProjectDbContext _dbContext;
+        private IHomeDAL homeRepository = null;
         private IUserDAL userRepository = null;
         private IMangaDAL mangaRepository = null;
         private IAnimeDAL animeRepository = null;
@@ -137,6 +139,18 @@ namespace DataAccessLayer.UnitOfWork
                     animeComentaryRepository = new AnimeComentaryDAL(_dbContext);
                 }
                 return animeComentaryRepository;
+            }
+        }
+
+        public IHomeDAL HomeRepository
+        {
+            get
+            {
+                if (homeRepository == null)
+                {
+                    homeRepository = new HomeDal(_dbContext);
+                }
+                return homeRepository;
             }
         }
 

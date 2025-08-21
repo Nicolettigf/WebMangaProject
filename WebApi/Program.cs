@@ -53,6 +53,7 @@ builder.Services.AddSingleton<ILog>(LogManager.GetLogger(typeof(object)));
 builder.Services.AddDbContext<MangaProjectDbContext>(options => options.UseSqlServer("name=ConnectionStrings:SqlServerMangaProjectConnection"));
 
 
+
 builder.Services.AddCors();
 var key = Encoding.ASCII.GetBytes(Settings.Secret);
 builder.Services.AddAuthentication(x =>
@@ -99,5 +100,14 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using var scope = app.Services.CreateScope();
+var db = scope.ServiceProvider.GetRequiredService<MangaProjectDbContext>();
+
+if (db.Database.EnsureCreated())
+{
+    // O banco acabou de ser criado, criar as procedures
+    db.Database.ExecuteSqlRaw(Procedures.GetTopAnimeManga);
+}
 
 app.Run();

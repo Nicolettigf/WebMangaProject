@@ -11,13 +11,14 @@ namespace Shared.Models.Manga
     {
         public int Id { get; set; }
         public string CanonicalTitle { get; set; }
-        public string JpgLargeImageUrl { get; set; }
+        public string WebpLargeImageUrl { get; set; }
 
+        public string ListType { get; set; } // <- adiciona aqui
         public static Expression<Func<Entities.MangaS.Manga, MangaCatalog>> Projection => x => new MangaCatalog()
         {
             Id = x.Id,
             CanonicalTitle = x.Title,
-            JpgLargeImageUrl = x.JpgLargeImageUrl
+            WebpLargeImageUrl = x.WebpLargeImageUrl
         };
     }
 }

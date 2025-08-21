@@ -1,11 +1,15 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using BusinessLogicalLayer.Interfaces;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Caching.Distributed;
 using MvcPresentationLayer.Apis.MangaProjectApi.Animes;
 using MvcPresentationLayer.Apis.MangaProjectApi.Mangas;
 using Newtonsoft.Json;
 using Shared;
+using Shared.DTOS;
 using Shared.Models.Anime;
 using Shared.Models.Manga;
 using Shared.Responses;
+using System.Data;
 
 namespace MvcPresentationLayer.Utilities
 {
@@ -14,12 +18,16 @@ namespace MvcPresentationLayer.Utilities
         private readonly IMangaProjectApiAnimeService _animeApiService;
         private readonly IMangaProjectApiMangaService _mangaApiService;
         private readonly IDistributedCache _distributedCache;
+        private readonly IHomeService _IHomeService;
 
-        public CacheService(IMangaProjectApiAnimeService animeService, IMangaProjectApiMangaService mangaService, IDistributedCache cache)
+
+        public CacheService(IMangaProjectApiAnimeService animeService, IMangaProjectApiMangaService mangaService,
+                            IDistributedCache cache, IHomeService homeService)
         {
             _animeApiService = animeService;
             _mangaApiService = mangaService;
             _distributedCache = cache;
+            _IHomeService = homeService;
         }
 
         //animes
@@ -139,16 +147,45 @@ namespace MvcPresentationLayer.Utilities
                 return response;
             }
         }
+
+        public async Task<SingleResponse<Top7Data>> GetTopAnimeMangaAsync(int skip, int take)
+        {
+            var cacheKey = new GetTopAnimeMangaCacheKey(skip, take).ToString();
+            var json = await _distributedCache.GetStringAsync(cacheKey);
+
+            if (json != null)
+            {
+                var cachedData = JsonConvert.DeserializeObject<Top7Data>(json);
+                return ResponseFactory.CreateInstance().CreateSuccessSingleResponse<Top7Data>(cachedData);
+            }
+            else
+            {
+                var data = await _IHomeService.GetTopAnimeManga(skip, take);
+
+                if (data != null)
+                {
+                    json = JsonConvert.SerializeObject(data.Item);
+                    await _distributedCache.SetStringAsync(cacheKey, json, new DistributedCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(30)
+                    });
+                }
+
+                return ResponseFactory.CreateInstance().CreateSuccessSingleResponse<Top7Data>(data.Item);
+            }
+        }
     }
 
     public interface ICacheService
     {
+        Task<SingleResponse<Top7Data>> GetTopAnimeMangaAsync(int skip, int take);
         Task<DataResponse<AnimeCatalog>> GetTop7AnimesCatalogByFavorites();
         Task<DataResponse<AnimeCatalog>> GetTop7AnimesCatalogByUserCount();
         Task<DataResponse<AnimeCatalog>> GetTop7AnimesCatalogByRating();
-
         Task<DataResponse<MangaCatalog>> GetTop7MangasCatalogByFavorites();
         Task<DataResponse<MangaCatalog>> GetTop7MangasCatalogByUserCount();
         Task<DataResponse<MangaCatalog>> GetTop7MangasCatalogByRating();
     }
+
+
 }
