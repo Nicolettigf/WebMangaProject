@@ -39,7 +39,7 @@ namespace DataAccessLayer.Implementations
                     else
                     {
                         // Busca no banco
-                        category = await _db.Categories.FirstOrDefaultAsync(c => c.MalId == item.MalId);
+                        category = await _db.Genre.FirstOrDefaultAsync(c => c.MalId == item.MalId);
                         if (category != null)
                         {
                             cate.Add(category); // associa entidade existente
@@ -93,40 +93,30 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
+                // Cache local para evitar múltiplas consultas ao banco
+                var genreCache = _db.Genre.ToDictionary(g => g.MalId);
+
                 foreach (var manga in items)
                 {
-                    ICollection<Genre> cate = new List<Genre>();
+                    var cate = new List<Genre>();
 
                     foreach (var item in manga.Genres)
                     {
-                        // Tenta pegar do contexto já carregado
-                        var category = _db.ChangeTracker.Entries<Genre>()
-                                          .FirstOrDefault(e => e.Entity.MalId == item.MalId)?.Entity;
-
-                        if (category != null)
+                        if (genreCache.TryGetValue(item.MalId ?? 0, out var existingGenre))
                         {
-                            cate.Add(category); // já está sendo rastreado
+                            cate.Add(existingGenre);
                         }
                         else
                         {
-                            // Busca no banco
-                            category = await _db.Categories.FirstOrDefaultAsync(c => c.MalId == item.MalId);
-                            if (category != null)
-                            {
-                                cate.Add(category); // associa entidade existente
-                            }
-                            else
-                            {
-                                cate.Add(item); // insere novo
-                            }
+                            cate.Add(item);
+                            genreCache[item.MalId ?? 0] = item; // adiciona ao cache
                         }
                     }
 
                     manga.Genres = cate;
-                    _db.Mangas.Add(manga);
                 }
-                
 
+                _db.Mangas.AddRange(items);
                 await _db.SaveChangesAsync();
                 return ResponseFactory.CreateInstance().CreateSuccessResponse();
             }
@@ -201,7 +191,7 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                _db.Categories.Add(id);
+                _db.Genre.Add(id);
                 //await _db.SaveChangesAsync();
                 return ResponseFactory.CreateInstance().CreateSuccessResponse();
             }
@@ -214,7 +204,7 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                Genre? a = _db.Categories.OrderBy(c => c.Id).LastOrDefault();
+                Genre? a = _db.Genre.OrderBy(c => c.Id).LastOrDefault();
                 return a.Id;
             }
             catch (Exception ex)
@@ -268,7 +258,7 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                Genre? Select = _db.Categories.Include(c => c.MangasID).FirstOrDefault(m => m.Id == ID);
+                Genre? Select = _db.Genre.Include(c => c.MangasID).FirstOrDefault(m => m.Id == ID);
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(Select.MangasID.ToList());
             }
             catch (Exception ex)

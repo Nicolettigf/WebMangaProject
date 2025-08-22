@@ -7,38 +7,6 @@ namespace Entities
     // Entidade base para elementos comuns entre Anime e Manga
     public abstract class MediaBase : Entity
     {
-        //public void PreencherBase(Shared.MediaDto dto)
-        //{
-        //    Themes = dto.MapList(dto.themes, t => new Theme
-        //    {
-        //        MalId = t.mal_id,
-        //        Type = t.type,
-        //        Name = t.name,
-        //        Url = t.url
-        //    });
-
-        //    Genres = dto.MapList(dto.genres, g => new Genre
-        //    {
-        //        MalId = g.mal_id,
-        //        Type = g.type,
-        //        Name = g.name
-        //    });
-
-        //    ExplicitGenres = dto.MapList(dto.explicit_genres, e => new ExplicitGenre
-        //    {
-        //        MalId = e.mal_id,
-        //        Type = e.type,
-        //        Name = e.name
-        //    });
-
-        //    Demographics = dto.MapList(dto.demographics, d => new Demographic
-        //    {
-        //        MalId = d.mal_id,
-        //        Type = d.type,
-        //        Name = d.name
-        //    });
-        //}
-
         public int MalId { get; set; }
         public string? Url { get; set; }
         public bool? Approved { get; set; }
@@ -72,6 +40,7 @@ namespace Entities
         public ICollection<Demographic>? Demographics { get; set; } = new List<Demographic>();
         public ICollection<Genre>? Genres { get; set; } = new List<Genre>();
         public ICollection<Theme>? Themes { get; set; } = new List<Theme>();
+        public ICollection<GenreItem>? GenreItems { get; set; } = new List<GenreItem>();
 
         public class ExplicitGenre : BaseClassesApi { }
 
@@ -79,9 +48,19 @@ namespace Entities
 
         public class Genre : BaseClassesApi
         {
+            [NotMapped]
+            public ICollection<Manga>? MangasID { get; set; }
+
+            [NotMapped]
+            public ICollection<Anime>? AnimesID { get; set; }
+
             public int Count { get; set; }
+        }
 
+        public class Theme : BaseClassesApi { }
 
+        public class GenreItem : BaseClassesApi 
+        {
             [NotMapped]
             public ICollection<Manga>? MangasID { get; set; }
 
@@ -89,8 +68,6 @@ namespace Entities
             public ICollection<Anime>? AnimesID { get; set; }
 
         }
-
-        public class Theme : BaseClassesApi { }
 
     }
     public abstract class BaseClassesApi
@@ -106,6 +83,5 @@ namespace Entities
         public string? Url { get; set; }
 
     }
-
 
 }

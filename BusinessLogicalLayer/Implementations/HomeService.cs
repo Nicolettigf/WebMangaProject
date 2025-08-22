@@ -18,10 +18,10 @@ namespace BusinessLogicalLayer.Implementations
             this._unitOfWork = unitOfWork;
         }
 
-        public async Task<SingleResponse<Top7Data>> GetTopAnimeManga(int skip, int take)
+        public async Task<SingleResponse<HomePageData>> GetTopAnimeManga(int skip, int take)
         {
             using var reader = await _unitOfWork.HomeRepository.GetTopAnimeManga(skip, take);
-            var top7Data = new Top7Data();
+            var top7Data = new HomePageData();
 
             do
             {

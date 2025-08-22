@@ -3,7 +3,7 @@ using Shared.Models.Manga;
 
 namespace Shared.DTOS
 {
-    public class Top7Data
+    public class HomePageData
     {
         public List<AnimeCatalog> TopAnimeByRank { get; set; }
         public List<AnimeCatalog> TopAnimeByMembers { get; set; }

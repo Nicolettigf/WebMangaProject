@@ -1,16 +1,15 @@
-﻿using BusinessLogicalLayer.ApiConsumer.Converter;
-using BusinessLogicalLayer.Implementations;
-using BusinessLogicalLayer.Interfaces;
+﻿using BusinessLogicalLayer.Interfaces;
 using BusinessLogicalLayer.Interfaces.IAnimeInterfaces;
 using BusinessLogicalLayer.Interfaces.IMangaInterfaces;
 using DataAccessLayer;
+using DataAccessLayer.Implementations;
+using DataAccessLayer.Interfaces.IAnimeInterfaces;
 using DataAccessLayer.Interfaces.IMangaInterfaces;
 using Entities.AnimeS;
 using Entities.MangaS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System.Net.Http;
 
 namespace BusinessLogicalLayer.ApiConsumer.MangaApi
 {
@@ -36,8 +35,8 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
             int lastPage;
             using (var scope = _scopeFactory.CreateScope())
             {
-                var mangaService = scope.ServiceProvider.GetRequiredService<IMangaService>();
-                lastPage = await mangaService.GetLastIndex(); // pode ser última página salva
+                var mangaDal = scope.ServiceProvider.GetRequiredService<IMangaDAL>();
+                lastPage = await mangaDal.GetLastIndex(); // pode ser última página salva
             }
 
             int totalPages = (int)Math.Ceiling(LimiteManga / (double)LoteTamanho);
@@ -52,11 +51,19 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
 
                     if (dtos.Count > 0)
                     {
-                        await _mangaService.InsertRange(mangaEntities);
+                        using (var scope = _scopeFactory.CreateScope())
+                        {
+                            var mangaDal = scope.ServiceProvider.GetRequiredService<IMangaDAL>();
+
+                            var mangaEntities = dtos.Select(dto =>
+                            Converter.ConvertDTOToEntity<Manga>(dto)).OfType<Manga>().ToList();
+
+                            await mangaDal.InsertRange(mangaEntities);
+                        }
                     }
 
                     Console.WriteLine($"✅ Página {page} processada ({dtos.Count} mangas)");
-                    await Task.Delay(500);
+                    await Task.Delay(350);
                 }
             }
 
@@ -67,8 +74,8 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
             int lastPage;
             using (var scope = _scopeFactory.CreateScope())
             {
-                var animeService = scope.ServiceProvider.GetRequiredService<IAnimeService>();
-                lastPage = await animeService.GetLastIndex();
+                var animeDal = scope.ServiceProvider.GetRequiredService<IAnimeDAL>();
+                lastPage = await animeDal.GetLastIndex();
             }
 
             int totalPages = (int)Math.Ceiling(LimiteAnime / (double)LoteTamanho);
@@ -84,33 +91,30 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                     {
                         using (var scope = _scopeFactory.CreateScope())
                         {
-                            var animeService = scope.ServiceProvider.GetRequiredService<IAnimeService>();
-                            var animeEntities = new List<Anime>();
+                            var animeDal = scope.ServiceProvider.GetRequiredService<IAnimeDAL>();
 
-                            foreach (var animeDto in animes)
-                            {
-                                var anime = AnimeConverter.ConvertDTOToAnime(animeDto);
-                                animeEntities.Add(anime);
-                            }
+                            var animeEntities = animes.Select(dto =>
+                            Converter.ConvertDTOToEntity<Anime>(dto)).OfType<Anime>().ToList();
 
-                            await animeService.InsertRange(animeEntities);
+                            await animeDal.InsertRange(animeEntities);
                         }
                     }
 
                     Console.WriteLine($"✅ Página {page} processada ({animes.Count} animes)");
 
-                    await Task.Delay(500);
+                    await Task.Delay(350);
                 }
             }
             Console.WriteLine("🏁 Finalizado!");
         }
         public async Task ConsumeMissingAnime()
         {
-            using var scope = _scopeFactory.CreateScope();
-            var animeService = scope.ServiceProvider.GetRequiredService<IAnimeService>();
-
-            // Método no serviço que retorna todos os MalIds faltantes
-            var missingMalIds = await animeService.GetMissingMalIds();
+            var missingMalIds = new Shared.Responses.DataResponse<int>();
+            using (var scope = _scopeFactory.CreateScope())
+            {
+                var animeDal = scope.ServiceProvider.GetRequiredService<IAnimeDAL>();
+               missingMalIds = await animeDal.GetMissingMalIds();
+            }
 
             Console.WriteLine($"📡 {missingMalIds.Data} MAL IDs faltando. Iniciando consumo unitário...");
 
@@ -124,10 +128,15 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
 
                         if (animeDto != null)
                         {
-                            var anime = AnimeConverter.ConvertDTOToAnime(animeDto);
-                            await animeService.Insert(anime);
+                            using (var scope = _scopeFactory.CreateScope())
+                            {
+                                var animeDal = scope.ServiceProvider.GetRequiredService<IAnimeDAL>();
+                                var animelist = new List<Anime>();
 
-                            Console.WriteLine($"✅ Anime {malId} inserido.");
+                                await animeDal.Insert(Converter.ConvertDTOToEntity<Anime>(animeDto));
+
+                                Console.WriteLine($"✅ Anime {malId} inserido.");
+                            }
                         }
                         else
                         {
@@ -140,7 +149,7 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                     }
 
                     // Delay para respeitar o rate limit
-                    await Task.Delay(1500);
+                    await Task.Delay(350);
                 }
             }
 
@@ -165,7 +174,7 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
 
                         if (mangaDto != null)
                         {
-                            var manga = MangaConverter.ConvertDTOToManga(mangaDto);
+                            var manga = Converter.ConvertDTOToEntity<Manga>(mangaDto);
                             await mangaService.Insert(manga);
 
                             Console.WriteLine($"✅ Manga {malId} inserido.");
@@ -180,7 +189,7 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
                         Console.WriteLine($"❌ Erro ao processar MAL ID {malId}: {ex.Message}");
                     }
 
-                    await Task.Delay(1500); // respeitar rate limit
+                    await Task.Delay(350);
                 }
             }
 
@@ -250,7 +259,7 @@ namespace BusinessLogicalLayer.ApiConsumer.MangaApi
 
             foreach (var datum in genresRoot.data)
             {
-                var exists = await _db.Categories.AnyAsync(c => c.MalId == datum.mal_id);
+                var exists = await _db.Genre.AnyAsync(c => c.MalId == datum.mal_id);
                 if (exists) continue;
 
                 var genre = new Entities.MediaBase.Genre

@@ -19,7 +19,7 @@ namespace DataAccessLayer
         public DbSet<UserMangaItem> UserManga { get; set; }
         public DbSet<UserAnimeItem> UserAnime { get; set; }
         public DbSet<MediaRatingFrequency> MediaRatingFrequency { get; set; }
-        public DbSet<Genre> Categories { get; set; }
+        public DbSet<Genre> Genre { get; set; }
         public DbSet<AnimeComentary> AnimeComentaries { get; set; }
         public DbSet<MangaComentary> MangaComentaries { get; set; }
         public MangaProjectDbContext(DbContextOptions<MangaProjectDbContext> options) : base(options) { }
@@ -40,12 +40,24 @@ namespace DataAccessLayer
             modelBuilder.Entity<Manga>().Property(c => c.Id).ValueGeneratedNever();
             modelBuilder.Entity<Genre>().Property(c => c.Id).ValueGeneratedNever();
             modelBuilder.Entity<Anime>().Property(c => c.Id).ValueGeneratedNever();
-
             modelBuilder.Entity<MediaRatingFrequency>().Property(c => c.Id).ValueGeneratedNever();
 
-            //Assembly no contexto do .NET
-            //Carrega os map config que tão criado dentro do projeto (assembly) DAL
+            // Configuração explícita das relações de Genre
+            modelBuilder.Entity<Anime>()
+                .HasMany(a => a.Genres)
+                .WithOne()
+                .HasForeignKey(g => g.AnimeId)
+                .HasPrincipalKey(a => a.Id);
+
+            modelBuilder.Entity<Manga>()
+                .HasMany(m => m.Genres)
+                .WithOne()
+                .HasForeignKey(g => g.MangaId)
+                .HasPrincipalKey(m => m.Id);
+
+            // Carrega todos os mapeamentos criados no assembly
             modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+
             base.OnModelCreating(modelBuilder);
         }
 

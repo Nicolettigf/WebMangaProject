@@ -20,15 +20,70 @@ namespace DataAccessLayer.Implementations
 
         public async Task<Response> Insert(Anime Anime)
         {
-            List<Genre> Cate = new();
+            var genreCache = await _db.Genre.ToDictionaryAsync(g => g.MalId);
             try
             {
-                foreach (var item in Anime.Genres)
+                var cate = new List<Genre>();
+                if (Anime.Genres != null)
                 {
-                    Cate.Add(await _db.Categories.FindAsync(item.Id));
+                    foreach (var item in Anime.Genres)
+                    {
+                        if (item.MalId.HasValue && genreCache.TryGetValue(item.MalId.Value, out var existingGenre))
+                        {
+                            cate.Add(existingGenre); // já existe no banco, usa a entidade rastreada
+                        }
+                        else
+                        {
+                            cate.Add(item);           // novo gênero
+                            if (item.MalId.HasValue)
+                                genreCache[item.MalId.Value] = item; // adiciona ao cache
+                        }
+                    }
                 }
-                Anime.Genres = (ICollection<MediaBase.Genre>)Cate;
+                Anime.Genres = cate;
                 _db.Animes.Add(Anime);
+
+                await _db.SaveChangesAsync();
+                return ResponseFactory.CreateInstance().CreateSuccessResponse();
+            }
+            catch (Exception ex)
+            {
+                return ResponseFactory.CreateInstance().CreateFailedResponse(ex);
+            }
+        }
+        public async Task<Response> InsertRange(IEnumerable<Anime> items)
+        {
+            try
+            {
+                // Carrega todos os gêneros existentes no banco para evitar múltiplas queries
+                var genreCache = await _db.Genre.ToDictionaryAsync(g => g.MalId);
+
+                foreach (var anime in items)
+                {
+                    var cate = new List<Genre>();
+
+                    if (anime.Genres != null)
+                    {
+                        foreach (var item in anime.Genres)
+                        {
+                            if (item.MalId.HasValue && genreCache.TryGetValue(item.MalId.Value, out var existingGenre))
+                            {
+                                cate.Add(existingGenre); // já existe no banco, usa a entidade rastreada
+                            }
+                            else
+                            {
+                                cate.Add(item);           // novo gênero
+                                if (item.MalId.HasValue)
+                                    genreCache[item.MalId.Value] = item; // adiciona ao cache
+                            }
+                        }
+                    }
+
+                    anime.Genres = cate;
+
+                    _db.Animes.Add(anime);
+                }
+
                 await _db.SaveChangesAsync();
                 return ResponseFactory.CreateInstance().CreateSuccessResponse();
             }
@@ -120,7 +175,7 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                Anime? Select = _db.Animes.Include(c => c.Genres).Include(c => c.Comentaries).ThenInclude(u => u.User).Include(r => r.MediaRatingFrequency).FirstOrDefault(m => m.Id == ID);
+                Anime? Select = _db.Animes.Include(d => d.Demographics).Include(c => c.GenreItems).Include(c => c.Comentaries).ThenInclude(u => u.User).Include(r => r.MediaRatingFrequency).FirstOrDefault(m => m.Id == ID);
                 return ResponseFactory.CreateInstance().CreateSuccessSingleResponse<Anime>(Select);
             }
             catch (Exception ex)
@@ -146,7 +201,7 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                Genre? a = _db.Categories.OrderBy(c => c.Id).LastOrDefault();
+                Genre? a = _db.Genre.OrderBy(c => c.Id).LastOrDefault();
                 return a.Id;
             }
             catch (Exception ex)
@@ -218,7 +273,7 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                Genre? Select = _db.Categories.Include(c => c.AnimeId).FirstOrDefault(m => m.Id == ID);
+                Genre? Select = _db.Genre.Include(c => c.AnimeId).FirstOrDefault(m => m.Id == ID);
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(Select.AnimesID.ToList());
             }
             catch (Exception ex)
@@ -247,47 +302,6 @@ namespace DataAccessLayer.Implementations
             }
         }
 
-        public async Task<Response> InsertRange(IEnumerable<Anime> items)
-        {
-            try
-            {
-                foreach (var anime in items)
-                {
-                    // Certifica que anime.Genres é do tipo ICollection<MediaBase.Genre>
-                    ICollection<Genre> cate = new List<Genre>();
-
-                    if (anime.Genres != null)
-                    {
-                        foreach (var item in anime.Genres)
-                        {
-                            // Busca a categoria no banco pelo MalId (opcional)
-                            var category = await _db.Categories.FirstOrDefaultAsync(c => c.MalId == item.MalId);
-                            if (category != null)
-                            {
-                                // Associa com os dados do banco
-                                cate.Add(category);
-                            }
-                            else
-                            {
-                                cate.Add(item);
-                            }
-                        }
-                    }
-
-                    anime.Genres = cate;
-
-                    // Adiciona o anime
-                    _db.Animes.Add(anime);
-                }
-
-                await _db.SaveChangesAsync();
-                return ResponseFactory.CreateInstance().CreateSuccessResponse();
-            }
-            catch (Exception ex)
-            {
-                return ResponseFactory.CreateInstance().CreateFailedResponse(ex);
-            }
-        }
 
         public async Task<DataResponse<int>> GetMissingMalIds()
         {

@@ -1,4 +1,5 @@
-﻿using Entities;
+﻿using DataAccessLayer.Migrations;
+using Entities;
 using Entities.AnimeS;
 using Entities.Enums;
 using static Entities.MediaBase;
@@ -8,31 +9,19 @@ namespace MvcPresentationLayer.Models.AnimeModel
     public class AnimeOnpageViewModel
     {
         public int Id { get; set; }
-        public DateTime? CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public string? Name { get; set; }
+        public DateTime? From { get; set; }
+        public DateTime? To { get; set; }
+        public string? Title { get; set; }
         public string? Synopsis { get; set; }
-        public string? Description { get; set; }
-        public string? CanonicalTitle { get; set; }
-        public string? AverageRating { get; set; }
-        public int? UserCount { get; set; }
-        public int? FavoritesCount { get; set; }
-        public string? StartDate { get; set; }
-        public string? EndDate { get; set; }
-        public int? PopularityRank { get; set; }
-        public int? RatingRank { get; set; }
-        public string? AgeRating { get; set; }
-        public string? AgeRatingGuide { get; set; }
-        public string? Subtype { get; set; }
-        public MangaStatus? Status { get; set; }
-        public string? AnimePosterImage { get; set; }
-        public string? AnimeCoverImage { get; set; }
-        public int? EpisodeCount { get; set; }
-        public int? EpisodeLength { get; set; }
-        public int? TotalLength { get; set; }
-        public string? YoutubeVideoId { get; set; }
-        public string? ShowType { get; set; }
-        public ICollection<Genre> Categories { get; set; }
+        public int? Favorites { get; set; }
+        public int? Popularity { get; set; }
+        public string? Rating { get; set; }
+        public string? Status { get; set; }
+        public string? JpgLargeImageUrl { get; set; }
+        public string? WebpLargeImageUrl { get; set; }
+        public int? Episodes { get; set; }
+        public string? Type { get; set; }
+        public ICollection<GenreItem> GenreItems { get; set; }
         public ICollection<AnimeComentary> Comentaries { get; set; }
     }
 }

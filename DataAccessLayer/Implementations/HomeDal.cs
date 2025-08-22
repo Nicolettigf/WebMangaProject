@@ -31,7 +31,6 @@ namespace DataAccessLayer.Implementations
             takeParam.Value = take;
             command.Parameters.Add(takeParam);
 
-            // Executar com CommandBehavior.CloseConnection para fechar a conexão ao final do reader
             return await command.ExecuteReaderAsync(/*CommandBehavior.CloseConnection*/);
         }
     }

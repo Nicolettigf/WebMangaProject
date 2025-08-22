@@ -148,15 +148,15 @@ namespace MvcPresentationLayer.Utilities
             }
         }
 
-        public async Task<SingleResponse<Top7Data>> GetTopAnimeMangaAsync(int skip, int take)
+        public async Task<SingleResponse<HomePageData>> GetTopAnimeMangaAsync(int skip, int take)
         {
             var cacheKey = new GetTopAnimeMangaCacheKey(skip, take).ToString();
             var json = await _distributedCache.GetStringAsync(cacheKey);
 
             if (json != null)
             {
-                var cachedData = JsonConvert.DeserializeObject<Top7Data>(json);
-                return ResponseFactory.CreateInstance().CreateSuccessSingleResponse<Top7Data>(cachedData);
+                var cachedData = JsonConvert.DeserializeObject<HomePageData>(json);
+                return ResponseFactory.CreateInstance().CreateSuccessSingleResponse<HomePageData>(cachedData);
             }
             else
             {
@@ -171,14 +171,14 @@ namespace MvcPresentationLayer.Utilities
                     });
                 }
 
-                return ResponseFactory.CreateInstance().CreateSuccessSingleResponse<Top7Data>(data.Item);
+                return ResponseFactory.CreateInstance().CreateSuccessSingleResponse<HomePageData>(data.Item);
             }
         }
     }
 
     public interface ICacheService
     {
-        Task<SingleResponse<Top7Data>> GetTopAnimeMangaAsync(int skip, int take);
+        Task<SingleResponse<HomePageData>> GetTopAnimeMangaAsync(int skip, int take);
         Task<DataResponse<AnimeCatalog>> GetTop7AnimesCatalogByFavorites();
         Task<DataResponse<AnimeCatalog>> GetTop7AnimesCatalogByUserCount();
         Task<DataResponse<AnimeCatalog>> GetTop7AnimesCatalogByRating();

@@ -3,15 +3,15 @@
 
 @{
 
-    ViewData["Title"] = @Model.Anime.CanonicalTitle;
-    string Img = @Model.Anime.AnimeCoverImage;
+    ViewData["Title"] = @Model.Anime.Title;
+    string Img = @Model.Anime.JpgLargeImageUrl;
     string width = "100%";
     int height = 400;
-    if (Model.Anime.AnimeCoverImage == null)
+    if (Model.Anime.JpgLargeImageUrl == null)
     {
         //width = "25";
         //height = 400;
-        Img = Model.Anime.AnimePosterImage;
+        Img = Model.Anime.JpgLargeImageUrl;
     }
     string Synopsys = @Model.Anime.Synopsis;
 
@@ -19,14 +19,14 @@
 
 
 
-<div class="mop-banner" style="background-image: url('@Model.Anime.AnimeCoverImage')">
+<div class="mop-banner" style="background-image: url('@Model.Anime.JpgLargeImageUrl')">
 </div>
 
 <div class="mop-header">
     <div class="mop-container">
         <div class="cover-wrap overlap-banner">
             <div class="cover-wrap-inner">
-                <img class="mop-poster" src="@Model.Anime.AnimePosterImage" />
+                <img class="mop-poster" src="@Model.Anime.WebpLargeImageUrl" />
                 @{
                     if (User.Identity.IsAuthenticated)
                     {
@@ -49,7 +49,7 @@
             </div>
         </div>
         <div class="mop-desc-content">
-            <h1>@Model.Anime.CanonicalTitle</h1>
+            <h1>@Model.Anime.Title</h1>
 
             @if (Synopsys.Length > 700)
             {
@@ -80,15 +80,15 @@
     <div class="div-anime-info">
         <div class="anime-info-items">
             <div class="info-type">Format:</div>
-            <div class="info-result">@Model.Anime.Subtype</div>
+            <div class="info-result">@Model.Anime.Type</div>
         </div>
         <div class="anime-info-items">
             <div class="info-type">Episodes:</div>
-            <div class="info-result">@Model.Anime.EpisodeCount</div>
+            <div class="info-result">@Model.Anime.Episodes</div>
         </div>
         <div class="anime-info-items">
             <div class="info-type">Episode Duration:</div>
-            <div class="info-result">@Model.Anime.EpisodeLength</div>
+            <div class="info-result">@Model.Anime.Episodes</div>
         </div>
         <div class="anime-info-items">
             <div class="info-type">Status:</div>
@@ -96,33 +96,33 @@
         </div>
         <div class="anime-info-items">
             <div class="info-type">Start Date:</div>
-            <div class="info-result">@Model.Anime.StartDate</div>
+            <div class="info-result">@Model.Anime.From</div>
         </div>
         <div class="anime-info-items">
             <div class="info-type">End Date:</div>
-            <div class="info-result">@Model.Anime.EndDate</div>
+            <div class="info-result">@Model.Anime.To</div>
         </div>
         <div class="anime-info-items">
             <div class="info-type">Average Score:</div>
-            <div class="info-result">@Model.Anime.AverageRating</div>
+            <div class="info-result">@Model.Anime.Rating</div>
         </div>
         <div class="anime-info-items">
             <div class="info-type">Popularity:</div>
-            <div class="info-result">@Model.Anime.PopularityRank</div>
+            <div class="info-result">@Model.Anime.Popularity</div>
         </div>
         <div class="anime-info-items">
             <div class="info-type">Favorites:</div>
-            <div class="info-result">@Model.Anime.FavoritesCount</div>
+            <div class="info-result">@Model.Anime.Favorites</div>
         </div>
         <div class="anime-info-items">
             <div class="info-type">Genres:</div>
             <div class="info-result">
                 <ul>
                     @{
-                        foreach (var item in @Model.Anime.Categories)
+                        foreach (var item in @Model.Anime.GenreItems)
                         {
                             <li>
-                                <p>@item.name</p>
+                                <p>@item.Name</p>
                             </li>
                         }
                     }
