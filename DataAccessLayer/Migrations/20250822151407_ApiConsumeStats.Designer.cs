@@ -4,6 +4,7 @@ using DataAccessLayer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(MangaProjectDbContext))]
-    partial class MangaProjectDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250822151407_ApiConsumeStats")]
+    partial class ApiConsumeStats
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -453,19 +455,16 @@ namespace DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("PagesConsumedAnime")
+                    b.Property<int>("PagesConsumed")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PagesConsumedManga")
+                    b.Property<int>("TotalRequests")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TotalRequests")
+                    b.Property<int>("UnitarioAnime")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UnitarioAnime")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("UnitarioManga")
+                    b.Property<int>("UnitarioManga")
                         .HasColumnType("int");
 
                     b.HasKey("Id");

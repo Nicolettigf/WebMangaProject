@@ -2,11 +2,11 @@
 using Entities.AnimeS;
 using Entities.MangaS;
 
-namespace BusinessLogicalLayer.ApiConsumer
+namespace BusinessLogicalLayer.Apis.JikanApi
 {
-    public class Converter
+    public class ConverterJikan
     {
-        public static T ConvertDTOToEntity<T>(MediaDto item) where T : MediaBase, new()
+        public static T ConvertDTOToEntity<T>(MediaDtoJikan item) where T : MediaBase, new()
         {
             if (item == null) return null;
 
@@ -29,7 +29,7 @@ namespace BusinessLogicalLayer.ApiConsumer
             return entity;
         }
 
-        private static void MapAnimeSpecific(Anime anime, MediaDto item)
+        private static void MapAnimeSpecific(Anime anime, MediaDtoJikan item)
         {
             anime.Source = item.source;
             anime.Episodes = item.episodes;
@@ -66,7 +66,7 @@ namespace BusinessLogicalLayer.ApiConsumer
             anime.streaming = item.MapList(item.streaming, s => new Entities.AnimeS.Streaming { AnimeId = anime.MalId, Anime = anime, name = s.name, url = s.url });
         }
 
-        private static void MapMangaSpecific(Manga manga, MediaDto item)
+        private static void MapMangaSpecific(Manga manga, MediaDtoJikan item)
         {
             manga.Chapters = item.chapters;
             manga.Volumes = item.volumes;
@@ -78,7 +78,7 @@ namespace BusinessLogicalLayer.ApiConsumer
             manga.Serializations = item.MapList(item.serializations, s => new Entities.MangaS.Serialization { MangaId = manga.MalId, Manga = manga, mal_id = s.mal_id, type = s.type, name = s.name, url = s.url });
         }
 
-        private static List<AnimeThemeSong> MapThemeSongs(MediaDto item, Anime anime)
+        private static List<AnimeThemeSong> MapThemeSongs(MediaDtoJikan item, Anime anime)
         {
             var songs = new List<AnimeThemeSong>();
 

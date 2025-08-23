@@ -3,7 +3,7 @@ using Entities;
 using Entities.AnimeS;
 using Entities.MangaS;
 
-public class MediaDto
+public class MediaDtoJikan
 {
     // ===== Comuns =====
     public int? mal_id { get; set; }
@@ -193,16 +193,16 @@ public class RootCate
 
 public class RootSingle
 {
-    public MediaDto data { get; set; }
+    public MediaDtoJikan data { get; set; }
 }
 public class RootAniPage
 {
-    public List<MediaDto> data { get; set; }
+    public List<MediaDtoJikan> data { get; set; }
 }
 public class Root
 {
     public Pagination? pagination { get; set; }
-    public List<MediaDto>? data { get; set; }
+    public List<MediaDtoJikan>? data { get; set; }
 }
 #endregion
 

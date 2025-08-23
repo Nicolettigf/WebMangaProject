@@ -1,4 +1,4 @@
-using BusinessLogicalLayer.ApiConsumer.MangaApi;
+using BusinessLogicalLayer.Apis.JikanApi;
 using BusinessLogicalLayer.Implementations;
 using BusinessLogicalLayer.Implementations.UserComentaryService;
 using BusinessLogicalLayer.Implementations.UserItemService;

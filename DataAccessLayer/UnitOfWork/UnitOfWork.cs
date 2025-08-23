@@ -17,6 +17,7 @@ namespace DataAccessLayer.UnitOfWork
     {
         private readonly MangaProjectDbContext _dbContext;
         private IHomeDAL homeRepository = null;
+        private IApiConsumeDAL apiConsumeRepository = null;
         private IUserDAL userRepository = null;
         private IMangaDAL mangaRepository = null;
         private IAnimeDAL animeRepository = null;
@@ -151,6 +152,18 @@ namespace DataAccessLayer.UnitOfWork
                     homeRepository = new HomeDal(_dbContext);
                 }
                 return homeRepository;
+            }
+        }
+
+        public IApiConsumeDAL ApiConsumeRepository
+        {
+            get
+            {
+                if (apiConsumeRepository == null)
+                {
+                    apiConsumeRepository = new ApiConsumeDal(_dbContext);
+                }
+                return apiConsumeRepository;
             }
         }
 

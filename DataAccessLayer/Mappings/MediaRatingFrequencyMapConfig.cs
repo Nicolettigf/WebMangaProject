@@ -9,7 +9,6 @@ namespace DataAccessLayer.Mappings
         public void Configure(EntityTypeBuilder<MediaRatingFrequency> builder)
         {
             builder.ToTable("MediaRatingFrequency");
-
         }
     }
 }

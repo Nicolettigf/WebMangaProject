@@ -13,6 +13,7 @@ namespace DataAccessLayer.UnitOfWork
         IUserDAL UserRepository { get; }
         IMangaDAL MangaRepository { get; }
         IHomeDAL HomeRepository { get; }
+        IApiConsumeDAL ApiConsumeRepository { get; }
         IAnimeDAL AnimeRepository { get; }
 
         IUserMangaItemDAL UserMangaItemRepository { get; }

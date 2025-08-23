@@ -29,8 +29,8 @@ namespace MvcPresentationLayer.Controllers
         {
             //Task.Run(async () =>
             //{
-            //await _JikanApi.ConsumeManga();
-            //await _JikanApi.ConsumeAnime();
+            await _JikanApi.ConsumeAnime();
+            await _JikanApi.ConsumeManga();
                 await _JikanApi.ConsumeMissingAnime();
                 await _JikanApi.ConsumeMissingMangas();
                 await _JikanApi.ConsumeGenre();
