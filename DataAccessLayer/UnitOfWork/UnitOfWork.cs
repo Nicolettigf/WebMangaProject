@@ -8,6 +8,7 @@ using DataAccessLayer.Interfaces.IMangaInterfaces;
 using DataAccessLayer.Interfaces.IUserComentary;
 using DataAccessLayer.Interfaces.IUSerInterfaces;
 using DataAccessLayer.Interfaces.IUserItem;
+using Entities;
 using Shared;
 using Shared.Responses;
 
@@ -25,10 +26,16 @@ namespace DataAccessLayer.UnitOfWork
         private IUserAnimeItemDAL userAnimeItemRepository = null;
         private IMangaComentaryDAL mangaComentaryRepository = null;
         private IAnimeComentaryDAL animeComentaryRepository = null;
+        private IApiReInsertStatsDAL apiReInsertStatsRepository = null;
 
         public UnitOfWork(MangaProjectDbContext dbContext, IUserDAL userDAL)
         {
             this._dbContext = dbContext;
+        }
+
+        public IQueryable<T> Query<T>() where T : class
+        {
+            return _dbContext.Set<T>();
         }
 
         public async Task<Response> Commit()
@@ -164,6 +171,17 @@ namespace DataAccessLayer.UnitOfWork
                     apiConsumeRepository = new ApiConsumeDal(_dbContext);
                 }
                 return apiConsumeRepository;
+            }
+        }
+        public IApiReInsertStatsDAL ApiReInsertStatRepository
+        {
+            get
+            {
+                if (apiReInsertStatsRepository == null)
+                {
+                    apiReInsertStatsRepository = new ApiReInsertStatsDAL(_dbContext);
+                }
+                return apiReInsertStatsRepository;
             }
         }
 

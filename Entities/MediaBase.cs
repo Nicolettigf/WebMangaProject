@@ -13,6 +13,7 @@ namespace Entities
         public string? Title { get; set; }
         public string? TitleEnglish { get; set; }
         public string? TitleJapanese { get; set; }
+        public string? TitleSynonyms { get; set; } 
         public string? Status { get; set; }
         public string? Type { get; set; }
         public double? Score { get; set; }

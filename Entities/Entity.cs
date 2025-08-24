@@ -13,6 +13,12 @@
             this.Active = true;
         }
 
+        public virtual void UpdateEntity()
+        {
+            this.UpdatedAt = DateTime.Now;
+            this.Active = true;
+        }
+
         public virtual void DisableEntity()
         {
             this.Active = false;

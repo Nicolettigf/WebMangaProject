@@ -20,18 +20,16 @@ namespace BusinessLogicalLayer.Apis.JikanApi
         private readonly IUnitOfWork _unitOfWork;
         private readonly string ApiName = "Jikan";
         private readonly MangaProjectDbContext _db;
-        private readonly IMangaService _mangaService;
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly Uri baseAddress = new Uri("https://api.jikan.moe/v4/");
+        private readonly Uri baseAddress = new("https://api.jikan.moe/v4/");
         private readonly int LimiteManga = 190000;
         private readonly int LimiteAnime = 80000;
         private readonly int LoteTamanho = 25; // Máximo permitido pelo Jikan
         private int counter = 0;
 
-        public JikanApi(IMangaService mangaService, MangaProjectDbContext db, IServiceScopeFactory scopeFactory, IUnitOfWork unitOfWork)
+        public JikanApi(MangaProjectDbContext db, IServiceScopeFactory scopeFactory, IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _mangaService = mangaService;
             _db = db;
             _scopeFactory = scopeFactory;
         }
@@ -48,22 +46,19 @@ namespace BusinessLogicalLayer.Apis.JikanApi
             {
                 for (int page = lastpage + 1; page <= totalPages; page++)
                 {
-                    var dtos = await BuscarPagina<Root>(httpClient, "manga", page, LoteTamanho);
+                    var dtos = await BuscarPagina<RootJikan>(httpClient, "manga", page, LoteTamanho);
 
                     if (dtos.Count > 0)
                     {
-                        using (var scope = _scopeFactory.CreateScope())
-                        {
-                            var mangaDal = scope.ServiceProvider.GetRequiredService<IMangaDAL>();
+                        using var scope = _scopeFactory.CreateScope();
+                        var mangaDal = scope.ServiceProvider.GetRequiredService<IMangaDAL>();
 
-                            var mangaEntities = dtos
-                                .Select(dto => ConverterJikan.ConvertDTOToEntity<Manga>(dto))
-                                .OfType<Manga>()
-                                .ToList();
+                        var mangaEntities = dtos
+                            .Select(dto => ConverterJikan.ConvertDTOToEntity<Manga>(dto))
+                            .OfType<Manga>()
+                            .ToList();
 
-                            await mangaDal.InsertRange(mangaEntities);
-
-                        }
+                        await mangaDal.InsertRange(mangaEntities);
                     }
                     await SalvarConsumoApi<Manga>(ConsumoTipo.Pagina, page);
 
@@ -87,19 +82,17 @@ namespace BusinessLogicalLayer.Apis.JikanApi
             {
                 for (int page = lastpage + 1; page <= totalPages; page++)
                 {
-                    var animes = await BuscarPagina<RootAniPage>(httpClient, "anime", page, LoteTamanho);
+                    var animes = await BuscarPagina<RootAniPageJikan>(httpClient, "anime", page, LoteTamanho);
 
                     if (animes.Count > 0)
                     {
-                        using (var scope = _scopeFactory.CreateScope())
-                        {
-                            var animeDal = scope.ServiceProvider.GetRequiredService<IAnimeDAL>();
+                        using var scope = _scopeFactory.CreateScope();
+                        var animeDal = scope.ServiceProvider.GetRequiredService<IAnimeDAL>();
 
-                            var animeEntities = animes.Select(dto =>
-                            ConverterJikan.ConvertDTOToEntity<Anime>(dto)).OfType<Anime>().ToList();
+                        var animeEntities = animes.Select(dto =>
+                        ConverterJikan.ConvertDTOToEntity<Anime>(dto)).OfType<Anime>().ToList();
 
-                            await animeDal.InsertRange(animeEntities);
-                        }
+                        await animeDal.InsertRange(animeEntities);
                     }
                     await SalvarConsumoApi<Anime>(ConsumoTipo.Pagina, page);
                     Console.WriteLine($"✅ Página {page} processada ({animes.Count} animes)");
@@ -129,13 +122,11 @@ namespace BusinessLogicalLayer.Apis.JikanApi
 
                         if (animeDto != null)
                         {
-                            using (var scope = _scopeFactory.CreateScope())
-                            {
-                                var animeDal = scope.ServiceProvider.GetRequiredService<IAnimeDAL>();
+                            using var scope = _scopeFactory.CreateScope();
+                            var animeDal = scope.ServiceProvider.GetRequiredService<IAnimeDAL>();
 
-                                var animeEntity = ConverterJikan.ConvertDTOToEntity<Anime>(animeDto);
-                                await animeDal.Insert(animeEntity);
-                            }
+                            var animeEntity = ConverterJikan.ConvertDTOToEntity<Anime>(animeDto);
+                            await animeDal.Insert(animeEntity);
                         }
                         else
                         {
@@ -164,35 +155,33 @@ namespace BusinessLogicalLayer.Apis.JikanApi
 
             Console.WriteLine($"Iniciando consumo unitário...");
 
-            using (var httpClient = new HttpClient { BaseAddress = baseAddress })
+            using var httpClient = new HttpClient { BaseAddress = baseAddress };
+            foreach (var malId in missingMalIds)
             {
-                foreach (var malId in missingMalIds)
+                try
                 {
-                    try
+                    var mangaDto = await BuscarPorId(httpClient, "manga", malId);
+
+                    if (mangaDto != null)
                     {
-                        var mangaDto = await BuscarPorId(httpClient, "manga", malId);
+                        var manga = ConverterJikan.ConvertDTOToEntity<Manga>(mangaDto);
+                        await _unitOfWork.MangaRepository.Insert(manga);
 
-                        if (mangaDto != null)
-                        {
-                            var manga = ConverterJikan.ConvertDTOToEntity<Manga>(mangaDto);
-                            await _unitOfWork.MangaRepository.Insert(manga);
-
-                            Console.WriteLine($"✅ Manga {malId} inserido.");
-                        }
-                        else
-                        {
-                            Console.WriteLine($"⚠️ Nenhum dado retornado para MAL ID {malId}");
-                        }
-
-                        await SalvarConsumoApi<Manga>(ConsumoTipo.Unitario, malId);
+                        Console.WriteLine($"✅ Manga {malId} inserido.");
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        Console.WriteLine($"❌ Erro ao processar MAL ID {malId}: {ex.Message}");
+                        Console.WriteLine($"⚠️ Nenhum dado retornado para MAL ID {malId}");
                     }
 
-                    await Task.Delay(350);
+                    await SalvarConsumoApi<Manga>(ConsumoTipo.Unitario, malId);
                 }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"❌ Erro ao processar MAL ID {malId}: {ex.Message}");
+                }
+
+                await Task.Delay(350);
             }
         }
         private async Task<List<MediaDtoJikan>> BuscarPagina<T>
@@ -230,7 +219,7 @@ namespace BusinessLogicalLayer.Apis.JikanApi
                 if (jsonString.Contains("errors") || jsonString.Contains("BadResponseException"))
                     return null;
 
-                var dto = JsonConvert.DeserializeObject<RootSingle>(jsonString);
+                var dto = JsonConvert.DeserializeObject<RootSingleJikan>(jsonString);
                 return dto?.data;
             }
             catch
@@ -257,7 +246,7 @@ namespace BusinessLogicalLayer.Apis.JikanApi
 
             foreach (var datum in genresRoot.data)
             {
-                var exists = await _db.Genre.AnyAsync(c => c.MalId == datum.mal_id);
+                var exists = await  _db.Genre.AnyAsync(c => c.MalId == datum.mal_id);
                 if (exists) continue;
 
                 var genre = new MediaBase.Genre
@@ -268,10 +257,9 @@ namespace BusinessLogicalLayer.Apis.JikanApi
                     Count = datum.count
                 };
 
-                await _mangaService.InsertCategory(genre);
+                await _unitOfWork.MangaRepository.InsertCategory(genre);
             }
         }
-
         public async Task SalvarConsumoApi<T>(ConsumoTipo tipo, int valor) where T : MediaBase
         {
             counter++;

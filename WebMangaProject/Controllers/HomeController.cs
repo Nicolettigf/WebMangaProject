@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicalLayer.Interfaces;
+using Entities.AnimeS;
 using Microsoft.AspNetCore.Mvc;
 using MvcPresentationLayer.Models.AnimeModel;
 using MvcPresentationLayer.Models.HomePage;
@@ -17,22 +18,25 @@ namespace MvcPresentationLayer.Controllers
         private readonly IMapper _mapper;
         private readonly ICacheService _cacheService;
         private readonly IJikanApi _JikanApi;
-        
-        public HomeController(IMapper mapper, ICacheService cacheService, IJikanApi JikanApi)
+        private readonly IKitsuApi _KitsuApi;
+        public HomeController(IMapper mapper, ICacheService cacheService, IJikanApi JikanApi, IKitsuApi kitsuApi)
         {
             this._mapper = mapper;
             this._cacheService = cacheService;
             this._JikanApi = JikanApi;
+            this._KitsuApi = kitsuApi;
         }
 
         public async Task<IActionResult> Index()
         {
             //Task.Run(async () =>
             //{
+            await _KitsuApi.BuscarECompararAnimePorIds(20000);
             await _JikanApi.ConsumeAnime();
             await _JikanApi.ConsumeManga();
-                await _JikanApi.ConsumeMissingAnime();
-                await _JikanApi.ConsumeMissingMangas();
+            await _JikanApi.ConsumeMissingAnime();
+            await _JikanApi.ConsumeMissingMangas();
+            await _KitsuApi.BuscarPagina<Anime>("anime");
                 await _JikanApi.ConsumeGenre();
             //});
 

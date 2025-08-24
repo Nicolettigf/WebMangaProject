@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(MangaProjectDbContext))]
-    [Migration("20250818050626_CreateMediaRatingFrequencies")]
-    partial class CreateMediaRatingFrequencies
+    [Migration("20250824030559_KitsuMember")]
+    partial class KitsuMember
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -41,16 +41,13 @@ namespace DataAccessLayer.Migrations
                     b.Property<bool?>("Airing")
                         .HasColumnType("bit");
 
-                    b.Property<string>("AnimeCoverImage")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("AnimePosterImage")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool?>("Approved")
                         .HasColumnType("bit");
 
                     b.Property<string>("Background")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("BroadcastComplete")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("BroadcastDay")
@@ -62,11 +59,17 @@ namespace DataAccessLayer.Migrations
                     b.Property<string>("BroadcastTimezone")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("CoverImageLarge")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Duration")
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("EpisodeLength")
+                        .HasColumnType("int");
 
                     b.Property<int?>("Episodes")
                         .HasColumnType("int");
@@ -75,6 +78,18 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("From")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("IdKitsu")
+                        .HasColumnType("int");
+
+                    b.Property<string>("JpgImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JpgLargeImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JpgSmallImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("LastAccess")
@@ -86,8 +101,14 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("Members")
                         .HasColumnType("int");
 
+                    b.Property<bool?>("Nsfw")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("Popularity")
                         .HasColumnType("int");
+
+                    b.Property<string>("PosterImageLarge")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Rank")
                         .HasColumnType("int");
@@ -131,6 +152,9 @@ namespace DataAccessLayer.Migrations
                     b.Property<string>("TitleJapanese")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("TitleSynonyms")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("To")
                         .HasColumnType("nvarchar(max)");
 
@@ -143,6 +167,21 @@ namespace DataAccessLayer.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("WebpImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebpLargeImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebpSmallImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("YoutubeImage")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("YoutubeVideoId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Youtube_id")
                         .HasColumnType("nvarchar(max)");
 
@@ -150,57 +189,6 @@ namespace DataAccessLayer.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Youtubeurl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ageRating")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ageRatingGuide")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("averageRating")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("canonicalTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("description")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("endDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("episodeCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("episodeLength")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("favoritesCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("popularityRank")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ratingRank")
-                        .HasColumnType("int");
-
-                    b.Property<string>("showType")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("startDate")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("subtype")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("userCount")
-                        .HasColumnType("int");
-
-                    b.Property<string>("youtubeVideoId")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -481,6 +469,65 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("Studio");
                 });
 
+            modelBuilder.Entity("Entities.ApiConsumeStats", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApiName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApiURLBase")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PagesConsumedAnime")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PagesConsumedManga")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TotalRequests")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UnitarioAnime")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UnitarioManga")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApiConsumeStats", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.ApiReInsertStats", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ApiName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Erro")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IdFromApi")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApiReInsertStats");
+                });
+
             modelBuilder.Entity("Entities.MangaS.Author", b =>
                 {
                     b.Property<int>("Id")
@@ -528,37 +575,37 @@ namespace DataAccessLayer.Migrations
                     b.Property<bool?>("Approved")
                         .HasColumnType("bit");
 
-                    b.Property<string>("AverageRating")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Background")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("CanonicalTitle")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("ChapterCount")
-                        .HasColumnType("int");
 
                     b.Property<int?>("Chapters")
                         .HasColumnType("int");
 
-                    b.Property<string>("CoverImageLink")
+                    b.Property<string>("CoverImageLarge")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("EndDate")
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("EpisodeLength")
+                        .HasColumnType("int");
 
                     b.Property<int?>("Favorites")
                         .HasColumnType("int");
 
-                    b.Property<int?>("FavoritesCount")
+                    b.Property<string>("From")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("IdKitsu")
                         .HasColumnType("int");
 
-                    b.Property<string>("From")
+                    b.Property<string>("JpgImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JpgLargeImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("JpgSmallImageUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("LastAccess")
@@ -570,29 +617,25 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("Members")
                         .HasColumnType("int");
 
+                    b.Property<bool?>("Nsfw")
+                        .HasColumnType("bit");
+
                     b.Property<int?>("Popularity")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PopularityRank")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PosterImageLink")
-                        .IsRequired()
+                    b.Property<string>("PosterImageLarge")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("PublishedFrom")
+                    b.Property<DateTime?>("PublishedFrom")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("PublishedTo")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Publishing")
+                    b.Property<bool?>("Publishing")
                         .HasColumnType("bit");
 
                     b.Property<int?>("Rank")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("RatingRank")
                         .HasColumnType("int");
 
                     b.Property<double?>("Score")
@@ -601,16 +644,7 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("ScoredBy")
                         .HasColumnType("int");
 
-                    b.Property<string>("Serialization")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("StartDate")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("Status")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Subtype")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Synopsis")
@@ -625,6 +659,9 @@ namespace DataAccessLayer.Migrations
                     b.Property<string>("TitleJapanese")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("TitleSynonyms")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("To")
                         .HasColumnType("nvarchar(max)");
 
@@ -637,14 +674,20 @@ namespace DataAccessLayer.Migrations
                     b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("UserCount")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("VolumeCount")
-                        .HasColumnType("int");
-
                     b.Property<int?>("Volumes")
                         .HasColumnType("int");
+
+                    b.Property<string>("WebpImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebpLargeImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("WebpSmallImageUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("YoutubeVideoId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -789,6 +832,54 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("AnimeId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("AnimeId1")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MalId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MangaId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MangaId1")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnimeId");
+
+                    b.HasIndex("AnimeId1");
+
+                    b.HasIndex("MangaId");
+
+                    b.HasIndex("MangaId1");
+
+                    b.ToTable("Genre", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.MediaBase+GenreItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("AnimeId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("MalId")
                         .HasColumnType("int");
 
@@ -810,64 +901,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("MangaId");
 
-                    b.ToTable("Genre", (string)null);
-                });
-
-            modelBuilder.Entity("Entities.MediaBase+Images", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int?>("AnimeId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("JpgImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("JpgLargeImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("JpgSmallImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("MalId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("MangaId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Type")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WebpImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WebpLargeImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("WebpSmallImageUrl")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AnimeId")
-                        .IsUnique()
-                        .HasFilter("[AnimeId] IS NOT NULL");
-
-                    b.HasIndex("MangaId")
-                        .IsUnique()
-                        .HasFilter("[MangaId] IS NOT NULL");
-
-                    b.ToTable("Images");
+                    b.ToTable("GenreItem");
                 });
 
             modelBuilder.Entity("Entities.MediaBase+Theme", b =>
@@ -1336,28 +1370,36 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("Entities.MediaBase+Genre", b =>
                 {
-                    b.HasOne("Entities.AnimeS.Anime", "Anime")
+                    b.HasOne("Entities.AnimeS.Anime", null)
                         .WithMany("Genres")
                         .HasForeignKey("AnimeId");
 
-                    b.HasOne("Entities.MangaS.Manga", "Manga")
+                    b.HasOne("Entities.AnimeS.Anime", "Anime")
+                        .WithMany()
+                        .HasForeignKey("AnimeId1");
+
+                    b.HasOne("Entities.MangaS.Manga", null)
                         .WithMany("Genres")
                         .HasForeignKey("MangaId");
+
+                    b.HasOne("Entities.MangaS.Manga", "Manga")
+                        .WithMany()
+                        .HasForeignKey("MangaId1");
 
                     b.Navigation("Anime");
 
                     b.Navigation("Manga");
                 });
 
-            modelBuilder.Entity("Entities.MediaBase+Images", b =>
+            modelBuilder.Entity("Entities.MediaBase+GenreItem", b =>
                 {
                     b.HasOne("Entities.AnimeS.Anime", "Anime")
-                        .WithOne("Imagens")
-                        .HasForeignKey("Entities.MediaBase+Images", "AnimeId");
+                        .WithMany("GenreItems")
+                        .HasForeignKey("AnimeId");
 
                     b.HasOne("Entities.MangaS.Manga", "Manga")
-                        .WithOne("Imagens")
-                        .HasForeignKey("Entities.MediaBase+Images", "MangaId");
+                        .WithMany("GenreItems")
+                        .HasForeignKey("MangaId");
 
                     b.Navigation("Anime");
 
@@ -1442,9 +1484,9 @@ namespace DataAccessLayer.Migrations
 
                     b.Navigation("ExplicitGenres");
 
-                    b.Navigation("Genres");
+                    b.Navigation("GenreItems");
 
-                    b.Navigation("Imagens");
+                    b.Navigation("Genres");
 
                     b.Navigation("MediaRatingFrequency");
 
@@ -1480,9 +1522,9 @@ namespace DataAccessLayer.Migrations
 
                     b.Navigation("ExplicitGenres");
 
-                    b.Navigation("Genres");
+                    b.Navigation("GenreItems");
 
-                    b.Navigation("Imagens");
+                    b.Navigation("Genres");
 
                     b.Navigation("MediaRatingFrequency");
 

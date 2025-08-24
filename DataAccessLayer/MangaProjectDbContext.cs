@@ -23,6 +23,7 @@ namespace DataAccessLayer
         public DbSet<AnimeComentary> AnimeComentaries { get; set; }
         public DbSet<MangaComentary> MangaComentaries { get; set; }
         public DbSet<ApiConsumeStats> ApiConsumeStats { get; set; }
+        public DbSet<ApiReInsertStats> ApiReInsertStats { get; set; }
         public MangaProjectDbContext(DbContextOptions<MangaProjectDbContext> options) : base(options) { }
         public MangaProjectDbContext()
         {
@@ -39,8 +40,8 @@ namespace DataAccessLayer
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Manga>().Property(c => c.Id).ValueGeneratedNever();
-            modelBuilder.Entity<Genre>().Property(c => c.Id).ValueGeneratedNever();
             modelBuilder.Entity<Anime>().Property(c => c.Id).ValueGeneratedNever();
+            modelBuilder.Entity<Genre>().Property(c => c.Id).ValueGeneratedNever();
             modelBuilder.Entity<MediaRatingFrequency>().Property(c => c.Id).ValueGeneratedNever();
             modelBuilder.Entity<ApiConsumeStats>().Property(c => c.Id).ValueGeneratedNever();
 

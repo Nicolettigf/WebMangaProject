@@ -1,6 +1,6 @@
 ﻿namespace Entities.AnimeS
 {
-    public class Anime : MediaBase
+    public class Anime : KitsuMember
     {
         public string? Source { get; set; }
         public int? Episodes { get; set; }
@@ -12,10 +12,13 @@
         public string? BroadcastDay { get; set; }
         public string? BroadcastTime { get; set; }
         public string? BroadcastTimezone { get; set; }
+        public string? BroadcastComplete { get; set; }
 
         public string? Youtube_id { get; set; }
         public string? Youtubeurl { get; set; }
         public string? Youtubeembed_url { get; set; }
+        public string? YoutubeImage { get; set; }
+
 
         public string? Themetype { get; set; }
         public string? Themename { get; set; }

@@ -22,6 +22,7 @@ public class MediaDtoJikan
     public int? favorites { get; set; }
     public string? synopsis { get; set; }
     public string? background { get; set; }
+    public List<string> title_synonyms { get; set; }
     public List<ExplicitGenre>? explicit_genres { get; set; }
     public List<Title>? titles { get; set; }
     public List<Genre>? genres { get; set; }
@@ -92,6 +93,7 @@ public class MediaDtoJikan
         media.Title = this.title;
         media.TitleEnglish = this.title_english;
         media.TitleJapanese = this.title_japanese;
+        media.TitleSynonyms = this.title_synonyms != null ?  this.title_synonyms.First() : null;
         media.Url = this.url;
         media.Approved = this.approved;
         media.Status = this.status;
@@ -173,6 +175,8 @@ public class MediaDtoJikan
             Type = d.type,
             Name = d.name
         });
+
+        media.EnableEntity();
     }
 }
 
@@ -191,15 +195,15 @@ public class RootCate
     public List<DataCategoria> data { get; set; }
 }
 
-public class RootSingle
+public class RootSingleJikan
 {
     public MediaDtoJikan data { get; set; }
 }
-public class RootAniPage
+public class RootAniPageJikan
 {
     public List<MediaDtoJikan> data { get; set; }
 }
-public class Root
+public class RootJikan
 {
     public Pagination? pagination { get; set; }
     public List<MediaDtoJikan>? data { get; set; }
@@ -238,6 +242,11 @@ public class Images
 {
     public Jpg? jpg { get; set; }
     public Webp? webp { get; set; }
+    public string? image_url { get; set; }
+    public string? small_image_url { get; set; }
+    public string? medium_image_url { get; set; }
+    public string? large_image_url { get; set; }
+    public string? maximum_image_url { get; set; }
 }
 public class Jpg
 {
@@ -361,6 +370,7 @@ public class Trailer
     public string? youtube_id { get; set; }
     public string? url { get; set; }
     public string? embed_url { get; set; }
+    public Images? images { get; set; }
 }
 public class Theme
 {

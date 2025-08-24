@@ -45,10 +45,12 @@ namespace BusinessLogicalLayer.Apis.JikanApi
             anime.Youtubeembed_url = item.trailer?.embed_url;
             anime.Youtubeurl = item.trailer?.url;
             anime.Youtube_id = item.trailer?.youtube_id;
+            anime.YoutubeImage = item.trailer?.images?.maximum_image_url;
 
             anime.BroadcastDay = item.broadcast?.day;
             anime.BroadcastTime = item.broadcast?.time;
             anime.BroadcastTimezone = item.broadcast?.timezone;
+            anime.BroadcastComplete = item.broadcast?.@string;
 
             // Listas
             anime.ThemeSongs = MapThemeSongs(item, anime);

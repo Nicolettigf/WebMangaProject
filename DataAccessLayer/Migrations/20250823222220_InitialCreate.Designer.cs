@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(MangaProjectDbContext))]
-    [Migration("20250822151407_ApiConsumeStats")]
-    partial class ApiConsumeStats
+    [Migration("20250823222220_InitialCreate")]
+    partial class InitialCreate
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -455,21 +455,47 @@ namespace DataAccessLayer.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PagesConsumed")
+                    b.Property<int?>("PagesConsumedAnime")
                         .HasColumnType("int");
 
-                    b.Property<int>("TotalRequests")
+                    b.Property<int?>("PagesConsumedManga")
                         .HasColumnType("int");
 
-                    b.Property<int>("UnitarioAnime")
+                    b.Property<int?>("TotalRequests")
                         .HasColumnType("int");
 
-                    b.Property<int>("UnitarioManga")
+                    b.Property<int?>("UnitarioAnime")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UnitarioManga")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.ToTable("ApiConsumeStats", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.ApiReInsertStats", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApiName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Erro")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IdFromApi")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApiReInsertStats");
                 });
 
             modelBuilder.Entity("Entities.MangaS.Author", b =>

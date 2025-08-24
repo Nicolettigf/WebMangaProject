@@ -1,4 +1,5 @@
 using BusinessLogicalLayer.Apis.JikanApi;
+using BusinessLogicalLayer.Apis.KitsuApi;
 using BusinessLogicalLayer.Implementations;
 using BusinessLogicalLayer.Implementations.UserComentaryService;
 using BusinessLogicalLayer.Implementations.UserItemService;
@@ -81,7 +82,7 @@ builder.Services.AddSingleton<IMangaProjectApiMangaItem, MangaProjectApiMangaIte
 #endregion
 
 builder.Services.AddTransient<IJikanApi, JikanApi>();
-
+builder.Services.AddTransient<IKitsuApi, KitsuApi>();
 
 builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
 builder.Services.AddDbContext<MangaProjectDbContext>(options => options.UseSqlServer("name=ConnectionStrings:SqlServerMangaProjectConnection"));

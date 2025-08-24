@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(MangaProjectDbContext))]
-    [Migration("20250818081631_TodasPropsAntigasRetiradas")]
-    partial class TodasPropsAntigasRetiradas
+    [Migration("20250823223808_ApiReInsertStatsIDAuto")]
+    partial class ApiReInsertStatsIDAuto
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -442,6 +442,65 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("Studio");
                 });
 
+            modelBuilder.Entity("Entities.ApiConsumeStats", b =>
+                {
+                    b.Property<int>("Id")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ApiName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ApiURLBase")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("PagesConsumedAnime")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("PagesConsumedManga")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("TotalRequests")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UnitarioAnime")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("UnitarioManga")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApiConsumeStats", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.ApiReInsertStats", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("ApiName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Erro")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("IdFromApi")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ApiReInsertStats");
+                });
+
             modelBuilder.Entity("Entities.MangaS.Author", b =>
                 {
                     b.Property<int>("Id")
@@ -525,13 +584,13 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("Popularity")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("PublishedFrom")
+                    b.Property<DateTime?>("PublishedFrom")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime?>("PublishedTo")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Publishing")
+                    b.Property<bool?>("Publishing")
                         .HasColumnType("bit");
 
                     b.Property<int?>("Rank")
@@ -725,7 +784,52 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("AnimeId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("AnimeId1")
+                        .HasColumnType("int");
+
                     b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MalId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MangaId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("MangaId1")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Type")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnimeId");
+
+                    b.HasIndex("AnimeId1");
+
+                    b.HasIndex("MangaId");
+
+                    b.HasIndex("MangaId1");
+
+                    b.ToTable("Genre", (string)null);
+                });
+
+            modelBuilder.Entity("Entities.MediaBase+GenreItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int?>("AnimeId")
                         .HasColumnType("int");
 
                     b.Property<int?>("MalId")
@@ -749,7 +853,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("MangaId");
 
-                    b.ToTable("Genre", (string)null);
+                    b.ToTable("GenreItem");
                 });
 
             modelBuilder.Entity("Entities.MediaBase+Theme", b =>
@@ -1218,12 +1322,35 @@ namespace DataAccessLayer.Migrations
 
             modelBuilder.Entity("Entities.MediaBase+Genre", b =>
                 {
-                    b.HasOne("Entities.AnimeS.Anime", "Anime")
+                    b.HasOne("Entities.AnimeS.Anime", null)
                         .WithMany("Genres")
                         .HasForeignKey("AnimeId");
 
-                    b.HasOne("Entities.MangaS.Manga", "Manga")
+                    b.HasOne("Entities.AnimeS.Anime", "Anime")
+                        .WithMany()
+                        .HasForeignKey("AnimeId1");
+
+                    b.HasOne("Entities.MangaS.Manga", null)
                         .WithMany("Genres")
+                        .HasForeignKey("MangaId");
+
+                    b.HasOne("Entities.MangaS.Manga", "Manga")
+                        .WithMany()
+                        .HasForeignKey("MangaId1");
+
+                    b.Navigation("Anime");
+
+                    b.Navigation("Manga");
+                });
+
+            modelBuilder.Entity("Entities.MediaBase+GenreItem", b =>
+                {
+                    b.HasOne("Entities.AnimeS.Anime", "Anime")
+                        .WithMany("GenreItems")
+                        .HasForeignKey("AnimeId");
+
+                    b.HasOne("Entities.MangaS.Manga", "Manga")
+                        .WithMany("GenreItems")
                         .HasForeignKey("MangaId");
 
                     b.Navigation("Anime");
@@ -1309,6 +1436,8 @@ namespace DataAccessLayer.Migrations
 
                     b.Navigation("ExplicitGenres");
 
+                    b.Navigation("GenreItems");
+
                     b.Navigation("Genres");
 
                     b.Navigation("MediaRatingFrequency");
@@ -1344,6 +1473,8 @@ namespace DataAccessLayer.Migrations
                     b.Navigation("Demographics");
 
                     b.Navigation("ExplicitGenres");
+
+                    b.Navigation("GenreItems");
 
                     b.Navigation("Genres");
 

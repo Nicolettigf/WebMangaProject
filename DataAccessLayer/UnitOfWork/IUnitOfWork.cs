@@ -4,6 +4,7 @@ using DataAccessLayer.Interfaces.IMangaInterfaces;
 using DataAccessLayer.Interfaces.IUserComentary;
 using DataAccessLayer.Interfaces.IUSerInterfaces;
 using DataAccessLayer.Interfaces.IUserItem;
+using Microsoft.EntityFrameworkCore;
 using Shared.Responses;
 
 namespace DataAccessLayer.UnitOfWork
@@ -14,6 +15,8 @@ namespace DataAccessLayer.UnitOfWork
         IMangaDAL MangaRepository { get; }
         IHomeDAL HomeRepository { get; }
         IApiConsumeDAL ApiConsumeRepository { get; }
+        IApiReInsertStatsDAL ApiReInsertStatRepository { get; }
+
         IAnimeDAL AnimeRepository { get; }
 
         IUserMangaItemDAL UserMangaItemRepository { get; }
@@ -24,5 +27,7 @@ namespace DataAccessLayer.UnitOfWork
 
         Task<Response> Commit();
         Task<Response> CommitForUser();
+        IQueryable<T> Query<T>() where T : class;
+       
     }
 }
