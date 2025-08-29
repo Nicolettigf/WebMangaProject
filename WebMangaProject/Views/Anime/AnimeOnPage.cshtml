@@ -11,7 +11,7 @@
     {
         //width = "25";
         //height = 400;
-        Img = Model.Anime.JpgLargeImageUrl;
+        Img = Model.Anime.PosterImageLarge ?? Model.Anime.JpgLargeImageUrl;
     }
     string Synopsys = @Model.Anime.Synopsis;
 
@@ -19,14 +19,17 @@
 
 
 
-<div class="mop-banner" style="background-image: url('@Model.Anime.JpgLargeImageUrl')">
+@{
+    string bannerImage = Model.Anime.CoverImageLarge ?? Model.Anime.JpgLargeImageUrl ?? "/images/default-banner.jpg";
+}
+<div class="mop-banner" style="background-image: url('@bannerImage')">
 </div>
 
 <div class="mop-header">
     <div class="mop-container">
         <div class="cover-wrap overlap-banner">
             <div class="cover-wrap-inner">
-                <img class="mop-poster" src="@Model.Anime.WebpLargeImageUrl" />
+                <img class="mop-poster" src="@(Model.Anime.PosterImageLarge ?? Model.Anime.WebpLargeImageUrl)" />
                 @{
                     if (User.Identity.IsAuthenticated)
                     {

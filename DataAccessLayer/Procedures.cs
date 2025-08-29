@@ -11,37 +11,37 @@
         BEGIN
             SET NOCOUNT ON;
 
-            SELECT Id, Title AS canonicalTitle, WebpLargeImageUrl, ''AnimeByRank'' AS ListType
+            SELECT Id, Title AS canonicalTitle, WebpLargeImageUrl, CoverImageLarge, PosterImageLarge, ''AnimeByRank'' AS ListType
             FROM Anime
             ORDER BY Rank DESC
             OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;
 
-            SELECT Id, Title AS canonicalTitle, WebpLargeImageUrl, ''AnimeByMembers'' AS ListType
+            SELECT Id, Title AS canonicalTitle, WebpLargeImageUrl, CoverImageLarge, PosterImageLarge, ''AnimeByMembers'' AS ListType
             FROM Anime
             ORDER BY Members DESC
             OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;
 
-            SELECT Id, Title AS canonicalTitle, WebpLargeImageUrl, ''AnimeByFavorites'' AS ListType
+            SELECT Id, Title AS canonicalTitle, WebpLargeImageUrl, CoverImageLarge, PosterImageLarge, ''AnimeByFavorites'' AS ListType
             FROM Anime
             ORDER BY Favorites DESC
             OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;
 
-            SELECT Id, Title AS CanonicalTitle, WebpLargeImageUrl, ''MangaByRank'' AS ListType
+            SELECT Id, Title AS CanonicalTitle, WebpLargeImageUrl, CoverImageLarge, PosterImageLarge, ''MangaByRank'' AS ListType
             FROM Mangas
             ORDER BY Rank DESC
             OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;
 
-            SELECT Id, Title AS CanonicalTitle, WebpLargeImageUrl, ''MangaByMembers'' AS ListType
+            SELECT Id, Title AS CanonicalTitle, WebpLargeImageUrl, CoverImageLarge, PosterImageLarge, ''MangaByMembers'' AS ListType
             FROM Mangas
             ORDER BY Members DESC
             OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;
 
-            SELECT Id, Title AS CanonicalTitle, WebpLargeImageUrl, ''MangaByFavorites'' AS ListType
+            SELECT Id, Title AS CanonicalTitle, WebpLargeImageUrl, CoverImageLarge, PosterImageLarge, ''MangaByFavorites'' AS ListType
             FROM Mangas
             ORDER BY Favorites DESC
             OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;
 
-            SELECT Id, Title AS canonicalTitle, WebpLargeImageUrl, ''AnimeLastAdded'' AS ListType
+            SELECT Id, Title AS canonicalTitle, WebpLargeImageUrl, CoverImageLarge, PosterImageLarge, ''AnimeLastAdded'' AS ListType
             FROM Anime
             ORDER BY Id DESC
             OFFSET @Skip ROWS FETCH NEXT @Take ROWS ONLY;

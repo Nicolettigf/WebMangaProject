@@ -19,6 +19,8 @@ namespace MvcPresentationLayer.Models.AnimeModel
         public string? Status { get; set; }
         public string? JpgLargeImageUrl { get; set; }
         public string? WebpLargeImageUrl { get; set; }
+        public string? PosterImageLarge { get; set; }
+        public string? CoverImageLarge { get; set; }
         public int? Episodes { get; set; }
         public string? Type { get; set; }
         public ICollection<GenreItem> GenreItems { get; set; }
