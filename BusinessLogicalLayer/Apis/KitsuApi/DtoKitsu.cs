@@ -1,5 +1,7 @@
 ﻿// Root myDeserializedClass = JsonConvert.Deserializeobject?<Root>(myJsonResponse);
 using Entities;
+using Entities.AnimeS;
+using Entities.MangaS;
 using Newtonsoft.Json;
 using Shared.Extensions;
 public class RootKitsu
@@ -8,10 +10,14 @@ public class RootKitsu
     public Meta? meta { get; set; }
     public links? links { get; set; }
 }
+public class RootKitsuUnitario
+{
+    public DatumKitsu data { get; set; }
+}
 
 public class DatumKitsu
 {
-    public string? id { get; set; }
+    public string id { get; set; }
     public string? type { get; set; }
     public links? links { get; set; }
     public Attributes? attributes { get; set; }
@@ -47,11 +53,6 @@ public class DatumKitsu
         return titleMatch; // && dateMatch && episodesMatch && subtypeMatch;
     }
 }
-public class RootKitsuUnitario
-{
-    public DatumKitsu data { get; set; }
-}
-
 
 public class Meta
 {
@@ -191,6 +192,45 @@ public class RatingFrequencies
 
     [JsonProperty("20")]
     public string? _20 { get; set; }
+
+    public MediaRatingFrequency ColocarDados(int? animeId = null, Anime? anime = null, int? mangaId = null, Manga? manga = null)
+    {
+        int? nota2 = int.TryParse(_2, out var n2) ? n2 : 0;
+        int? nota3 = int.TryParse(_3, out var n3) ? n3 : 0;
+        int? nota4 = int.TryParse(_4, out var n4) ? n4 : 0;
+        int? nota5 = int.TryParse(_5, out var n5) ? n5 : 0;
+
+        return new MediaRatingFrequency
+        {
+            _1 = (int?)Math.Round(((nota2 ?? 0) + (nota3 ?? 0) + (nota4 ?? 0)) / 3.0),
+            _2 = nota2,
+            _3 = nota3,
+            _4 = nota4,
+            _5 = nota5,
+            AnimeId = animeId,
+            Anime = anime,
+            MangaId = mangaId,
+            Manga = manga
+        };
+    }
+
+
+    private int? Sum(params string?[] values)
+    {
+        int total = 0;
+        bool anyValue = false;
+
+        foreach (var val in values)
+        {
+            if (int.TryParse(val, out int parsed))
+            {
+                total += parsed;
+                anyValue = true;
+            }
+        }
+
+        return anyValue ? total : null;
+    }
 }
 public class Relationships
 {

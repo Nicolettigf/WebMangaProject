@@ -1,6 +1,6 @@
 ﻿namespace Entities.MangaS
 {
-    public class Manga : KitsuMember
+    public class Manga : MediaBase
     {
         public int? Chapters { get; set; }
         public int? Volumes { get; set; }

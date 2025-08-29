@@ -1,7 +1,4 @@
 ﻿using BusinessLogicalLayer.Interfaces;
-using BusinessLogicalLayer.Interfaces.IMangaInterfaces;
-using DataAccessLayer;
-using DataAccessLayer.Interfaces;
 using DataAccessLayer.Interfaces.IAnimeInterfaces;
 using DataAccessLayer.Interfaces.IMangaInterfaces;
 using DataAccessLayer.UnitOfWork;
@@ -11,7 +8,7 @@ using Entities.MangaS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using System.Drawing;
+using System.Diagnostics;
 
 namespace BusinessLogicalLayer.Apis.JikanApi
 {
@@ -19,198 +16,156 @@ namespace BusinessLogicalLayer.Apis.JikanApi
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly string ApiName = "Jikan";
-        private readonly MangaProjectDbContext _db;
         private readonly IServiceScopeFactory _scopeFactory;
         private readonly Uri baseAddress = new("https://api.jikan.moe/v4/");
-        private readonly int LimiteManga = 190000;
-        private readonly int LimiteAnime = 80000;
         private readonly int LoteTamanho = 25; // Máximo permitido pelo Jikan
+        const int maxPerSecond = 3; // limite da API
         private int counter = 0;
 
-        public JikanApi(MangaProjectDbContext db, IServiceScopeFactory scopeFactory, IUnitOfWork unitOfWork)
+        public JikanApi(IServiceScopeFactory scopeFactory, IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
-            _db = db;
             _scopeFactory = scopeFactory;
         }
-
-        public async Task ConsumeManga()
+        public async Task ConsumeMedia<T>() where T : MediaBase, new() 
         {
             counter = 0; // contador de registros processados
 
-            var lastpage = _unitOfWork.ApiConsumeRepository.GetStats(ApiName).Result.PagesConsumedManga ?? 0;
+            var firstPage = typeof(T) == typeof(Anime)
+                ? _unitOfWork.ApiConsumeRepository.GetStats(ApiName).Result.PagesConsumedAnime ?? 0
+                : _unitOfWork.ApiConsumeRepository.GetStats(ApiName).Result.PagesConsumedManga ?? 0;
 
-            int totalPages = (int)Math.Ceiling(LimiteManga / (double)LoteTamanho);
+            int lastId = await ApiConsume.GetLastId<T>(ApiName);
+            int lastPage = (int)Math.Ceiling(lastId / (double)LoteTamanho);
 
-            using (var httpClient = new HttpClient { BaseAddress = baseAddress })
+            const int maxPagesPerSecond = 3; // limite da API
+            using var httpClient = new HttpClient { BaseAddress = baseAddress };
+
+            // Processa páginas em batches de 3
+            for (int batchStart = firstPage + 1; batchStart <= lastPage; batchStart += maxPagesPerSecond)
             {
-                for (int page = lastpage + 1; page <= totalPages; page++)
+                var sw = Stopwatch.StartNew();
+
+                var pageBatch = Enumerable.Range(batchStart, Math.Min(maxPagesPerSecond, lastPage - batchStart + 1));
+
+                var tasks = pageBatch.Select(async page =>
                 {
-                    var dtos = await BuscarPagina<RootJikan>(httpClient, "manga", page, LoteTamanho);
+                    var dtos = await BuscarPagina<T>(httpClient, page);
 
                     if (dtos.Count > 0)
                     {
-                        using var scope = _scopeFactory.CreateScope();
-                        var mangaDal = scope.ServiceProvider.GetRequiredService<IMangaDAL>();
-
-                        var mangaEntities = dtos
-                            .Select(dto => ConverterJikan.ConvertDTOToEntity<Manga>(dto))
-                            .OfType<Manga>()
+                        var entities = dtos
+                            .Select(dto => ConverterJikan.ConvertDTOToEntity<T>(dto))
+                            .OfType<T>()
                             .ToList();
 
-                        await mangaDal.InsertRange(mangaEntities);
-                    }
-                    await SalvarConsumoApi<Manga>(ConsumoTipo.Pagina, page);
-
-                    Console.WriteLine($"✅ Página {page} processada ({dtos.Count} mangas)");
-                    await Task.Delay(350);
-                }
-            }
-
-
-            Console.WriteLine("🏁 Finalizado!");
-        }
-        public async Task ConsumeAnime()
-        {
-            counter = 0; // contador de registros processados
-
-            var lastpage = _unitOfWork.ApiConsumeRepository.GetStats(ApiName).Result.PagesConsumedAnime ?? 0;
-
-            int totalPages = (int)Math.Ceiling(LimiteAnime / (double)LoteTamanho);
-
-            using (var httpClient = new HttpClient { BaseAddress = baseAddress })
-            {
-                for (int page = lastpage + 1; page <= totalPages; page++)
-                {
-                    var animes = await BuscarPagina<RootAniPageJikan>(httpClient, "anime", page, LoteTamanho);
-
-                    if (animes.Count > 0)
-                    {
                         using var scope = _scopeFactory.CreateScope();
-                        var animeDal = scope.ServiceProvider.GetRequiredService<IAnimeDAL>();
+                        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-                        var animeEntities = animes.Select(dto =>
-                        ConverterJikan.ConvertDTOToEntity<Anime>(dto)).OfType<Anime>().ToList();
-
-                        await animeDal.InsertRange(animeEntities);
+                        await uow.GetDAL<T>().InsertRange(entities);
+                        await uow.Commit();
                     }
-                    await SalvarConsumoApi<Anime>(ConsumoTipo.Pagina, page);
-                    Console.WriteLine($"✅ Página {page} processada ({animes.Count} animes)");
 
-                    await Task.Delay(350);
-                }
+                    await SalvarConsumoApi<T>(ConsumoTipo.Pagina, page);
+                    Console.WriteLine($"✅ Página {page} processada ({dtos.Count} {typeof(T).Name.ToLower()}s)");
+                });
+
+                await Task.WhenAll(tasks);
+
+                // Aguarda o tempo restante para respeitar o limite de 3 páginas/segundo
+                sw.Stop();
+
+                int delay = Math.Max(0, 1000 - (int)sw.ElapsedMilliseconds);
+                await Task.Delay(delay);
             }
             Console.WriteLine("🏁 Finalizado!");
         }
-        public async Task ConsumeMissingAnime()
+
+        public async Task ConsumeMissingMedia<T>() where T : MediaBase, new()
         {
-            counter = 0; // contador de registros processados
+            counter = 0;
+            var ids = await _unitOfWork.ApiConsumeRepository.GetIdsFromApi<T>(ApiName, ConsumoTipo.Unitario);
+            List<int> missingIds = ApiConsumeStats.GetMissingUnitarios(ids, await ApiConsume.GetLastId<T>(ApiName));
+            using var httpClient = new HttpClient { BaseAddress = baseAddress };
 
-            // Retorna os IDs existentes
-            var ids = await _unitOfWork.ApiConsumeRepository.GetIdsFromApi<Anime>(ApiName, ConsumoTipo.Unitario);
-            var missingMalIds = ApiConsumeStats.GetMissingUnitarios(ids, LimiteAnime);
+            var sw = Stopwatch.StartNew(); // inicia o cronômetro do batch
 
-            Console.WriteLine($"Iniciando consumo unitário...");
-
-            using (var httpClient = new HttpClient { BaseAddress = baseAddress })
+            foreach (var batch in missingIds.Chunk(maxPerSecond))
             {
-                foreach (var malId in missingMalIds)
+                var tasks = batch.Select(async malId =>
                 {
                     try
                     {
-                        var animeDto = await BuscarPorId(httpClient, "anime", malId);
+                        using var scope = _scopeFactory.CreateScope();
+                        var uow = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
 
-                        if (animeDto != null)
+                        var dto = await BuscarPorId<T>(httpClient, malId);
+
+                        if (dto != null)
                         {
-                            using var scope = _scopeFactory.CreateScope();
-                            var animeDal = scope.ServiceProvider.GetRequiredService<IAnimeDAL>();
-
-                            var animeEntity = ConverterJikan.ConvertDTOToEntity<Anime>(animeDto);
-                            await animeDal.Insert(animeEntity);
+                            var entity = ConverterJikan.ConvertDTOToEntity<T>(dto);
+                            await uow.GetDAL<T>().Insert(entity);
+                            await uow.Commit();
                         }
                         else
                         {
                             Console.WriteLine($"⚠️ Nenhum dado retornado para MAL ID {malId}");
                         }
-                        await SalvarConsumoApi<Anime>(ConsumoTipo.Unitario, malId);
+
+                        await SalvarConsumoApi<T>(ConsumoTipo.Unitario, malId);
                     }
                     catch (Exception ex)
                     {
                         Console.WriteLine($"❌ Erro ao processar MAL ID {malId}: {ex.Message}");
                     }
+                });
 
-                    // Delay para respeitar o rate limit
-                    await Task.Delay(350);
-                }
+                await Task.WhenAll(tasks);
+
+                sw.Stop(); // para o cronômetro
+               
+                // espera apenas o tempo necessário para completar 1 segundo
+                await Task.Delay(Math.Max(0, 1000 - (int)sw.ElapsedMilliseconds));
             }
 
-            Console.WriteLine("🏁 Finalizado consumo unitário!");
+            Console.WriteLine($"🏁 Finalizado consumo unitário de {typeof(T).Name}s!");
         }
-        public async Task ConsumeMissingMangas()
+        public async Task ConsumeGenre<T>() where T : MediaBase
         {
-            counter = 0; // contador de registros processados
-
-            var ids = await _unitOfWork.ApiConsumeRepository.GetIdsFromApi<Manga>(ApiName, ConsumoTipo.Unitario);
-            var missingMalIds = ApiConsumeStats.GetMissingUnitarios(ids, LimiteManga);
-
-            Console.WriteLine($"Iniciando consumo unitário...");
+            // Define o endpoint baseado no tipo da entidade
+            string type = typeof(T) == typeof(Anime) ? "anime" : "manga";
 
             using var httpClient = new HttpClient { BaseAddress = baseAddress };
-            foreach (var malId in missingMalIds)
+
+            var response = await httpClient.GetAsync($"genres/{type}");
+            if (!response.IsSuccessStatusCode) return;
+
+            var jsonString = await response.Content.ReadAsStringAsync();
+            var genresRoot = JsonConvert.DeserializeObject<RootCate>(jsonString);
+
+            if (genresRoot?.data == null) return;
+
+            foreach (var datum in genresRoot.data)
             {
-                try
+                var exists = await _unitOfWork.Query<Entities.MediaBase.Genre>().AnyAsync(c => c.Id == datum.mal_id);
+
+                if (exists) continue;
+
+                var genre = new MediaBase.Genre
                 {
-                    var mangaDto = await BuscarPorId(httpClient, "manga", malId);
+                    Id = datum.mal_id,
+                    MalId = datum.mal_id,
+                    Name = datum.name,
+                    Count = datum.count
+                };
 
-                    if (mangaDto != null)
-                    {
-                        var manga = ConverterJikan.ConvertDTOToEntity<Manga>(mangaDto);
-                        await _unitOfWork.MangaRepository.Insert(manga);
-
-                        Console.WriteLine($"✅ Manga {malId} inserido.");
-                    }
-                    else
-                    {
-                        Console.WriteLine($"⚠️ Nenhum dado retornado para MAL ID {malId}");
-                    }
-
-                    await SalvarConsumoApi<Manga>(ConsumoTipo.Unitario, malId);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"❌ Erro ao processar MAL ID {malId}: {ex.Message}");
-                }
-
-                await Task.Delay(350);
+                await _unitOfWork.MangaRepository.InsertCategory(genre);
             }
         }
-        private async Task<List<MediaDtoJikan>> BuscarPagina<T>
-        (HttpClient httpClient, string endpoint, int page, int limit) where T : class
+        private async Task<MediaDtoJikan?> BuscarPorId<T>(HttpClient httpClient, int malId) where T : MediaBase
         {
-            try
-            {
-                var response = await httpClient.GetAsync($"{endpoint}?page={page}&limit={limit}");
-                var jsonString = await response.Content.ReadAsStringAsync();
+            string endpoint = typeof(T) == typeof(Anime) ? "anime" : "manga";
 
-                if (string.IsNullOrWhiteSpace(jsonString) ||
-                    jsonString.Contains("errors") ||
-                    jsonString.Contains("BadResponseException"))
-                    return new List<MediaDtoJikan>();
-
-                var dto = JsonConvert.DeserializeObject<T>(jsonString);
-
-                // procura a prop "data" no Root recebido
-                var dataProp = typeof(T).GetProperty("data");
-                var value = dataProp?.GetValue(dto) as List<MediaDtoJikan>;
-                return value ?? new List<MediaDtoJikan>();
-            }
-            catch
-            {
-                return new List<MediaDtoJikan>();
-            }
-        }
-        private async Task<MediaDtoJikan?> BuscarPorId(HttpClient httpClient, string endpoint, int malId)
-        {
             try
             {
                 var response = await httpClient.GetAsync($"{endpoint}/{malId}");
@@ -227,47 +182,40 @@ namespace BusinessLogicalLayer.Apis.JikanApi
                 return null;
             }
         }
-        public async Task ConsumeGenre()
+        private async Task<List<MediaDtoJikan>> BuscarPagina<T>(HttpClient httpClient, int page)
+    where T : MediaBase
         {
-            await PopularGenerosAsync("anime");
-            await PopularGenerosAsync("manga");
-        }
-        private async Task PopularGenerosAsync(string type)
-        {
-            using var httpClient = new HttpClient { BaseAddress = baseAddress };
-
-            var response = await httpClient.GetAsync($"genres/{type}");
-            if (!response.IsSuccessStatusCode) return;
-
-            var jsonString = await response.Content.ReadAsStringAsync();
-            var genresRoot = JsonConvert.DeserializeObject<RootCate>(jsonString);
-
-            if (genresRoot?.data == null) return;
-
-            foreach (var datum in genresRoot.data)
+            try
             {
-                var exists = await  _db.Genre.AnyAsync(c => c.MalId == datum.mal_id);
-                if (exists) continue;
+                // Define o endpoint baseado no tipo da entidade
+                string endpoint = typeof(T) == typeof(Anime) ? "anime" : "manga";
 
-                var genre = new MediaBase.Genre
-                {
-                    Id = datum.mal_id,
-                    MalId = datum.mal_id,
-                    Name = datum.name,
-                    Count = datum.count
-                };
+                var response = await httpClient.GetAsync($"{endpoint}?page={page}&limit={LoteTamanho}");
+                var jsonString = await response.Content.ReadAsStringAsync();
 
-                await _unitOfWork.MangaRepository.InsertCategory(genre);
+                if (string.IsNullOrWhiteSpace(jsonString) ||
+                    jsonString.Contains("errors") ||
+                    jsonString.Contains("BadResponseException"))
+                    return new List<MediaDtoJikan>();
+
+                // Hoje só tem um DTO, então sempre desserializa como RootPageJikan
+                var dto = JsonConvert.DeserializeObject<RootPageJikan>(jsonString);
+
+                return dto?.data ?? new List<MediaDtoJikan>();
+            }
+            catch
+            {
+                return new List<MediaDtoJikan>();
             }
         }
-        public async Task SalvarConsumoApi<T>(ConsumoTipo tipo, int valor) where T : MediaBase
+        private async Task SalvarConsumoApi<T>(ConsumoTipo tipo, int valor) where T : MediaBase
         {
             counter++;
 
             switch (tipo)
             {
                 case ConsumoTipo.Unitario:
-                    if (counter % 50 == 0) // salva a cada 50
+                    if (counter % 25 == 0) // salva a cada 25
                     {
                         await _unitOfWork.ApiConsumeRepository.UpdateConsumeStats<T>(ConsumoTipo.Unitario, ApiName, valor);
                         Console.WriteLine($"🔄 Stats (unitário) atualizados após {counter} registros.");
@@ -275,7 +223,7 @@ namespace BusinessLogicalLayer.Apis.JikanApi
                     break;
 
                 case ConsumoTipo.Pagina:
-                    if (counter % 20 == 0) // salva a cada 20
+                    if (counter % 10 == 0) // salva a cada 10
                     {
                         await _unitOfWork.ApiConsumeRepository.UpdateConsumeStats<T>(ConsumoTipo.Pagina, ApiName, valor);
                         Console.WriteLine($"🔄 Stats (página) atualizados após {counter} registros.");
@@ -283,6 +231,5 @@ namespace BusinessLogicalLayer.Apis.JikanApi
                     break;
             }
         }
-
     }
 }

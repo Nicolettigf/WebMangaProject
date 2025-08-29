@@ -93,7 +93,7 @@ public class MediaDtoJikan
         media.Title = this.title;
         media.TitleEnglish = this.title_english;
         media.TitleJapanese = this.title_japanese;
-        media.TitleSynonyms = this.title_synonyms != null ?  this.title_synonyms.First() : null;
+        media.TitleSynonyms = this.title_synonyms?.FirstOrDefault();
         media.Url = this.url;
         media.Approved = this.approved;
         media.Status = this.status;
@@ -199,14 +199,10 @@ public class RootSingleJikan
 {
     public MediaDtoJikan data { get; set; }
 }
-public class RootAniPageJikan
-{
-    public List<MediaDtoJikan> data { get; set; }
-}
-public class RootJikan
+public class RootPageJikan
 {
     public Pagination? pagination { get; set; }
-    public List<MediaDtoJikan>? data { get; set; }
+    public List<MediaDtoJikan> data { get; set; }
 }
 #endregion
 

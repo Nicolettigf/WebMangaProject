@@ -99,10 +99,5 @@ namespace BusinessLogicalLayer.Implementations
         {
             return await _unitOfWork.AnimeRepository.GetByPopularity(skip, take);
         }
-
-        public async Task<DataResponse<int>> GetMissingMalIds()
-        {
-            return await _unitOfWork.AnimeRepository.GetMissingMalIds();
-        }
     }
 }

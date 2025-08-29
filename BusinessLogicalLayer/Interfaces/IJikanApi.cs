@@ -1,16 +1,11 @@
-﻿namespace BusinessLogicalLayer.Interfaces
+﻿using Entities;
+
+namespace BusinessLogicalLayer.Interfaces
 {
     public interface IJikanApi
     {
-        /// <summary>
-        /// Consome mangas da API exerna kitsu, e insere na DB(DAL)
-        /// </summary>
-        /// <param></param>
-        /// <returns></returns>
-        Task ConsumeManga();
-        Task ConsumeMissingMangas();
-        Task ConsumeAnime();
-        Task ConsumeMissingAnime();
-        Task ConsumeGenre();
+        Task ConsumeGenre<T>() where T : MediaBase;
+        Task ConsumeMissingMedia<T>() where T : MediaBase, new();
+        Task ConsumeMedia<T>() where T : MediaBase, new();
     }
 }

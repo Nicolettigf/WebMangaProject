@@ -486,9 +486,6 @@ namespace DataAccessLayer.Migrations
                     b.Property<int?>("PagesConsumedManga")
                         .HasColumnType("int");
 
-                    b.Property<int?>("TotalRequests")
-                        .HasColumnType("int");
-
                     b.Property<int?>("UnitarioAnime")
                         .HasColumnType("int");
 
@@ -940,7 +937,10 @@ namespace DataAccessLayer.Migrations
             modelBuilder.Entity("Entities.MediaRatingFrequency", b =>
                 {
                     b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
 
                     b.Property<int?>("AnimeId")
                         .HasColumnType("int");

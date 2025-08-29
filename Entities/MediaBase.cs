@@ -26,17 +26,23 @@ namespace Entities
         public string? Background { get; set; }
         public string? From { get; set; }
         public string? To { get; set; }
-
         public string? JpgImageUrl { get; set; }
         public string? JpgSmallImageUrl { get; set; }
         public string? JpgLargeImageUrl { get; set; }
         public string? WebpImageUrl { get; set; }
         public string? WebpSmallImageUrl { get; set; }
         public string? WebpLargeImageUrl { get; set; }
-
         public MediaRatingFrequency? MediaRatingFrequency { get; set; }
 
-        //public List<string>? TitleSynonyms { get; set; }
+        #region KitsuProps
+        public int? IdKitsu { get; set; }
+        public bool? Nsfw { get; set; }
+        public string? YoutubeVideoId { get; set; }
+        public int? EpisodeLength { get; set; }
+        public string? PosterImageLarge { get; set; }
+        public string? CoverImageLarge { get; set; }
+        #endregion
+
         public ICollection<ExplicitGenre>? ExplicitGenres { get; set; }
         public ICollection<Demographic>? Demographics { get; set; } = new List<Demographic>();
         public ICollection<Genre>? Genres { get; set; } = new List<Genre>();

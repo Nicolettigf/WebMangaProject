@@ -39,5 +39,14 @@ namespace Shared.Extensions
 
             return sb.ToString().Normalize(NormalizationForm.FormC);
         }
+
+        public static int ToIntOrDefault(this string? value)
+        {
+            if (int.TryParse(value, out int result))
+            {
+                return result;
+            }
+            return 0;
+        }
     }
 }

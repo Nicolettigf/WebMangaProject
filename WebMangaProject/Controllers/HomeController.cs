@@ -1,6 +1,9 @@
 ﻿using AutoMapper;
 using BusinessLogicalLayer.Interfaces;
+using DataAccessLayer.Interfaces.IAnimeInterfaces;
+using DataAccessLayer.Interfaces.IMangaInterfaces;
 using Entities.AnimeS;
+using Entities.MangaS;
 using Microsoft.AspNetCore.Mvc;
 using MvcPresentationLayer.Models.AnimeModel;
 using MvcPresentationLayer.Models.HomePage;
@@ -31,16 +34,18 @@ namespace MvcPresentationLayer.Controllers
         {
             //Task.Run(async () =>
             //{
-            await _KitsuApi.BuscarECompararAnimePorIds(20000);
-            await _JikanApi.ConsumeAnime();
-            await _JikanApi.ConsumeManga();
-            await _JikanApi.ConsumeMissingAnime();
-            await _JikanApi.ConsumeMissingMangas();
-            await _KitsuApi.BuscarPagina<Anime>("anime");
-                await _JikanApi.ConsumeGenre();
+            await _KitsuApi.BuscarECompararPorIds<Anime>();
+            await _KitsuApi.BuscarECompararPorIds<Manga>();
+            await _JikanApi.ConsumeGenre<Anime>();
+            await _JikanApi.ConsumeGenre<Manga>();
+            await _JikanApi.ConsumeMedia<Anime>();
+            await _JikanApi.ConsumeMedia<Manga>();
+            await _JikanApi.ConsumeMissingMedia<Anime>();
+            await _JikanApi.ConsumeMissingMedia<Manga>();
+
             //});
 
-            var HomeAnimeEMangas = await _cacheService.GetTopAnimeMangaAsync(0,7);
+            var HomeAnimeEMangas = await _cacheService.GetTopAnimeMangaAsync(0, 7);
 
             if (!HomeAnimeEMangas.HasSuccess)
             {

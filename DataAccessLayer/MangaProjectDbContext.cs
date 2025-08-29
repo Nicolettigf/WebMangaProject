@@ -42,7 +42,6 @@ namespace DataAccessLayer
             modelBuilder.Entity<Manga>().Property(c => c.Id).ValueGeneratedNever();
             modelBuilder.Entity<Anime>().Property(c => c.Id).ValueGeneratedNever();
             modelBuilder.Entity<Genre>().Property(c => c.Id).ValueGeneratedNever();
-            modelBuilder.Entity<MediaRatingFrequency>().Property(c => c.Id).ValueGeneratedNever();
             modelBuilder.Entity<ApiConsumeStats>().Property(c => c.Id).ValueGeneratedNever();
 
             // Configuração explícita das relações de Genre

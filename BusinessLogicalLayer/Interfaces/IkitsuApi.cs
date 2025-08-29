@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,8 +9,6 @@ namespace BusinessLogicalLayer.Interfaces
 {
     public interface IKitsuApi
     {
-        Task<RootKitsu> BuscarPagina<T>(string endpoint, int offset = 0, int limit = 20) where T : class;
-
-        Task BuscarECompararAnimePorIds(int maxId);
+        Task BuscarECompararPorIds<T>() where T : MediaBase;
     }
 }

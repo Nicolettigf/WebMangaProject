@@ -9,6 +9,8 @@ using DataAccessLayer.Interfaces.IUserComentary;
 using DataAccessLayer.Interfaces.IUSerInterfaces;
 using DataAccessLayer.Interfaces.IUserItem;
 using Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Shared;
 using Shared.Responses;
 
@@ -17,6 +19,7 @@ namespace DataAccessLayer.UnitOfWork
     public class UnitOfWork : IUnitOfWork, IDisposable
     {
         private readonly MangaProjectDbContext _dbContext;
+        private readonly IServiceProvider _serviceProvider; // precisa disso
         private IHomeDAL homeRepository = null;
         private IApiConsumeDAL apiConsumeRepository = null;
         private IUserDAL userRepository = null;
@@ -28,14 +31,20 @@ namespace DataAccessLayer.UnitOfWork
         private IAnimeComentaryDAL animeComentaryRepository = null;
         private IApiReInsertStatsDAL apiReInsertStatsRepository = null;
 
-        public UnitOfWork(MangaProjectDbContext dbContext, IUserDAL userDAL)
+        public UnitOfWork(MangaProjectDbContext dbContext, IServiceProvider serviceProvider)
         {
-            this._dbContext = dbContext;
+            _dbContext = dbContext;
+            _serviceProvider = serviceProvider;
         }
 
         public IQueryable<T> Query<T>() where T : class
         {
             return _dbContext.Set<T>();
+        }
+
+        public ICRUD<T> GetDAL<T>() where T : MediaBase
+        {
+            return _serviceProvider.GetRequiredService<ICRUD<T>>();
         }
 
         public async Task<Response> Commit()
@@ -50,6 +59,7 @@ namespace DataAccessLayer.UnitOfWork
                 return ResponseFactory.CreateInstance().CreateFailedResponse(ex);
             }
         }
+
         public async Task<Response> CommitForUser()
         {
             try
@@ -62,7 +72,6 @@ namespace DataAccessLayer.UnitOfWork
                 return UserDbFailed.Handle(ex);
             }
         }
-
 
         private bool disposed = false;
 
@@ -200,6 +209,73 @@ namespace DataAccessLayer.UnitOfWork
         {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        /// <summary>
+        /// Desfaz todas as alterações pendentes no DbContext.
+        /// </summary>
+        public async Task Rollback()
+        {
+            // Desfaz alterações pendentes no DbContext
+            foreach (var entry in _dbContext.ChangeTracker.Entries()
+                                             .Where(e => e.State != EntityState.Unchanged))
+            {
+                switch (entry.State)
+                {
+                    case EntityState.Modified:
+                        entry.CurrentValues.SetValues(entry.OriginalValues);
+                        entry.State = EntityState.Unchanged;
+                        break;
+                    case EntityState.Added:
+                        entry.State = EntityState.Detached;
+                        break;
+                    case EntityState.Deleted:
+                        entry.State = EntityState.Unchanged;
+                        break;
+                }
+            }
+            await Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Retorna um IQueryable sem rastreamento de alterações.
+        /// Ideal para leitura apenas.
+        /// </summary>
+        public IQueryable<T> QueryNoTracking<T>() where T : class
+        {
+            return _dbContext.Set<T>().AsNoTracking();
+        }
+
+        /// <summary>
+        /// Desanexa uma entidade específica do DbContext, deixando de rastrear alterações.
+        /// </summary>
+        public void Detach<T>(T entity) where T : class
+        {
+            _dbContext.Entry(entity).State = EntityState.Detached;
+        }
+
+        /// <summary>
+        /// Busca uma entidade pelo ID.
+        /// </summary>
+        public async Task<T> FindByIdAsync<T>(int id) where T : class
+        {
+            return await _dbContext.Set<T>().FindAsync(id);
+        }
+
+        /// <summary>
+        /// Executa uma query SQL bruta diretamente no banco de dados.
+        /// </summary>
+        public async Task<int> ExecuteSqlAsync(string sql, params object[] parameters)
+        {
+            return await _dbContext.Database.ExecuteSqlRawAsync(sql, parameters);
+        }
+
+        /// <summary>
+        /// Reseta o ChangeTracker do DbContext, removendo o rastreamento de todas as entidades carregadas.
+        /// </summary>
+        public void ResetChangeTracker()
+        {
+            _dbContext.ChangeTracker.Clear();
         }
     }
 }

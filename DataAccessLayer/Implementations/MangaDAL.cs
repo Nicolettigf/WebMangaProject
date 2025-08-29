@@ -22,7 +22,7 @@ namespace DataAccessLayer.Implementations
 
         public async Task<Response> Insert(Manga manga)
         {
-                ICollection<Genre> cate = new List<Genre>();
+           ICollection<Genre> cate = new List<Genre>();
             try
             {
 

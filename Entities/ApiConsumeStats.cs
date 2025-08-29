@@ -16,17 +16,16 @@ namespace Entities
         public int? PagesConsumedManga { get; set; }
         public int? UnitarioAnime { get; set; }
         public int? UnitarioManga { get; set; }
-        public int? TotalRequests { get; set; }
 
         public static List<int> GetMissingUnitarios(List<int> existingIds, int limite)
         {
             if (existingIds == null || existingIds.Count == 0)
-                return Enumerable.Range(1, limite).ToList();
+                return new List<int>(); // se não há ids, retorna vazio
 
             existingIds.Sort(); // garante que a lista esteja ordenada
 
             var missingIds = new List<int>();
-            int current = 1;
+            int current = existingIds.First(); // começa do primeiro ID existente
 
             foreach (var id in existingIds)
             {

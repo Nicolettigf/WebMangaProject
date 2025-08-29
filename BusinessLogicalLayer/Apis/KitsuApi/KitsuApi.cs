@@ -3,177 +3,143 @@ using BusinessLogicalLayer.Interfaces;
 using DataAccessLayer.UnitOfWork;
 using Entities;
 using Entities.AnimeS;
+using Entities.MangaS;
 using Newtonsoft.Json;
+using System.Diagnostics.Metrics;
+using System.Drawing;
 using System.Globalization;
 namespace BusinessLogicalLayer.Apis.KitsuApi
 {
     public class KitsuApi : IKitsuApi
     {
         private readonly Uri baseAddress = new("https://kitsu.io/api/edge/");
-        private readonly int LoteTamanho = 20; // limite padrão do Kitsu
+        private readonly string ApiName = "Kitsu";
         private readonly IUnitOfWork _unitOfWork;
+        private int counter = 0;
+        const int batchSize = 100;
 
         public KitsuApi(IUnitOfWork unitOfWork)
         {
             _unitOfWork = unitOfWork;
         }
 
-        public async Task<RootKitsu> BuscarPagina<T>(string endpoint, int offset = 0, int limit = 20) where T : class
+        public async Task BuscarECompararPorIds<T>() where T : MediaBase
         {
-            using var httpClient = new HttpClient { BaseAddress = baseAddress };
+            counter = 0;
 
-            // Monta a query no padrão do Kitsu
-            var response = await httpClient.GetAsync($"{endpoint}?page[limit]={limit}&page[offset]={offset}");
-            var jsonString = await response.Content.ReadAsStringAsync();
-
-            if (string.IsNullOrWhiteSpace(jsonString) || !response.IsSuccessStatusCode)
-                return null;
-
-            foreach (var item in JsonConvert.DeserializeObject<RootKitsu>(jsonString).data)
-            {
-                // Pega apenas animes que estão no ar, e passa para memória
-                var dbAnimes = _unitOfWork.Query<Anime>()
-                                .Where(a => a.Airing == true) // filtro simples traduzível para SQL
-                                .AsEnumerable()               // agora passa para memória
-                                .Where(a => item.IsMatch(a.Title)) // compara usando seu método
-                                .OrderBy(a => a.Title)
-                                .ToList();
-
-                foreach (var match in dbAnimes)
-                {
-                    // Aqui você pode fazer o que quiser com os matches
-                    Console.WriteLine($"Match encontrado: {match.TitleEnglish}");
-                }
-            }
-
-            return null;
-        }
-
-        public async Task BuscarECompararAnimePorIds(int maxId)
-        {
             using var httpClient = new HttpClient();
+            string endpoint = typeof(T) == typeof(Anime) ? "anime" : "manga";
 
-            var dbAnimes = _unitOfWork.Query<Anime>().AsEnumerable().ToList();
+            var dbItemsQuery = _unitOfWork.Query<T>().Where(x => x.IdKitsu == null).ToList();
 
-            //var dbAnimes = _unitOfWork.Query<Anime>().Select(a => new{ a.Id, a.Title,a.From,a.Episodes,a.Type}).AsEnumerable().ToList();
+            // Pega o último ID consumido do tipo T
+            var stats = _unitOfWork.ApiConsumeRepository.GetStats(ApiName).Result;
+            var startId = typeof(T) == typeof(Anime) ? stats.UnitarioAnime ?? 0 : stats.UnitarioManga ?? 0;
 
-            const string TYPE = "Anime"; // pode trocar para "Manga" se mudar a rota
-            const string API_NAME = "Kitsu";
+            // Define até onde buscar (pode vir do GetLastId<T>())
+            int lastId = await ApiConsume.GetLastId<T>(ApiName);
 
-            int total = 0, um = 0, dois = 0, tres = 0, resto = 0, semMatch = 0;
-
-            const int batchSize = 100;
-
-            for (int startId = 0; startId <= maxId; startId += batchSize)
+            for (; startId <= lastId; startId += batchSize)
             {
                 var statsToInsert = new List<ApiReInsertStats>();
 
-                var tasks = Enumerable.Range(startId, batchSize)
-                    .Select(async id =>
-                    {
-                        try
-                        {
-                            var url = $"https://kitsu.io/api/edge/anime/{id}";
-                            var response = await httpClient.GetStringAsync(url);
-                            return JsonConvert.DeserializeObject<RootKitsuUnitario>(response)?.data;
-                        }
-                        catch
-                        {
-                            return null;
-                        }
-                    });
-
-                var kitsuAnimes = await Task.WhenAll(tasks);
-
-                foreach (var kitsuAnime in kitsuAnimes.Where(x => x != null))
+                var tasks = Enumerable.Range(startId, batchSize).Select(async id =>
                 {
-                    total++;
+                    try
+                    {
+                        var url = $"{baseAddress}/{endpoint}/{id}";
+                        var response = await httpClient.GetStringAsync(url);
 
-                    var matches = dbAnimes
-                        .Where(a => kitsuAnime.IsMatch(a.Title))
+                        return JsonConvert.DeserializeObject<RootKitsuUnitario>(response)?.data;
+                    }
+                    catch
+                    {
+                        return null;
+                    }
+                });
+
+                var results = await Task.WhenAll(tasks); // agora de fato executa
+
+                foreach (var apiItem in results.Where(x => x != null))
+                {
+                    var matches = dbItemsQuery
+                        .Where(a => apiItem.IsMatch(a.Title))
                         .OrderBy(a => a.Title)
                         .ToList();
 
-                    switch (matches.Count)
+                    if (matches.Count == 1)
                     {
-                        case 0:
-                            semMatch++;
-                            statsToInsert.Add(new ApiReInsertStats
-                            {
-                                ApiName = API_NAME,
-                                IdFromApi = int.TryParse(kitsuAnime.id, out var idParsed) ? idParsed : 0,
-                                Type = TYPE,
-                                Erro = matches.Count.ToString()
-                            });
-                            break;
+                        var entidade = matches.First();
 
-                        case 1:
-                            um++;
-                            break; // não insere porque deu certo
+                        entidade.IdKitsu = Convert.ToInt32(apiItem.id);  // int.TryParse(apiItem.id, out var idParsed) ? idParsed : null;
+                        entidade.Nsfw = apiItem.attributes?.nsfw;
+                        entidade.YoutubeVideoId = apiItem.attributes?.youtubeVideoId;
+                        entidade.EpisodeLength = apiItem.attributes?.episodeLength;
+                        entidade.PosterImageLarge = apiItem.attributes?.posterImage?.large;
+                        entidade.CoverImageLarge = apiItem.attributes?.coverImage?.large;
 
-                        case 2:
-                            dois++;
-                            statsToInsert.Add(new ApiReInsertStats
-                            {
-                                ApiName = API_NAME,
-                                IdFromApi = int.TryParse(kitsuAnime.id, out var idParsed2) ? idParsed2 : 0,
-                                Type = TYPE,
-                                Erro = matches.Count.ToString()
-                            });
-                            break;
+                        // Cria MediaRatingFrequency
+                        entidade.MediaRatingFrequency = apiItem.attributes?.ratingFrequencies?.ColocarDados(
+                            animeId: entidade is Anime a ? a.Id : null,
+                            anime: entidade as Anime,
+                            mangaId: entidade is Manga m ? m.Id : null,
+                            manga: entidade as Manga
+                        );
 
-                        case 3:
-                            tres++;
-                            statsToInsert.Add(new ApiReInsertStats
-                            {
-                                ApiName = API_NAME,
-                                IdFromApi = int.TryParse(kitsuAnime.id, out var idParsed3) ? idParsed3 : 0,
-                                Type = TYPE,
-                                Erro = matches.Count.ToString()
-                            });
-                            break;
+                        dbItemsQuery.Remove(entidade);
 
-                        default:
-                            resto++;
-                            statsToInsert.Add(new ApiReInsertStats
-                            {
-                                ApiName = API_NAME,
-                                IdFromApi = int.TryParse(kitsuAnime.id, out var idParsedN) ? idParsedN : 0,
-                                Type = TYPE,
-                                Erro = matches.Count.ToString()
-                            });
-                            break;
+                        continue;
                     }
+
+                    statsToInsert.Add(new ApiReInsertStats
+                    {
+                        ApiName = ApiName,
+                        IdFromApi = int.TryParse(apiItem.id, out var idParsed) ? idParsed : 0,
+                        Type = typeof(T).Name,
+                        Erro = matches.Count.ToString()
+                    });
                 }
 
                 // Salva no banco a cada batch
                 if (statsToInsert.Any())
                 {
                     await _unitOfWork.ApiReInsertStatRepository.InserRange(statsToInsert);
-                    await _unitOfWork.Commit();
                 }
-
-                Console.WriteLine($"\n--- Progresso até agora ---");
-                Console.WriteLine($"Consumidos da API: {total}");
-                Console.WriteLine($"1 match (OK): {um}");
-                Console.WriteLine($"2 matches: {dois}");
-                Console.WriteLine($"3 matches: {tres}");
-                Console.WriteLine($"4+ matches: {resto}");
-                Console.WriteLine($"Sem match: {semMatch}");
-                Console.WriteLine("---------------------------\n");
+                await _unitOfWork.Commit();
+                await SalvarConsumoApi<T>(startId);
             }
-
-            Console.WriteLine("\n=== Resumo Final ===");
-            Console.WriteLine($"Consumidos da API: {total}");
-            Console.WriteLine($"1 match (OK): {um}");
-            Console.WriteLine($"2 matches: {dois}");
-            Console.WriteLine($"3 matches: {tres}");
-            Console.WriteLine($"4+ matches: {resto}");
-            Console.WriteLine($"Sem match: {semMatch}");
-            Console.WriteLine("====================");
         }
 
 
+        private async Task SalvarConsumoApi<T>(int valor) where T : MediaBase
+        {
+            counter++;
 
+            if (counter % 25 == 0) // salva a cada 25
+            {
+                await _unitOfWork.ApiConsumeRepository.UpdateConsumeStats<T>(ConsumoTipo.Unitario, ApiName, valor);
+                Console.WriteLine($"🔄 Stats (unitário) atualizados após {counter} registros.");
+            }
+        }
+
+        private async Task<int> GetLastId<T>()
+        {
+            var url = typeof(T) == typeof(Anime) ? "https://kitsu.io/api/edge/anime?page[limit]=1&page[offset]=0&sort=-id" :
+                                                   "https://kitsu.io/api/edge/manga?page[limit]=1&page[offset]=0&sort=-id";
+
+            try
+            {
+                using var httpClient = new HttpClient();
+                var response = await httpClient.GetAsync(url);
+                var jsonString = await response.Content.ReadAsStringAsync();
+
+                var dto = JsonConvert.DeserializeObject<RootKitsu>(jsonString);
+                return dto.data[0].id == null ? 0 : 100000;
+            }
+            catch
+            {
+                return 0;
+            }
+        }
     }
 }

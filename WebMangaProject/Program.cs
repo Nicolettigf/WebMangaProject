@@ -20,7 +20,9 @@ using DataAccessLayer.Interfaces.IUserComentary;
 using DataAccessLayer.Interfaces.IUSerInterfaces;
 using DataAccessLayer.Interfaces.IUserItem;
 using DataAccessLayer.UnitOfWork;
+using Entities.AnimeS;
 using Entities.Enums;
+using Entities.MangaS;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.EntityFrameworkCore;
 using MvcPresentationLayer.Apis.MangaProjectApi;
@@ -31,6 +33,7 @@ using MvcPresentationLayer.Apis.MangaProjectApi.Mangas;
 using MvcPresentationLayer.Apis.MangaProjectApi.UserItem.UserAnimeItem;
 using MvcPresentationLayer.Apis.MangaProjectApi.UserItem.UserMangaItem;
 using MvcPresentationLayer.Utilities;
+using Shared;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -67,6 +70,14 @@ builder.Services.AddTransient<IUserMangaItemDAL, UserMangaItemDAL>();
 builder.Services.AddTransient<IMangaComentaryDAL, MangaComentaryDAL>();
 builder.Services.AddTransient<IAnimeComentaryDAL, AnimeComentaryDAL>();
 builder.Services.AddTransient<IUserAnimeItemDAL, UserAnimeItemDAL>();
+
+// Anime
+builder.Services.AddScoped<ICRUD<Anime>, AnimeDAL>();
+builder.Services.AddScoped<IAnimeDAL, AnimeDAL>();
+
+// Manga
+builder.Services.AddScoped<ICRUD<Manga>, MangaDAL>();
+builder.Services.AddScoped<IMangaDAL, MangaDAL>();
 
 #endregion
 #region MvcApi

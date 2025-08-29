@@ -1,6 +1,6 @@
 ﻿namespace Entities.AnimeS
 {
-    public class Anime : KitsuMember
+    public class Anime : MediaBase
     {
         public string? Source { get; set; }
         public int? Episodes { get; set; }

@@ -34,14 +34,7 @@ namespace MvcPresentationLayer.Controllers
 
             return View(mangas);
         }
-        public async Task<IActionResult> ConsumirApi()
-        {
-            await _JikanApi.ConsumeGenre();
-            await _JikanApi.ConsumeAnime();
-            await _JikanApi.ConsumeManga();
-            
-            return RedirectToAction("Index");
-        }
+       
 
         // GET: MangaDbController/Details/5
         public ActionResult Details(int id)
