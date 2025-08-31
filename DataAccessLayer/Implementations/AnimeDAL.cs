@@ -324,5 +324,10 @@ namespace DataAccessLayer.Implementations
 
             return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(missingIds);
         }
+
+        public async Task<DataResponse<AnimeCatalog>> GetHome(int skip, int take)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

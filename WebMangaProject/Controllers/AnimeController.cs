@@ -32,7 +32,6 @@ namespace MvcPresentationLayer.Controllers
             this._mapper = mapper;
             this._userAnimeItem = userAnimeItem;
             this._animeComentary = animeComentary;
-
             this._cacheService = cacheService;
         }
 

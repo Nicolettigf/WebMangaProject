@@ -13,6 +13,7 @@ using System.Data;
 
 namespace MvcPresentationLayer.Utilities
 {
+    ///////////////////TERA QUE SER TRANFERIDO PARA A WEBAPI O LUGAR DELE NAO È NA TELA......///////////////////////
     public class CacheService : ICacheService
     {
         private readonly IMangaProjectApiAnimeService _animeApiService;

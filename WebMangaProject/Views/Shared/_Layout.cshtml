@@ -49,14 +49,14 @@
                     <i class="uil uil-caret-right sub-menu-manga"></i>
                 </a>
                 <ul class="manga-show">
-                    @if (role == "BigBoss" || role == "Admin")
-                    {
+                   @*  @if (role == "BigBoss" || role == "Admin")
+                    { *@
                         <li>
                             <a asp-area="" asp-controller="MangaDb" asp-action="Index">
                                 <span class="sub-title">Database</span>
                             </a>
                         </li>
-                    }
+                    @* } *@
                     <li>
                         <a asp-area="" asp-controller="Manga" asp-action="Index">
                             <span class="sub-title">Manga Home</span>

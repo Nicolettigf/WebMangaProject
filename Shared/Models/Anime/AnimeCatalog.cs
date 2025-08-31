@@ -6,9 +6,9 @@ namespace Shared.Models.Anime
     public class AnimeCatalog
     {
         public int Id { get; set; }
-        public string canonicalTitle { get; set; }
+        public string CanonicalTitle { get; set; }
         public string? WebpLargeImageUrl { get; set; }
-
+        
         public string? PosterImageLarge { get; set; }
 
         public string? CoverImageLarge { get; set; }
@@ -18,7 +18,7 @@ namespace Shared.Models.Anime
         public static Expression<Func<Entities.AnimeS.Anime, AnimeCatalog>> Projection => x => new AnimeCatalog()
         {
             Id = x.Id,
-            canonicalTitle = x.Title,
+            CanonicalTitle = x.Title,
             WebpLargeImageUrl = x.WebpLargeImageUrl,
             PosterImageLarge = x.PosterImageLarge,
             CoverImageLarge = x.CoverImageLarge

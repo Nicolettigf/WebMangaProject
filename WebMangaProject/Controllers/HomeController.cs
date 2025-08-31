@@ -34,14 +34,14 @@ namespace MvcPresentationLayer.Controllers
         {
             //Task.Run(async () =>
             //{
+            await _JikanApi.ConsumeGenre<Anime>();
+            await _JikanApi.ConsumeGenre<Manga>();
+            await _JikanApi.ConsumeMedia<Anime>();
+            await _JikanApi.ConsumeMedia<Manga>();
+            await _JikanApi.ConsumeMissingMedia<Anime>();
+            await _JikanApi.ConsumeMissingMedia<Manga>();
             //await _KitsuApi.BuscarECompararPorIds<Anime>();
             //await _KitsuApi.BuscarECompararPorIds<Manga>();
-            //await _JikanApi.ConsumeGenre<Anime>();
-            //await _JikanApi.ConsumeGenre<Manga>();
-            //await _JikanApi.ConsumeMedia<Anime>();
-            //await _JikanApi.ConsumeMedia<Manga>();
-            //await _JikanApi.ConsumeMissingMedia<Anime>();
-            //await _JikanApi.ConsumeMissingMedia<Manga>();
 
             //});
 

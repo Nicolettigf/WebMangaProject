@@ -278,5 +278,10 @@ namespace MvcPresentationLayer.Apis.MangaProjectApi.Mangas
         {
             throw new NotImplementedException();
         }
+
+        public Task<DataResponse<MangaCatalog>> GetHome(int skip, int take)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

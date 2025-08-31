@@ -323,5 +323,10 @@ namespace DataAccessLayer.Implementations
                 return ResponseFactory.CreateInstance().CreateFailedDataResponse<MangaCatalog>(ex);
             }
         }
+
+        public async Task<DataResponse<MangaCatalog>> GetHome(int skip, int take)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

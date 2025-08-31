@@ -99,5 +99,11 @@ namespace BusinessLogicalLayer.Implementations
         {
             return await _unitOfWork.MangaRepository.GetByPopularity(skip, take);
         }
+
+        public async Task<DataResponse<MangaCatalog>> GetHome(int skip, int take)
+        {
+            return await _unitOfWork.MangaRepository.GetHome(skip, take);
+
+        }
     }
 }

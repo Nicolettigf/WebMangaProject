@@ -1,0 +1,1178 @@
+namespace MvcPresentationLayer.Controllers
+{
+    public class AnimeController : Controller
+    {
+        private readonly IMangaProjectApiAnimeService _animeApiService;
+        private readonly IMapper _mapper;
+        private readonly IMangaProjectApiUserService _userApiService;
+        private readonly IUserAnimeItemService _userAnimeItem;
+        private readonly IMangaProjectApiAnimeComentary _animeComentary;
+        private readonly ICacheService _cacheService;
+
+        public AnimeController(IMapper mapper, IMangaProjectApiUserService userApiService, IMangaProjectApiAnimeService animeApiService, IUserAnimeItemService userAnimeItem, IMangaProjectApiAnimeComentary animeComentary, ICacheService cacheService)
+        {
+            this._animeApiService = animeApiService;
+            this._userApiService = userApiService;
+            this._mapper = mapper;
+            this._userAnimeItem = userAnimeItem;
+            this._animeComentary = animeComentary;
+
+            this._cacheService = cacheService;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> AnimeOnPage(int id)
+        {
+            SingleResponse<Anime> responseAnime = await _animeApiService.GetComplete(id);
+            if (responseAnime.NotFound)
+            {
+                return NotFound();
+            }
+            AnimeOnpageViewModel anime = _mapper.Map<AnimeOnpageViewModel>(responseAnime.Item);
+
+            SingleResponse<User> responseUser = new();
+            if (User.Identity.IsAuthenticated)
+            {
+                responseUser = await _userApiService.Get(UserService.GetId(HttpContext), UserService.GetToken(HttpContext));
+            }
+
+            UserFavoriteAnimeViewModel userAnimeItem = new();
+            bool hasItem = false;
+
+            if (responseUser.HasSuccess && responseUser.Item.AnimeList != null)
+            {
+                foreach (var item in responseUser.Item.AnimeList)
+                {
+                    if (item.AnimeId == id)
+                    {
+                        userAnimeItem = _mapper.Map<UserFavoriteAnimeViewModel>(item);
+                        hasItem = true;
+                    }
+                }
+            }
+
+            DataResponse<Anime> responseSugg = new();
+            if (User.Identity.IsAuthenticated)
+            {
+                responseSugg = await _userAnimeItem.GetUserRecommendations(responseUser.Item.Id);
+            }
+            List<AnimeShortViewModel> animeSugg = _mapper.Map<List<AnimeShortViewModel>>(responseSugg.Data);
+
+            DataResponse<AnimeComentary> responseComentary = await _animeComentary.GetByAnime(anime.Id);
+
+            List<AnimeComentaryViewModel> comments = _mapper.Map<List<AnimeComentaryViewModel>>(responseComentary.Data);
+
+            if (!hasItem)
+            {
+                userAnimeItem.StartDate = DateTime.Now.Date;
+                userAnimeItem.FinishDate = DateTime.Now.Date;
+            }
+
+            AnimeItemModalViewModel animeItemModalViewModel = new()
+            {
+                UserAnimeItem = userAnimeItem,
+                Anime = anime,
+                Recommendations = animeSugg,
+                Comments = comments
+            };
+            return View(animeItemModalViewModel);
+        }
+
+        #region All
+        [HttpGet, AllowAnonymous]
+        public async Task<IActionResult> All(string by)
+        {
+            DataResponse<AnimeCatalog> response;
+
+            switch (by)
+            {
+                case "ByFavorites":
+                    response = await _animeApiService.GetByFavorites(0, 99);
+                    break;
+                case "ByRating":
+                    response = await _animeApiService.GetByRating(0, 99);
+                    break;
+                case "ByUserCount":
+                    response = await _animeApiService.GetByUserCount(0, 99);
+                    break;
+                case "ByPopularity":
+                    response = await _animeApiService.GetByPopularity(0, 99);
+                    break;
+                default:
+                    response = new("Whereby??", false, null, null);
+                    break;
+            }
+
+
+            if (!response.HasSuccess)
+            {
+                return BadRequest(response.Message);
+            }
+
+            List<AnimeShortViewModel> mangasView =
+                _mapper.Map<List<AnimeShortViewModel>>(response.Data);
+
+            return View(mangasView);
+        }
+
+
+        [HttpGet, AllowAnonymous]
+        public IActionResult AllByFavorites() => RedirectToAction("All", new { by = "ByFavorites" });
+        [HttpGet, AllowAnonymous]
+        public IActionResult AllByPopularity() => RedirectToAction("All", new { by = "ByPopularity" });
+
+        [HttpGet, AllowAnonymous]
+        public IActionResult AllByRating() => RedirectToAction("All", new { by = "ByRating" });
+
+        [HttpGet, AllowAnonymous]
+        public IActionResult AllByUserCount() => RedirectToAction("All", new { by = "ByUserCount" });
+        #endregion
+
+        public async Task<IActionResult> Index()
+        {
+            DataResponse<AnimeCatalog> responseAnimesFavorites = await _cacheService.GetTop7AnimesCatalogByFavorites();
+            DataResponse<AnimeCatalog> responseAnimesByCount = await _cacheService.GetTop7AnimesCatalogByUserCount();
+            DataResponse<AnimeCatalog> responseAnimesByRating = await _cacheService.GetTop7AnimesCatalogByRating();
+
+            if (!responseAnimesFavorites.HasSuccess || !responseAnimesByCount.HasSuccess || !responseAnimesByRating.HasSuccess)
+            {
+                return BadRequest(responseAnimesFavorites);
+            }
+
+            List<AnimeShortViewModel> animesFavorites =
+                _mapper.Map<List<AnimeShortViewModel>>(responseAnimesFavorites.Data);
+
+            List<AnimeShortViewModel> animesByCount =
+                _mapper.Map<List<AnimeShortViewModel>>(responseAnimesByCount.Data);
+
+            List<AnimeShortViewModel> animeesbyrating = _mapper.Map<List<AnimeShortViewModel>>(responseAnimesByRating.Data);
+
+            AnimesForHomeViewModel animesForHomeViewModel = new()
+            {
+                AnimesFavorites = animesFavorites,
+                AnimesByCount = animesByCount,
+                AnimesByRating = animeesbyrating
+            };
+
+            return View(animesForHomeViewModel);
+        }
+
+
+    }
+}
+
+namespace MvcPresentationLayer.Controllers
+{
+    public class HomeController : Controller
+    {
+        private readonly IMapper _mapper;
+        private readonly ICacheService _cacheService;
+        private readonly IJikanApi _JikanApi;
+        private readonly IKitsuApi _KitsuApi;
+        public HomeController(IMapper mapper, ICacheService cacheService, IJikanApi JikanApi, IKitsuApi kitsuApi)
+        {
+            this._mapper = mapper;
+            this._cacheService = cacheService;
+            this._JikanApi = JikanApi;
+            this._KitsuApi = kitsuApi;
+        }
+
+        public async Task<IActionResult> Index()
+        {
+            //Task.Run(async () =>
+            //{
+            //await _KitsuApi.BuscarECompararPorIds<Anime>();
+            //await _KitsuApi.BuscarECompararPorIds<Manga>();
+            //await _JikanApi.ConsumeGenre<Anime>();
+            //await _JikanApi.ConsumeGenre<Manga>();
+            //await _JikanApi.ConsumeMedia<Anime>();
+            //await _JikanApi.ConsumeMedia<Manga>();
+            //await _JikanApi.ConsumeMissingMedia<Anime>();
+            //await _JikanApi.ConsumeMissingMedia<Manga>();
+
+            //});
+
+            var HomeAnimeEMangas = await _cacheService.GetTopAnimeMangaAsync(0, 7);
+
+            if (!HomeAnimeEMangas.HasSuccess)
+            {
+                return BadRequest(HomeAnimeEMangas);
+            }
+
+            HomePageViewModel homePageViewModel = new()
+            {
+                AnimesFavorites = _mapper.Map<List<AnimeShortViewModel>>(HomeAnimeEMangas.Item.TopAnimeByFavorites),
+                AnimesByCount = _mapper.Map<List<AnimeShortViewModel>>(HomeAnimeEMangas.Item.TopAnimeByMembers),
+                AnimesByRating = _mapper.Map<List<AnimeShortViewModel>>(HomeAnimeEMangas.Item.TopAnimeByRank),
+                MangasFavorites = _mapper.Map<List<MangaShortViewModel>>(HomeAnimeEMangas.Item.TopMangaByFavorites),
+                MangasByCount = _mapper.Map<List<MangaShortViewModel>>(HomeAnimeEMangas.Item.TopMangaByMembers),
+                MangasByRating = _mapper.Map<List<MangaShortViewModel>>(HomeAnimeEMangas.Item.TopMangaByRank),
+            };
+
+            return View(homePageViewModel);
+        }
+        public IActionResult AboutUs()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+    }
+} 
+
+namespace MvcPresentationLayer.Controllers
+{
+    public class MangaController : Controller
+    {
+        private readonly IMapper _mapper;
+        private readonly IMangaProjectApiMangaService _mangaApiService;
+        private readonly IMangaProjectApiUserService _userApiService;
+        private readonly IUserMangaItemService _userMangaItem;
+        private readonly IMangaProjectApiMangaComentary _mangaComentary;
+
+        public MangaController(IMapper mapper, IMangaProjectApiMangaService mangaApiService, IMangaProjectApiUserService userService, IUserMangaItemService userMangaItem, IMangaProjectApiMangaComentary mangaComentary)
+        {
+            this._userMangaItem = userMangaItem;
+            this._userApiService = userService;
+            this._mapper = mapper;
+            this._mangaApiService = mangaApiService;
+            this._mangaComentary = mangaComentary;
+        }
+
+        [HttpGet, AllowAnonymous]
+        public async Task<IActionResult> Index()
+        {
+            DataResponse<MangaCatalog> responseFavorites = await _mangaApiService.GetByFavorites(0, 7);
+            DataResponse<MangaCatalog> responseCount = await _mangaApiService.GetByUserCount(0, 7);
+            DataResponse<MangaCatalog> responserating = await _mangaApiService.GetByRating(0, 7);
+
+            if (!responseFavorites.HasSuccess || !responseCount.HasSuccess || !responserating.HasSuccess)
+            {
+                return BadRequest(responseFavorites);
+            }
+
+            List<MangaShortViewModel> favo =
+                _mapper.Map<List<MangaShortViewModel>>(responseFavorites.Data);
+
+            List<MangaShortViewModel> Count =
+                _mapper.Map<List<MangaShortViewModel>>(responseCount.Data);
+
+            List<MangaShortViewModel> rating = _mapper.Map<List<MangaShortViewModel>>(responserating.Data);
+
+            MangasForHomeViewModel MangasForHomeViewModel = new()
+            {
+                MangasFavorites = favo,
+                MangasByCount = Count,
+                MangasByRating = rating
+            };
+            return View(MangasForHomeViewModel);
+        }
+
+        #region All
+        [HttpGet, AllowAnonymous]
+        public async Task<IActionResult> All(string by)
+        {
+            DataResponse<MangaCatalog> response;
+
+            switch (by)
+            {
+                case "ByFavorites":
+                    response = await _mangaApiService.GetByFavorites(0, 99);
+                    break;
+                case "ByRating":
+                    response = await _mangaApiService.GetByRating(0, 99);
+                    break;
+                case "ByUserCount":
+                    response = await _mangaApiService.GetByUserCount(0, 99);
+                    break;
+                case "ByPopularity":
+                    response = await _mangaApiService.GetByPopularity(0, 99);
+                    break;
+                default:
+                    response = new("Whereby??", false, null, null);
+                    break;
+            }
+
+
+            if (!response.HasSuccess)
+            {
+                return BadRequest(response.Message);
+            }
+
+            List<MangaShortViewModel> mangasView =
+                _mapper.Map<List<MangaShortViewModel>>(response.Data);
+
+            return View(mangasView);
+        }
+
+
+        [HttpGet, AllowAnonymous]
+        public IActionResult AllByFavorites() => RedirectToAction("All", new { by = "ByFavorites" });
+
+        [HttpGet, AllowAnonymous]
+        public IActionResult AllByPopularity() => RedirectToAction("All", new { by = "ByPopularity" });
+
+        [HttpGet, AllowAnonymous]
+        public IActionResult AllByRating() => RedirectToAction("All", new { by = "ByRating" });
+
+        [HttpGet, AllowAnonymous]
+        public IActionResult AllByUserCount() => RedirectToAction("All", new { by = "ByUserCount" });
+        #endregion
+
+        [HttpGet]
+        public async Task<IActionResult> MangaOnPage(int id)
+        {
+            SingleResponse<Manga> responseManga = await _mangaApiService.GetComplete(id);
+            if (responseManga.NotFound)
+            {
+                return NotFound();
+            }
+            MangaOnPageViewModel manga = _mapper.Map<MangaOnPageViewModel>(responseManga.Item);
+
+
+            SingleResponse<User> responseUser = new();
+            if (User.Identity.IsAuthenticated)
+            {
+                responseUser = await _userApiService.Get(UserService.GetId(HttpContext), UserService.GetToken(HttpContext));
+            }
+            UserFavoriteMangaViewModel userMangaItem = new();
+            bool hasItem = false;
+
+            if (responseUser.HasSuccess && responseUser.Item.MangaList != null)
+            {
+                foreach (var item in responseUser.Item.MangaList)
+                {
+                    if (item.MangaId == id)
+                    {
+                        userMangaItem = _mapper.Map<UserFavoriteMangaViewModel>(item);
+                        hasItem = true;
+                    }
+                }
+            }
+
+            DataResponse<Manga> responseSugg = new();
+            if (User.Identity.IsAuthenticated)
+            {
+                responseSugg = await _userMangaItem.GetUserRecommendations(responseUser.Item.Id);
+            }
+            List<MangaShortViewModel> mangaSugg = _mapper.Map<List<MangaShortViewModel>>(responseSugg.Data);
+
+            DataResponse<MangaComentary> responseComentary = await _mangaComentary.GetByManga(manga.Id);
+
+            List<MangaComentaryViewModel> comments = _mapper.Map<List<MangaComentaryViewModel>>(responseComentary.Data);
+
+            if (!hasItem)
+            {
+                userMangaItem.StartDate = DateTime.Now.Date;
+                userMangaItem.FinishDate = DateTime.Now.Date;
+            }
+
+            MangaItemModalViewModel mangaItemModalViewModel = new()
+            {
+                UserMangaItem = userMangaItem,
+                Manga = manga,
+                Recommendations = mangaSugg,
+                Comments = comments
+            };
+
+            return View(mangaItemModalViewModel);
+        }
+
+
+        public async Task<IActionResult> GetSuggestionList(string title)
+        {
+            DataResponse<Manga> response = await _mangaApiService.Get(title);
+            return Json(new { resultado = response.Data });
+        }
+    }
+}
+
+namespace MvcPresentationLayer.Controllers
+{
+    public class MangaDbController : Controller
+    {
+        private readonly IMangaProjectApiMangaService _mangaApiService;
+        private readonly IMapper _mapper;
+        private readonly IJikanApi _JikanApi;
+        public MangaDbController(IMangaProjectApiMangaService svc, IMapper mapper, IJikanApi JikanApi)
+        {
+            this._mangaApiService = svc;
+            this._mapper = mapper;
+            this._JikanApi = JikanApi;
+        }
+        public async Task<IActionResult> Index()
+        {
+            DataResponse<Manga> responseMangas = await _mangaApiService.Get(null, 01, 99);
+
+            if (!responseMangas.HasSuccess)
+            {
+                ViewBag.Errors = responseMangas.Message;
+                return View();
+            }
+
+            List<MangaShortDbViewModel> mangas =
+                _mapper.Map<List<MangaShortDbViewModel>>(responseMangas.Data);
+
+            return View(mangas);
+        }
+       
+
+        // GET: MangaDbController/Details/5
+        public ActionResult Details(int id)
+        {
+            return View();
+        }
+
+        // GET: MangaDbController/Create
+        public ActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: MangaDbController/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(IFormCollection collection)
+        {
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: MangaDbController/Edit/5
+        public ActionResult Edit(int id)
+        {
+            return View();
+        }
+
+        // POST: MangaDbController/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Edit(int id, IFormCollection collection)
+        {
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+
+        // GET: MangaDbController/Delete/5
+        public ActionResult Delete(int id)
+        {
+            return View();
+        }
+
+        // POST: MangaDbController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Delete(int id, IFormCollection collection)
+        {
+            try
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            catch
+            {
+                return View();
+            }
+        }
+        
+    }
+}
+
+namespace MvcPresentationLayer.Controllers
+{
+
+    public class UserController : Controller
+    {
+        private readonly IMapper _mapper;
+        private readonly IMangaProjectApiUserService _userApiService;
+        private readonly IMangaProjectApiAnimeItem _userItemApiAnimeService;
+        private readonly IMangaProjectApiMangaItem _userItemApiMangaService;
+
+        private string _filePath;
+
+        public UserController(IMapper mapper, IWebHostEnvironment env, IMangaProjectApiUserService userApiService, IMangaProjectApiAnimeItem userItemApiAnimeService, IMangaProjectApiMangaItem userItemApiMangaService)
+        {
+            this._filePath = env.WebRootPath;
+            this._mapper = mapper;
+            this._userApiService = userApiService;
+            this._userItemApiMangaService = userItemApiMangaService;
+            this._userItemApiAnimeService = userItemApiAnimeService;
+        }
+
+        [HttpGet, Authorize(Policy = "Admin")]
+        public async Task<IActionResult> Index()
+        {
+            DataResponse<User> responseUsers = await _userApiService.Get(UserService.GetToken(HttpContext));
+            if (!responseUsers.HasSuccess)
+            {
+                return BadRequest(responseUsers.Exception);
+            }
+            List<UserSelectViewModel> users =
+                _mapper.Map<List<UserSelectViewModel>>(responseUsers.Data);
+            return View(users);
+        }
+
+
+        #region Avatar
+        public async Task<Response> SaveAvatarFileAsync(IFormFile file, UserProfileUpdate user)
+        {
+            var response = ImageFileValidator(file);
+            if (!response.HasSuccess)
+                return response;
+
+            //var name = Guid.NewGuid().ToString() + file.FileName;
+            string folder = "\\avatars";
+            string filePath = _filePath + folder;
+            string extension = Path.GetExtension(file.FileName);
+
+            if (!Directory.Exists(filePath))
+            {
+                Directory.CreateDirectory(filePath); //folder
+            }
+
+            string name = $"{user.Nickname}Avatar{extension}";
+
+            DeleteAvatarImage(folder, name);
+            using (var stream = System.IO.File.Create(filePath + "\\" + name))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            user.AvatarImageFileLocation = name;
+
+            return ResponseFactory.CreateInstance().CreateSuccessResponse();
+        }
+
+        public void DeleteAvatarImage(string folder, string fileName)
+        {
+            string filePath = $"{_filePath}{folder}\\{fileName}";
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+        }
+        #endregion
+
+        #region Cover
+        public async Task<Response> SaveCoverFileAsync(IFormFile file, UserProfileUpdate user)
+        {
+            var response = ImageFileValidator(file);
+            if (!response.HasSuccess)
+                return response;
+
+            //var name = Guid.NewGuid().ToString() + file.FileName;
+            string folder = "\\covers";
+            string filePath = _filePath + folder;
+            string extension = Path.GetExtension(file.FileName);
+
+            if (!Directory.Exists(filePath))
+            {
+                Directory.CreateDirectory(filePath); //folder
+            }
+
+            string name = $"{user.Nickname}Cover{extension}";
+
+            DeleteCoverImage(folder, name);
+            using (var stream = System.IO.File.Create(filePath + "\\" + name))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            user.CoverImageFileLocation = name;
+
+            return ResponseFactory.CreateInstance().CreateSuccessResponse();
+        }
+
+
+        public void DeleteCoverImage(string folder, string fileName)
+        {
+            string filePath = $"{_filePath}{folder}\\{fileName}";
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+        }
+        #endregion
+
+        #region Utilities
+
+        public bool IsAuthenticated()
+        {
+            return HttpContext.User.Identity.IsAuthenticated;
+        }
+        public RedirectToActionResult RedirectIfIsAuthenticated()
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        public bool IsAmMyself(int? id)
+        {
+            int MyId = UserService.GetId(HttpContext);
+            return MyId == id;
+        }
+        public RedirectToActionResult RedirectIfImNotMe()
+        {
+            return RedirectToAction("Index", "Home");
+        }
+
+        public bool IsAdmin()
+        {
+            return UserService.IsRole(UserRoles.Admin.ToString(), HttpContext);
+        }
+
+        private async Task<bool> UserExists(int id)
+        {
+            var userSelectResponse = await _userApiService.Get(id, UserService.GetToken(HttpContext));
+            return userSelectResponse.HasSuccess;
+        }
+
+        public Response ImageFileValidator(IFormFile file)
+        {
+            switch (file.ContentType)
+            {
+                case "image/jpeg": return ResponseFactory.CreateInstance().CreateSuccessResponse();
+                case "image/bmp": return ResponseFactory.CreateInstance().CreateSuccessResponse();
+                case "image/gif": return ResponseFactory.CreateInstance().CreateSuccessResponse();
+                case "image/png": return ResponseFactory.CreateInstance().CreateSuccessResponse();
+
+                default:
+                    return ResponseFactory.CreateInstance().CreateFailedResponse(null);
+            }
+        }
+
+        [Authorize]
+        public IActionResult TesteAuth() => Ok(User.Claims.Select(x => new { Type = x.Type, Value = x.Value }));
+
+        #endregion
+
+        #region Login
+
+        [HttpGet, AllowAnonymous]
+        public IActionResult Login()
+        {
+            if (IsAuthenticated())
+                return RedirectIfIsAuthenticated();
+
+            return View();
+        }
+
+        [HttpPost, ValidateAntiForgeryToken, AllowAnonymous]
+        public async Task<IActionResult> Login(UserLoginPageViewModel userLoginView)
+        {
+            UserLogin login = new()
+            {
+                EmailOrNickname = userLoginView.UserLogin.EmailOrNickname,
+                Password = userLoginView.UserLogin.Password
+            };
+            var response = await _userApiService.Login(login);
+
+            if (response.HasSuccess)
+            {
+                _ = AuthenticationAsync(response.Item, response.Token);
+                return RedirectToAction("Index", "Home");
+
+            }
+
+            ViewBag.Errors = response.Message;
+            return View();
+        }
+
+
+        public async Task AuthenticationAsync(User user, string token)
+        {
+            ClaimsIdentity identity = new("CookieSerieAuth");
+
+            identity.AddClaim(new Claim(ClaimTypes.Name, user.Nickname));
+            identity.AddClaim(new Claim(ClaimTypes.PrimarySid, user.Id.ToString()));
+            identity.AddClaim(new Claim(ClaimTypes.Role, user.Role.ToString()));
+            identity.AddClaim(new Claim("Token", token));
+
+            ClaimsPrincipal principal = new(identity);
+
+            Thread.CurrentPrincipal = principal;
+
+            var authProperties = new AuthenticationProperties
+            {
+                ExpiresUtc = DateTime.UtcNow.AddHours(8),
+                IssuedUtc = DateTime.UtcNow
+            };
+
+            await HttpContext.SignInAsync("CookieSerieAuth", principal, authProperties);
+        }
+
+        public async Task LogoutAuthenticationAsync()
+        {
+            await HttpContext.SignOutAsync("CookieSerieAuth");
+        }
+
+        [HttpGet, Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            await LogoutAuthenticationAsync();
+            return RedirectToAction("Index", "Home");
+        }
+
+        #endregion
+
+        [HttpGet, Authorize]
+        public async Task<IActionResult> Profile()
+        {
+            var ctx = HttpContext;
+            int id = UserService.GetId(ctx);
+
+            if (!IsAmMyself(id))
+                return RedirectIfImNotMe();
+
+            SingleResponse<User> response = await _userApiService.Get(id, UserService.GetToken(ctx));
+            //var responseMangaFavorites = await _userItemApiMangaService.GetUserFavorites(id, null);
+            //var responseAnimeFavorites = await _userItemApiAnimeService.GetUserFavorites(id, UserService.GetToken(ctx));
+
+            var user = _mapper.Map<UserProfileViewModel>(response.Item);
+            //var animeFavorite = _mapper.Map<List<AnimeShortViewModel>>(responseAnimeFavorites.Data);
+            //var mangaFavorite = _mapper.Map<List<MangaShortViewModel>>(responseMangaFavorites.Data);
+
+            UserProfileItemViewModel userProfileViewModel = new()
+            {
+               User = user
+                //FavoriteAnimeList = animeFavorite,
+                //FavoriteMangaList = mangaFavorite
+            };
+
+            if (!response.HasSuccess)
+            {
+                return BadRequest(response);
+            }
+
+            return View(userProfileViewModel);
+        }
+
+
+        [HttpGet, AllowAnonymous]
+        public IActionResult Create()
+        {
+            if (IsAuthenticated())
+                return RedirectIfIsAuthenticated();
+
+            return View();
+        }
+        [HttpPost, AllowAnonymous]
+        public async Task<IActionResult> Create(UserLoginPageViewModel userCreate)
+        {
+            //User user = _mapper.Map<User>(viewModel);
+
+            UserCreate create = new()
+            {
+                Nickname = userCreate.UserInsert.Nickname,
+                Email = userCreate.UserInsert.Email,
+                Password = userCreate.UserInsert.Password,
+                ConfirmPassword = userCreate.UserInsert.ConfirmPassword
+            };
+            var response = await _userApiService.Insert(create, UserService.GetToken(HttpContext));
+
+            if (response.HasSuccess)
+                return RedirectToAction("Index");
+
+            ViewBag.Errors = response.Message;
+            return View();
+        }
+
+
+        [HttpGet, Authorize]
+        public async Task<IActionResult> Edit(int id)
+        {
+            if (!IsAmMyself(id))
+                return RedirectIfImNotMe();
+
+            var userSelectResponse = await _userApiService.Get(id, UserService.GetToken(HttpContext));
+
+            if (!userSelectResponse.HasSuccess)
+            {
+                return NotFound();
+            }
+            User user = userSelectResponse.Item;
+            UserUpdateViewModel userUpdate = _mapper.Map<UserUpdateViewModel>(user);
+
+            return View(userUpdate);
+        }
+        
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nickname,About,AvatarImage,CoverImage")] UserUpdateViewModel userUpdate, IFormFile fileA, IFormFile fileC)
+        {
+            Response response;
+
+            if (id != userUpdate.Id)
+            {
+                return NotFound();
+            }
+
+            UserProfileUpdate user = _mapper.Map<UserProfileUpdate>(userUpdate);
+            
+            if (fileA != null)
+            {
+                await SaveAvatarFileAsync(fileA, user);
+            }
+            if (fileC != null)
+            {
+                await SaveCoverFileAsync(fileC, user);
+            }
+            response = await _userApiService.Update(user, UserService.GetToken(HttpContext));
+
+            if (!response.HasSuccess)
+            {
+                ViewBag.Errors = response.Message;
+                return View(userUpdate);
+            }
+
+            return RedirectToAction("Index", "Home");
+        }
+
+
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Delete(int id)
+        {
+            //only admin or the logged in user
+            if (!IsAdmin())
+            {
+                if (!IsAmMyself(id))
+                    return RedirectIfImNotMe();
+            }
+
+
+            if (!await UserExists(id))
+                return Problem("User is not exist.");
+
+
+            await _userApiService.Delete(id, UserService.GetToken(HttpContext));
+            //Delete avatar
+
+            return RedirectToAction(nameof(Index));
+        }
+
+    }
+}
+
+namespace MvcPresentationLayer.Controllers.Comentary
+{
+    public class AnimeComentaryController : Controller
+    {
+        private readonly IMapper _mapper;
+        private readonly IMangaProjectApiAnimeComentary _AnimeComentary;
+        public AnimeComentaryController(IMapper mapper, IMangaProjectApiAnimeComentary AnimeComentary)
+        {
+            this._AnimeComentary = AnimeComentary;
+            this._mapper = mapper;
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Insert(AnimeItemModalViewModel fav)
+        {
+            fav.AnimeComentary.AnimeId = fav.Anime.Id;
+            AnimeComentary item = this._mapper.Map<AnimeComentary>(fav.AnimeComentary);
+
+            item.UserId = UserService.GetId(HttpContext);
+            item.DataComentary = DateTime.Now;
+
+            Response Response = await _AnimeComentary.Insert(item, null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("AnimeOnPage", "Anime", new { id = fav.Anime.Id });
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Update(AnimeComentary fav)
+        {
+            Response Response = await _AnimeComentary.Update(fav,null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("AnimeOnPage", "Anime", new { id = fav.Id });
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Get(int id)
+        {
+            SingleResponse<AnimeComentary> Response = await _AnimeComentary.Get(id,null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("AnimeOnPage", "Anime", new { id = id });
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Get(int skp, int take)
+        {
+            DataResponse<AnimeComentary> Response = await _AnimeComentary.Get(null,skp, take);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("Home", "Index");
+        }
+        public async Task<IActionResult> Delete(int id)
+        {
+            Response Response = await _AnimeComentary.Delete(id,null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+        public async Task<IActionResult> GetByUser(int id)
+        {
+            Response Response = await _AnimeComentary.GetByUser(id);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+    }
+}
+
+namespace MvcPresentationLayer.Controllers.Comentary
+{
+    public class MangaComentaryController : Controller
+    {
+        private readonly IMapper _mapper;
+        private readonly IMangaProjectApiMangaComentary _mangaComentary;
+        public MangaComentaryController(IMapper mapper, IMangaProjectApiMangaComentary mangaapiComentary)
+        {
+            this._mangaComentary = mangaapiComentary;
+            this._mapper = mapper;
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Insert(MangaItemModalViewModel fav)
+        {
+            fav.MangaComentary.MangaId = fav.Manga.Id;
+            MangaComentary item = this._mapper.Map<MangaComentary>(fav.MangaComentary);
+
+            item.UserId = UserService.GetId(HttpContext);
+            item.DataComentary = DateTime.Now;
+
+            Response Response = await _mangaComentary.Insert(item, null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("MangaOnPage", "Manga", new { id = fav.Manga.Id });
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Update(MangaComentary fav)
+        {
+            Response Response = await _mangaComentary.Update(fav,null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("MangaOnPage", "Manga", new { id = fav.Id });
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Get(int id)
+        {
+            DataResponse<MangaComentary> Response = await _mangaComentary.Get(null,id);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("MangaOnPage", "Manga", new { id = id });
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Get(int skp,int take)
+        {
+            DataResponse<MangaComentary> Response = await _mangaComentary.Get(null,skp,take);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("Home", "Index");
+        }
+        public async Task<IActionResult> Delete(int id)
+        {
+            Response Response = await _mangaComentary.Delete(id,null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+        public async Task<IActionResult> GetByUser(int id)
+        {
+            Response Response = await _mangaComentary.GetByUser(id);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+    }
+}
+
+namespace MvcPresentationLayer.Controllers.UserItem
+{
+    public class UserItemAnimeController : Controller
+    {
+        private readonly IMapper _mapper;
+        private readonly IMangaProjectApiAnimeItem _AnimeApiItem;
+     
+        public UserItemAnimeController(IMapper mapper, IMangaProjectApiAnimeItem Animeitem)
+        {
+            this._AnimeApiItem = Animeitem;
+            this._mapper = mapper;
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Insert(AnimeItemModalViewModel fav)
+        {
+            fav.UserAnimeItem.AnimeId = fav.Anime.Id;
+            UserAnimeItem item = this._mapper.Map<UserAnimeItem>(fav.UserAnimeItem);
+
+            item.UserId = UserService.GetId(HttpContext);
+            Response Response = await _AnimeApiItem.Insert(item,null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("AnimeOnPage", "Anime", new { id = fav.Anime.Id });
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Update(UserAnimeItem fav)
+        {
+            Response Response = await _AnimeApiItem.Update(fav, null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("AnimeOnPage", "Anime", new { id = fav.Id });
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Get(int id)
+        {
+            SingleResponse<UserAnimeItem> Response = await _AnimeApiItem.Get(id, null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("AnimeOnPage", "Anime", new { id = id });
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Get(int skp, int take)
+        {
+            DataResponse<UserAnimeItem> Response = await _AnimeApiItem.Get(skp, take,null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("Home", "Index");
+        }
+        public async Task<IActionResult> Delete(int id)
+        {
+            Response Response = await _AnimeApiItem.Delete(id, null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+        public async Task<IActionResult> GetByUser(int id)
+        {
+            Response Response = await _AnimeApiItem.GetByUser(id,null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+    }
+}
+
+namespace MvcPresentationLayer.Controllers.UserItem
+{
+    public class UserItemMangaController : Controller
+    {
+        private readonly IMapper _mapper;
+        private readonly IMangaProjectApiMangaItem _MangaApiItem;
+        public UserItemMangaController(IMapper mapper, IMangaProjectApiMangaItem Mangaitem)
+        {
+            this._MangaApiItem = Mangaitem;
+            this._mapper = mapper;
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Insert(MangaItemModalViewModel fav)
+        {
+            fav.UserMangaItem.MangaId = fav.Manga.Id;
+            UserMangaItem item = this._mapper.Map<UserMangaItem>(fav.UserMangaItem);
+
+            item.UserId = UserService.GetId(HttpContext);
+            item.Id = 0;
+
+            Response Response = await _MangaApiItem.Insert(item, null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("MangaOnPage", "Manga", new { id = fav.Manga.Id });
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Update(UserMangaItem fav)
+        {
+            Response Response = await _MangaApiItem.Update(fav, null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("AnimeOnPage", "Anime", new { id = fav.Id });
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Get(int id)
+        {
+            SingleResponse<UserMangaItem> Response = await _MangaApiItem.Get(id, null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("AnimeOnPage", "Anime", new { id = id });
+        }
+        [HttpPost, Authorize]
+        public async Task<IActionResult> Get(int skp, int take)
+        {
+            DataResponse<UserMangaItem> Response = await _MangaApiItem.Get(skp, take,null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("Home", "Index");
+        }
+        public async Task<IActionResult> Delete(int id)
+        {
+            Response Response = await _MangaApiItem.Delete(id, null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+        public async Task<IActionResult> GetByUser(int id)
+        {
+            Response Response = await _MangaApiItem.GetByUser(id,null);
+            if (!Response.HasSuccess)
+            {
+                return BadRequest(Response);
+            }
+            return RedirectToAction("Index", "Home");
+        }
+    }
+}

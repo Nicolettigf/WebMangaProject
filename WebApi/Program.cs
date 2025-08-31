@@ -1,6 +1,7 @@
 using BusinessLogicalLayer.Implementations;
 using BusinessLogicalLayer.Implementations.UserComentaryService;
 using BusinessLogicalLayer.Implementations.UserItemService;
+using BusinessLogicalLayer.Interfaces;
 using BusinessLogicalLayer.Interfaces.IAnimeInterfaces;
 using BusinessLogicalLayer.Interfaces.IMangaInterfaces;
 using BusinessLogicalLayer.Interfaces.IUserComentaryService;
@@ -46,6 +47,9 @@ builder.Services.AddTransient<IUserMangaItemDAL, UserMangaItemDAL>();
 builder.Services.AddTransient<IMangaComentaryDAL, MangaComentaryDAL>();
 builder.Services.AddTransient<IAnimeComentaryDAL, AnimeComentaryDAL>();
 builder.Services.AddTransient<IUserAnimeItemDAL, UserAnimeItemDAL>();
+
+builder.Services.AddTransient<IHomeService, HomeService>();
+
 
 builder.Services.AddTransient<IUnitOfWork, UnitOfWork>();
 builder.Services.AddSingleton<ILog>(LogManager.GetLogger(typeof(object)));
