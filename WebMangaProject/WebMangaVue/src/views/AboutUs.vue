@@ -81,5 +81,4 @@ export default {
 
 <style scoped>
 @import "/css/site.css";
-/* Mantém as mesmas classes CSS do Razor */
 </style>

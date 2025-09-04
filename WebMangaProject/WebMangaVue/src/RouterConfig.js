@@ -3,20 +3,22 @@ import { createRouter, createWebHistory } from "vue-router";
 // Layout
 import MainLayout from "./views/Shared/MainLayout.vue";
 
-// Home
-import HomePage from "./views/HomePage.vue";
+//Shared
 import AboutUs from "./views/AboutUs.vue";
 import ErrorPage from "./views/Shared/ErrorPage.vue";
 
+//Home
+import HomePage from "./views/HomePage.vue";
+import Catalog from "./views/Shared/Catalog.vue"
+import CatalogHome from "./views/Shared/CatalogHome.vue"
+
 // Anime
-import AnimeHome from "./views/anime/AnimeHome.vue";
-import AnimeCatalog from "./views/anime/AnimeCatalog.vue";
 import AnimeOnPage from "./views/anime/AnimeOnPage.vue";
 
 // Manga
-import MangaHome from "./views/manga/MangaHome.vue";
-import MangaCatalog from "./views/manga/MangaCatalog.vue";
 import MangaOnPage from "./views/manga/MangaOnPage.vue";
+
+
 // import GetSuggestionList from "../views/manga/GetSuggestionList.vue";
 
 // // MangaDb
@@ -73,24 +75,29 @@ const routes = [
       { path: "about", name: "AboutUs", component: AboutUs },
       { path: "error", name: "Error", component: ErrorPage },
 
+      // CatalogHome unificado
+      { path: "anime/Home", name: "AnimeHome", component: CatalogHome, props: { entityType: "anime" } },
+      { path: "manga/Home", name: "MangaHome", component: CatalogHome, props: { entityType: "manga" } },
+
+
       // AnimeController
-      { path: "anime/Home", name: "AnimeHome", component: AnimeHome },
-      { path: "anime/all", name: "AnimeAll", component: AnimeCatalog },
-      { path: "anime/all/favorites", name: "AnimeAllByFavorites", component: AnimeCatalog },
-      { path: "anime/all/popularity", name: "AnimeAllByPopularity", component: AnimeCatalog },
-      { path: "anime/all/rating", name: "AnimeAllByRating", component: AnimeCatalog },
-      { path: "anime/all/usercount", name: "AnimeAllByUserCount", component: AnimeCatalog },
-      { path: "anime/:id", name: "AnimeOnPage", component: AnimeOnPage },
+      { path: "anime/all", name: "AnimeAll", component: Catalog, props: { entityType: "anime", type: "all" } },
+      { path: "anime/favorites", name: "AnimeAllByFavorites", component: Catalog, props: { entityType: "anime", type: "favorites" } },
+      { path: "anime/popularity", name: "AnimeAllByPopularity", component: Catalog, props: { entityType: "anime", type: "popularity" } },
+      { path: "anime/score", name: "AnimeAllByRating", component: Catalog, props: { entityType: "anime", type: "score" } },
+      { path: "anime/usercount", name: "AnimeAllByUserCount", component: Catalog, props: { entityType: "anime", type: "usercount" } },
+      { path: "animeOnPage/:id", name: "AnimeOnPage", component: AnimeOnPage },
+      
+
 
       // MangaController
-      { path: "manga/Home", name: "MangaHome", component: MangaHome },
-      { path: "manga/all", name: "MangaAll", component: MangaCatalog },
-      { path: "manga/all/favorites", name: "MangaAllByFavorites", component: MangaCatalog },
-      { path: "manga/all/popularity", name: "MangaAllByPopularity", component: MangaCatalog },
-      { path: "manga/all/rating", name: "MangaAllByRating", component: MangaCatalog },
-      { path: "manga/all/usercount", name: "MangaAllByUserCount", component: MangaCatalog },
-      { path: "manga/:id", name: "MangaOnPage", component: MangaOnPage },
-      //{ path: "manga/suggestion", name: "GetSuggestionList", component: GetSuggestionList },
+      { path: "manga/all", name: "MangaAll", component: Catalog, props: { entityType: "manga", type: "all" } },
+      { path: "manga/favorites", name: "MangaAllByFavorites", component: Catalog, props: { entityType: "manga", type: "favorites" } },
+      { path: "manga/popularity", name: "MangaAllByPopularity", component: Catalog, props: { entityType: "manga", type: "popularity" } },
+      { path: "manga/score", name: "MangaAllByScore", component: Catalog, props: { entityType: "manga", type: "score" } },
+      { path: "manga/usercount", name: "MangaAllByUserCount", component: Catalog, props: { entityType: "manga", type: "usercount" } },
+      { path: "mangaOnPage/:id", name: "MangaOnPage", component: MangaOnPage }, // sempre por último
+
 
       // // MangaDbController
       // { path: "mangadb", name: "MangaDbIndex", component: MangaDbIndex },

@@ -209,6 +209,49 @@ namespace DataAccessLayer.Implementations
                 return 0;
             }
         }
+
+        public async Task<DataResponse<Anime>> GetByCategory(int ID)
+        {
+            try
+            {
+                Genre? Select = _db.Genre.Include(c => c.AnimeId).FirstOrDefault(m => m.Id == ID);
+                return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(Select.AnimesID.ToList());
+            }
+            catch (Exception ex)
+            {
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<Anime>(ex);
+            }
+        }
+
+
+
+        public async Task<DataResponse<int>> GetMissingMalIds()
+        {
+            // Pega todos os MalIds já salvos no banco
+            var existingIds = await _db.Animes
+                .Select(a => a.MalId)
+                .ToListAsync();
+
+            // Garante que não tenha null
+            // existingIds = existingIds.Where(id => id.HasValue).Select(id => id.Value).ToList();
+
+            // Descobre o maior MalId já salvo no banco
+            int maxMalId = existingIds.Count > 0 ? existingIds.Max() : 0;
+
+            // 🔹 Gera a lista de MalIds esperados (de 1 até o maior encontrado no banco ou até um limite pré-definido)
+            var expectedIds = Enumerable.Range(1, maxMalId).ToList();
+
+            // Faz a diferença entre o esperado e o existente
+            var missingIds = expectedIds.Except(existingIds).ToList();
+
+            return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(missingIds);
+        }
+
+        public async Task<DataResponse<AnimeCatalog>> GetHome(int skip, int take)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<DataResponse<AnimeCatalog>> GetByFavorites(int skip, int take)
         {
             try
@@ -233,8 +276,8 @@ namespace DataAccessLayer.Implementations
         {
             try
             {
-                List<AnimeCatalog> animes = await _db.Animes
-                    .OrderBy(m => m.Rank)
+                List<AnimeCatalog> animes = await _db.Animes.Where(w => w.Score != null && Convert.ToInt32(w.Score) != 0)
+                    .OrderByDescending(m => m.Score)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)
@@ -268,25 +311,11 @@ namespace DataAccessLayer.Implementations
                 return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(ex);
             }
         }
-
-        public async Task<DataResponse<Anime>> GetByCategory(int ID)
-        {
-            try
-            {
-                Genre? Select = _db.Genre.Include(c => c.AnimeId).FirstOrDefault(m => m.Id == ID);
-                return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(Select.AnimesID.ToList());
-            }
-            catch (Exception ex)
-            {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<Anime>(ex);
-            }
-        }
-
         public async Task<DataResponse<AnimeCatalog>> GetByPopularity(int skip, int take)
         {
             try
             {
-                List<AnimeCatalog> Animes = await _db.Animes
+                List<AnimeCatalog> Animes = await _db.Animes.Where(w => w.Popularity != 0)
                     .OrderBy(m => m.Popularity)
                     .AsNoTracking()
                     .Skip(skip)
@@ -301,33 +330,64 @@ namespace DataAccessLayer.Implementations
                 return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(ex);
             }
         }
-
-
-        public async Task<DataResponse<int>> GetMissingMalIds()
+        public async Task<DataResponse<AnimeCatalog>> GetByCatalog(int skip, int take, string catalog)
         {
-            // Pega todos os MalIds já salvos no banco
-            var existingIds = await _db.Animes
-                .Select(a => a.MalId)
-                .ToListAsync();
+            try
+            {
+                IQueryable<Anime> query = _db.Animes.AsNoTracking();
 
-            // Garante que não tenha null
-            // existingIds = existingIds.Where(id => id.HasValue).Select(id => id.Value).ToList();
+                // Define a ordenação com base no catalog
+                switch (catalog?.ToLower())
+                {
+                    case "favorites":
+                        query = query.OrderByDescending(a => a.Favorites);
+                        break;
 
-            // Descobre o maior MalId já salvo no banco
-            int maxMalId = existingIds.Count > 0 ? existingIds.Max() : 0;
+                    case "score":
+                        query = query.Where(a => a.Score != null && Convert.ToInt32(a.Score) != 0)
+                                     .OrderByDescending(a => a.Score);
+                        break;
 
-            // 🔹 Gera a lista de MalIds esperados (de 1 até o maior encontrado no banco ou até um limite pré-definido)
-            var expectedIds = Enumerable.Range(1, maxMalId).ToList();
+                    case "usercount":
+                        query = query.OrderByDescending(a => a.Members);
+                        break;
 
-            // Faz a diferença entre o esperado e o existente
-            var missingIds = expectedIds.Except(existingIds).ToList();
+                    case "popularity":
+                        query = query.Where(a => a.Popularity != 0)
+                                     .OrderBy(a => a.Popularity);
+                        break;
 
-            return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(missingIds);
+                    case "scoredby":
+                        query = query.Where(a => a.ScoredBy != null)
+                                     .OrderByDescending(a => a.ScoredBy);
+                        break;
+
+                    case "rank":
+                        query = query.Where(a => a.Rank != null && Convert.ToInt32(a.Rank) != 0)
+                                     .OrderByDescending(a => a.Rank);
+                        break;
+
+                    default:
+                        query = query.OrderBy(a => a.Title); // ordem padrão
+                        break;
+                }
+
+                // Aplica paginação e projeção
+                List<AnimeCatalog> animes = await query
+                    .Skip(skip)
+                    .Take(take)
+                    .Select(AnimeCatalog.Projection)
+                    .ToListAsync();
+
+                return ResponseFactory.CreateInstance()
+                    .CreateResponseBasedOnCollectionData(animes);
+            }
+            catch (Exception ex)
+            {
+                return ResponseFactory.CreateInstance()
+                    .CreateFailedDataResponse<AnimeCatalog>(ex);
+            }
         }
 
-        public async Task<DataResponse<AnimeCatalog>> GetHome(int skip, int take)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

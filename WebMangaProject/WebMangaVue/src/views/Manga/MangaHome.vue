@@ -8,18 +8,23 @@
       >
         <div class="idiv-config">
           <h3 class="section-title">{{ section.title }}</h3>
+          <div class="va-div">
+            <router-link class="custom-link va-width" :to="section.viewAllLink">
+              View All
+            </router-link>
+          </div>
         </div>
         <hr />
         <div class="card-wrapper">
           <router-link
-            v-for="manga in section.items"
-            :key="manga.id"
+            v-for="item in section.items"
+            :key="item.id"
             class="card-item custom-link"
-            :to="`/Manga/${manga.id}`"
+            :to="`/MangaOnPage/${item.id}`"
           >
-            <img :src="manga.webpLargeImageUrl" :alt="manga.canonicalTitle" />
+            <img :src="item.webpLargeImageUrl" :alt="item.canonicalTitle" />
             <div class="card-content">
-              <h5>{{ manga.canonicalTitle }}</h5>
+              <h5>{{ item.canonicalTitle }}</h5>
             </div>
           </router-link>
         </div>
@@ -46,14 +51,17 @@ export default {
       return [
         {
           title: "All Time Favorites",
+          viewAllLink: "/manga/favorites",
           items: this.mangasFavorites
         },
         {
           title: "Most Popular",
+          viewAllLink: "/manga/popularity",
           items: this.mangasByCount
         },
         {
           title: "Rating",
+          viewAllLink: "/manga/score",
           items: this.mangasByRating
         }
       ];

@@ -8,6 +8,11 @@
       >
         <div class="idiv-config">
           <h3 class="section-title">{{ section.title }}</h3>
+          <div class="va-div">
+            <router-link class="custom-link va-width" :to="section.viewAllLink">
+              View All
+            </router-link>
+          </div>
         </div>
         <hr />
         <div class="card-wrapper">
@@ -15,7 +20,7 @@
             v-for="item in section.items"
             :key="item.id"
             class="card-item custom-link"
-            :to="section.type === 'anime' ? `/Anime/${item.id}` : `/Manga/${item.id}`"
+            :to="section.type === 'anime' ? `/AnimeOnPage/${item.id}` : `/MangaOnPage/${item.id}`"
           > 
               <img :src="item.posterImageLarge || item.webpLargeImageUrl" />
               <div class="card-content">
@@ -49,42 +54,49 @@ export default {
   computed: {
     sections() {
       return [
-      {
-        title: "All Time Favorite Manga",
-        type: "manga",
-        items: this.mangasFavorites
-      },
-      {
-        title: "Most Popular Manga",
-        type: "manga",
-        items: this.mangasByCount
-      },
-      {
-        title: "All Time By Rank Mangas",
-        type: "manga",
-        items: this.mangaByRank
-      },
-      {
-        title: "All Time By Rank Animes",
-        type: "anime",
-        items: this.animeByRank
-      },
-      {
-        title: "All Time Favorite Animes",
-        type: "anime",
-        items: this.animesFavorites
-      },
-      {
-        title: "Most Popular Animes",
-        type: "anime",
-        items: this.animesByCount
-      },
-      {
-        title: "Latest Animes",
-        type: "anime",
-        items: this.latestAnimes
-      }
-    ];
+        {
+          title: "All Time Favorite Manga",
+          type: "manga",
+          viewAllLink: "/manga/favorites",
+          items: this.mangasFavorites
+        },
+        {
+          title: "Most Popular Manga",
+          type: "manga",
+          viewAllLink: "/manga/popularity",
+          items: this.mangasByCount
+        },
+        {
+          title: "All Time By Score Mangas",
+          type: "manga",
+          viewAllLink: "/manga/score",
+          items: this.mangaByRank
+        },
+        {
+          title: "All Time Favorite Animes",
+          type: "anime",
+          viewAllLink: "/anime/favorites",
+          items: this.animesFavorites
+        },
+        {
+          title: "Most Popular Animes",
+          type: "anime",
+          viewAllLink: "/anime/popularity",
+          items: this.animesByCount
+        },
+        {
+          title: "All Time By Score Animes",
+          type: "anime",
+          viewAllLink: "/anime/score",
+          items: this.animeByRank
+        },
+        {
+          title: "Latest Animes",
+          type: "anime",
+          viewAllLink: "/anime/usercount", // se quiser "latest" mesmo, precisa criar no router também
+          items: this.latestAnimes
+        }
+      ];
     }
   },
   async mounted() {
@@ -114,17 +126,5 @@ export default {
     width: 100%;
     display: flex;
     justify-content: center;
-}
-
-.idiv-config {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-}
-
-.section-title {
-    display: flex;
-    justify-content: center;
-    padding-top: 1%;
 }
 </style>

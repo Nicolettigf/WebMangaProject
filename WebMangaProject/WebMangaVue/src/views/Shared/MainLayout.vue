@@ -24,8 +24,8 @@
             <!-- <li><router-link to="/manga/db">Database</router-link></li> -->
             <li><router-link to="/manga/Home">Manga Home</router-link></li>
             <li><router-link to="/manga/favorites">Favorites</router-link></li>
-            <li><router-link to="/manga/popular">Popular</router-link></li>
-            <li><router-link to="/manga/rating">Rating</router-link></li>
+            <li><router-link to="/manga/popularity">Popular</router-link></li>
+            <li><router-link to="/manga/score">Score</router-link></li>
           </ul>
         </li>
 
@@ -39,8 +39,8 @@
           <ul class="item-show" :class="{ active: showAnime }">
             <li><router-link to="/anime/Home">Anime Home</router-link></li>
             <li><router-link to="/anime/favorites">Favorites</router-link></li>
-            <li><router-link to="/anime/popular">Popular</router-link></li>
-            <li><router-link to="/anime/rating">Rating</router-link></li>
+            <li><router-link to="/anime/popularity">Popular</router-link></li>
+            <li><router-link to="/anime/score">Score</router-link></li>
           </ul>
         </li>
 

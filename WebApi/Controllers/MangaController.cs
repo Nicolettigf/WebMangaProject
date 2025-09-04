@@ -17,14 +17,14 @@ namespace WebApi.Controllers
             this._mangaService = mangaService;
         }
 
-        [HttpGet(template: "skip/{skip}/take/{take}"), AllowAnonymous]
-        public async Task<IActionResult> GetAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
+        [HttpGet(template: "ByCatalog/skip/{skip}/take/{take}"), AllowAnonymous]    
+        public async Task<IActionResult> GetByCatalog([FromQuery] string catalogName, [FromRoute] int skip = 0, [FromRoute] int take = 25)
         {
             if (take >= 100)
             {
                 return BadRequest("take < 100");
             }
-            var responseUsers = await _mangaService.Get(skip, take);
+            var responseUsers = await _mangaService.GetByCatalog(skip, take,catalogName);
             if (!responseUsers.HasSuccess)
             {
                 return BadRequest(responseUsers);
@@ -33,29 +33,14 @@ namespace WebApi.Controllers
             return Ok(responseUsers);
         }
 
-        [HttpGet(template: "ByFavorites/skip/{skip}/take/{take}"), AllowAnonymous]
-        public async Task<IActionResult> GeByFavoritestAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
+        [HttpGet(template: "GetHome/skip/{skip}/take/{take}"), AllowAnonymous]
+        public async Task<IActionResult> GetHome([FromRoute] int skip = 0, [FromRoute] int take = 25)
         {
             if (take >= 100)
             {
                 return BadRequest("take < 100");
             }
-            var responseUsers = await _mangaService.GetByFavorites(skip, take);
-            if (!responseUsers.HasSuccess)
-            {
-                return BadRequest(responseUsers);
-            }
-
-            return Ok(responseUsers);
-        }
-        [HttpGet(template: "ByRating/skip/{skip}/take/{take}"), AllowAnonymous]
-        public async Task<IActionResult> GetByRating([FromRoute] int skip = 0, [FromRoute] int take = 25)
-        {
-            if (take >= 100)
-            {
-                return BadRequest("take < 100");
-            }
-            var responseUsers = await _mangaService.GetByRating(skip, take);
+            var responseUsers = await _mangaService.GetHome(skip, take);
             if (!responseUsers.HasSuccess)
             {
                 return BadRequest(responseUsers);
@@ -64,21 +49,7 @@ namespace WebApi.Controllers
             return Ok(responseUsers);
         }
 
-        [HttpGet(template: "ByUserCount/skip/{skip}/take/{take}"), AllowAnonymous]
-        public async Task<IActionResult> GetByUserCountAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
-        {
-            if (take >= 100)
-            {
-                return BadRequest("take < 100");
-            }
-            var responseUsers = await _mangaService.GetByUserCount(skip, take);
-            if (!responseUsers.HasSuccess)
-            {
-                return BadRequest(responseUsers);
-            }
 
-            return Ok(responseUsers);
-        }
 
         [HttpGet("ByName/{title}"), AllowAnonymous]
         public async Task<IActionResult> GetByNameAsync([FromRoute] string title)
@@ -156,5 +127,88 @@ namespace WebApi.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet(template: "skip/{skip}/take/{take}"), AllowAnonymous]
+        public async Task<IActionResult> GetAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
+        {
+            if (take >= 100)
+            {
+                return BadRequest("take < 100");
+            }
+            var responseUsers = await _mangaService.Get(skip, take);
+            if (!responseUsers.HasSuccess)
+            {
+                return BadRequest(responseUsers);
+            }
+
+            return Ok(responseUsers);
+        }
+
+
+        #region FUTURAMENTEDELETAR
+
+        [HttpGet(template: "ByPopularity/skip/{skip}/take/{take}"), AllowAnonymous]
+        public async Task<IActionResult> GetByPopularityAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
+        {
+            if (take >= 100)
+            {
+                return BadRequest("take < 100");
+            }
+            var responseUsers = await _mangaService.GetByPopularity(skip, take);
+            if (!responseUsers.HasSuccess)
+            {
+                return BadRequest(responseUsers);
+            }
+            return Ok(responseUsers);
+        }
+
+        [HttpGet(template: "ByFavorites/skip/{skip}/take/{take}"), AllowAnonymous]
+        public async Task<IActionResult> GeByFavoritestAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
+        {
+            if (take >= 100)
+            {
+                return BadRequest("take < 100");
+            }
+            var responseUsers = await _mangaService.GetByFavorites(skip, take);
+            if (!responseUsers.HasSuccess)
+            {
+                return BadRequest(responseUsers);
+            }
+
+            return Ok(responseUsers);
+        }
+        [HttpGet(template: "ByRating/skip/{skip}/take/{take}"), AllowAnonymous]
+        public async Task<IActionResult> GetByRating([FromRoute] int skip = 0, [FromRoute] int take = 25)
+        {
+            if (take >= 100)
+            {
+                return BadRequest("take < 100");
+            }
+            var responseUsers = await _mangaService.GetByRating(skip, take);
+            if (!responseUsers.HasSuccess)
+            {
+                return BadRequest(responseUsers);
+            }
+
+            return Ok(responseUsers);
+        }
+
+        [HttpGet(template: "ByUserCount/skip/{skip}/take/{take}"), AllowAnonymous]
+        public async Task<IActionResult> GetByUserCountAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
+        {
+            if (take >= 100)
+            {
+                return BadRequest("take < 100");
+            }
+            var responseUsers = await _mangaService.GetByUserCount(skip, take);
+            if (!responseUsers.HasSuccess)
+            {
+                return BadRequest(responseUsers);
+            }
+
+            return Ok(responseUsers);
+        }
+
+        #endregion
     }
 }

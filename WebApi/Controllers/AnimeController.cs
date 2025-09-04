@@ -17,14 +17,14 @@ namespace WebApi.Controllers
             this._animeService = animeService;
         }
 
-        [HttpGet(template: "skip/{skip}/take/{take}"), AllowAnonymous]
-        public async Task<IActionResult> GetAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
+        [HttpGet(template: "ByCatalog/skip/{skip}/take/{take}"), AllowAnonymous]
+        public async Task<IActionResult> GetByCatalog([FromQuery] string catalogName, [FromRoute] int skip = 0, [FromRoute] int take = 25)
         {
             if (take >= 100)
             {
                 return BadRequest("take < 100");
             }
-            var responseUsers = await _animeService.Get(skip, take);
+            var responseUsers = await _animeService.GetByCatalog(skip, take, catalogName);
             if (!responseUsers.HasSuccess)
             {
                 return BadRequest(responseUsers);
@@ -33,14 +33,14 @@ namespace WebApi.Controllers
             return Ok(responseUsers);
         }
 
-        [HttpGet(template: "ByFavorites/skip/{skip}/take/{take}"), AllowAnonymous]
-        public async Task<IActionResult> GeByFavoritestAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
+        [HttpGet(template: "GetHome/skip/{skip}/take/{take}"), AllowAnonymous]
+        public async Task<IActionResult> GetHome([FromRoute] int skip = 0, [FromRoute] int take = 25)
         {
             if (take >= 100)
             {
                 return BadRequest("take < 100");
             }
-            var responseUsers = await _animeService.GetByFavorites(skip, take);
+            var responseUsers = await _animeService.GetHome(skip, take);
             if (!responseUsers.HasSuccess)
             {
                 return BadRequest(responseUsers);
@@ -48,63 +48,8 @@ namespace WebApi.Controllers
 
             return Ok(responseUsers);
         }
-        [HttpGet(template: "ByRating/skip/{skip}/take/{take}"), AllowAnonymous]
-        public async Task<IActionResult> GetByRating([FromRoute] int skip = 0, [FromRoute] int take = 25)
-        {
-            if (take >= 100)
-            {
-                return BadRequest("take < 100");
-            }
-            var response = await _animeService.GetByRating(skip, take);
-            if (!response.HasSuccess)
-            {
-                return BadRequest(response);
-            }
 
-            return Ok(response);
-        }
 
-        [HttpGet(template: "ByUserCount/skip/{skip}/take/{take}"), AllowAnonymous]
-        public async Task<IActionResult> GetByUserCountAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
-        {
-            if (take >= 100)
-            {
-                return BadRequest("take < 100");
-            }
-            var responseUsers = await _animeService.GetByUserCount(skip, take);
-            if (!responseUsers.HasSuccess)
-            {
-                return BadRequest(responseUsers);
-            }
-
-            return Ok(responseUsers);
-        }
-        [HttpGet(template: "ByPopularity/skip/{skip}/take/{take}"), AllowAnonymous]
-        public async Task<IActionResult> GetByPopularityAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
-        {
-            if (take >= 100)
-            {
-                return BadRequest("take < 100");
-            }
-            var responseUsers = await _animeService.GetByPopularity(skip, take);
-            if (!responseUsers.HasSuccess)
-            {
-                return BadRequest(responseUsers);
-            }
-            return Ok(responseUsers);
-        }
-
-        [HttpGet("ByName/{title}"), AllowAnonymous]
-        public async Task<IActionResult> GetByNameAsync([FromRoute] string title)
-        {
-            var response = await _animeService.Get(title);
-            if (!response.HasSuccess)
-            {
-                return BadRequest(response);
-            }
-
-            return Ok(response);
-        }
 
         [HttpGet("ById/{id}"), AllowAnonymous]
         public async Task<IActionResult> GetByIdAsync(int id)
@@ -128,7 +73,6 @@ namespace WebApi.Controllers
 
             return Ok(responseUsers);
         }
-
 
         [HttpPost, Authorize(Policy = "Admin")]
         public async Task<IActionResult> PostAsync([FromBody] string value)
@@ -171,5 +115,100 @@ namespace WebApi.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet(template: "skip/{skip}/take/{take}"), AllowAnonymous]
+        public async Task<IActionResult> GetAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
+        {
+            if (take >= 100)
+            {
+                return BadRequest("take < 100");
+            }
+            var responseUsers = await _animeService.Get(skip, take);
+            if (!responseUsers.HasSuccess)
+            {
+                return BadRequest(responseUsers);
+            }
+
+            return Ok(responseUsers);
+        }
+
+        [HttpGet("ByName/{title}"), AllowAnonymous]
+        public async Task<IActionResult> GetByNameAsync([FromRoute] string title)
+        {
+            var response = await _animeService.Get(title);
+            if (!response.HasSuccess)
+            {
+                return BadRequest(response);
+            }
+
+            return Ok(response);
+        }
+
+
+        #region DELETARFUTURAMENTE
+
+            [HttpGet(template: "ByFavorites/skip/{skip}/take/{take}"), AllowAnonymous]
+            public async Task<IActionResult> GeByFavoritestAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
+            {
+                if (take >= 100)
+                {
+                    return BadRequest("take < 100");
+                }
+                var responseUsers = await _animeService.GetByFavorites(skip, take);
+                if (!responseUsers.HasSuccess)
+                {
+                    return BadRequest(responseUsers);
+                }
+
+                return Ok(responseUsers);
+            }
+            [HttpGet(template: "ByRating/skip/{skip}/take/{take}"), AllowAnonymous]
+            public async Task<IActionResult> GetByRating([FromRoute] int skip = 0, [FromRoute] int take = 25)
+            {
+                if (take >= 100)
+                {
+                    return BadRequest("take < 100");
+                }
+                var response = await _animeService.GetByRating(skip, take);
+                if (!response.HasSuccess)
+                {
+                    return BadRequest(response);
+                }
+
+                return Ok(response);
+            }
+
+            [HttpGet(template: "ByUserCount/skip/{skip}/take/{take}"), AllowAnonymous]
+            public async Task<IActionResult> GetByUserCountAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
+            {
+                if (take >= 100)
+                {
+                    return BadRequest("take < 100");
+                }
+                var responseUsers = await _animeService.GetByUserCount(skip, take);
+                if (!responseUsers.HasSuccess)
+                {
+                    return BadRequest(responseUsers);
+                }
+
+                return Ok(responseUsers);
+            }
+            [HttpGet(template: "ByPopularity/skip/{skip}/take/{take}"), AllowAnonymous]
+            public async Task<IActionResult> GetByPopularityAsync([FromRoute] int skip = 0, [FromRoute] int take = 25)
+            {
+                if (take >= 100)
+                {
+                    return BadRequest("take < 100");
+                }
+                var responseUsers = await _animeService.GetByPopularity(skip, take);
+                if (!responseUsers.HasSuccess)
+                {
+                    return BadRequest(responseUsers);
+                }
+                return Ok(responseUsers);
+            }
+
+        #endregion
+
     }
 }

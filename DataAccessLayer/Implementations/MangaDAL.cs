@@ -224,24 +224,6 @@ namespace DataAccessLayer.Implementations
                 return 0;
             }
         }
-        public async Task<DataResponse<MangaCatalog>> GetByPopularity(int skip, int take)
-        {
-            try
-            {
-                List<MangaCatalog> mangas = await _db.Mangas
-                    .OrderBy(m => m.Popularity)
-                    .AsNoTracking()
-                    .Skip(skip)
-                    .Take(take)
-                    .Select(MangaCatalog.Projection)
-                    .ToListAsync();
-                return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(mangas);
-            }
-            catch (Exception ex)
-            {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MangaCatalog>(ex);
-            }
-        }
         public async Task<SingleResponse<Manga>> GetComplete(int ID)
         {
             try
@@ -266,12 +248,15 @@ namespace DataAccessLayer.Implementations
                 return ResponseFactory.CreateInstance().CreateFailedDataResponse<Manga>(ex);
             }
         }
+
+
+
         public async Task<DataResponse<MangaCatalog>> GetByRating(int skip, int take)
         {
             try
             {
-                List<MangaCatalog> mangas = await _db.Mangas
-                    .OrderByDescending(m => m.Rank)
+                List<MangaCatalog> mangas = await _db.Mangas.Where(w => w.Score != null && Convert.ToInt32(w.Score) != 0)
+                    .OrderByDescending(m => m.Score)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)
@@ -279,6 +264,24 @@ namespace DataAccessLayer.Implementations
                     .ToListAsync();
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(mangas);
 
+            }
+            catch (Exception ex)
+            {
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MangaCatalog>(ex);
+            }
+        }
+        public async Task<DataResponse<MangaCatalog>> GetByPopularity(int skip, int take)
+        {
+            try
+            {
+                List<MangaCatalog> mangas = await _db.Mangas.Where(w => w.Popularity != 0)
+                    .OrderBy(m => m.Popularity)
+                    .AsNoTracking()
+                    .Skip(skip)
+                    .Take(take)
+                    .Select(MangaCatalog.Projection)
+                    .ToListAsync();
+                return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(mangas);
             }
             catch (Exception ex)
             {
@@ -323,6 +326,58 @@ namespace DataAccessLayer.Implementations
                 return ResponseFactory.CreateInstance().CreateFailedDataResponse<MangaCatalog>(ex);
             }
         }
+        public async Task<DataResponse<MangaCatalog>> GetByCatalog(int skip, int take, string catalog)
+        {
+            try
+            {
+                IQueryable<Manga> query = _db.Mangas.AsNoTracking();
+
+                // Filtrando e ordenando baseado no catalog
+                switch (catalog?.ToLower())
+                {
+                    case "favorites":
+                        query = query.OrderByDescending(m => m.Favorites);
+                        break;
+                    case "popularity":
+                        query = query.Where(w => w.Popularity != 0).OrderBy(m => m.Popularity);
+                        break;
+                    case "score":
+                        query = query.Where(m => m.Score != null && m.Score != 0).OrderByDescending(m => m.Score);
+                        break;
+                    case "usercount":
+                        query = query.OrderByDescending(m => m.Members);
+                        break;
+                    case "scoredby":
+                        query = query.Where(a => a.ScoredBy != null)
+                                     .OrderByDescending(a => a.ScoredBy);
+                        break;
+                    case "rank":
+                        query = query.Where(a => a.Rank != null && Convert.ToInt32(a.Rank) != 0)
+                                     .OrderByDescending(a => a.Rank);
+                        break;
+                    default:
+                        query = query.OrderBy(m => m.Title); // ou qualquer ordem padrão
+                        break;
+                }
+
+                // Projeção e paginação
+                List<MangaCatalog> mangas = await query
+                    .Skip(skip)
+                    .Take(take)
+                    .Select(MangaCatalog.Projection)
+                    .ToListAsync();
+
+                return ResponseFactory.CreateInstance()
+                    .CreateResponseBasedOnCollectionData(mangas);
+            }
+            catch (Exception ex)
+            {
+                return ResponseFactory.CreateInstance()
+                    .CreateFailedDataResponse<MangaCatalog>(ex);
+            }
+        }
+
+
 
         public async Task<DataResponse<MangaCatalog>> GetHome(int skip, int take)
         {

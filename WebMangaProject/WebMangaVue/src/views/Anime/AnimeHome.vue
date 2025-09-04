@@ -17,14 +17,14 @@
         <hr />
         <div class="card-wrapper">
           <router-link
-            v-for="anime in section.items"
-            :key="anime.id"
+            v-for="item in section.items"
+            :key="item.id"
             class="card-item custom-link"
-            :to="`/Anime/AnimeOnPage/${anime.id}`"
+            :to="`/AnimeOnPage/${item.id}`"
           >
-            <img :src="anime.webpLargeImageUrl" :alt="anime.canonicalTitle" />
+            <img :src="item.webpLargeImageUrl" :alt="item.canonicalTitle" />
             <div class="card-content">
-              <h5>{{ anime.canonicalTitle }}</h5>
+              <h5>{{ item.canonicalTitle }}</h5>
             </div>
           </router-link>
         </div>
@@ -51,7 +51,7 @@ export default {
       return [
         {
           title: "All Time Favorites",
-          viewAllLink: "/Anime/AllByFavorites",
+          viewAllLink: "/anime/favorites",
           items: this.animesFavorites
         },
         {
@@ -60,8 +60,8 @@ export default {
           items: this.animesByCount
         },
         {
-          title: "Rating",
-          viewAllLink: "/Anime/AllByRating",
+          title: "All Time By Score",
+          viewAllLink: "/anime/score",
           items: this.animesByRating
         }
       ];
@@ -83,4 +83,6 @@ export default {
 
 <style scoped>
 @import "/css/site.css";
+
+
 </style>

@@ -9,59 +9,12 @@ export class MangaService {
     };
   }
 
-  // GET: api/Manga/skip/{skip}/take/{take}
-  async getAll(skip = 0, take = 25) {
-    const { data } = await api.get(`/Manga/skip/${skip}/take/${take}`, {
-      headers: this.headers,
-    });
-    return data;
-  }
-
-  // GET: api/Manga/ByFavorites/skip/{skip}/take/{take}
-  async getByFavorites(skip = 0, take = 25) {
-    const { data } = await api.get(`/Manga/ByFavorites/skip/${skip}/take/${take}`, {
-      headers: this.headers,
-    });
-    return data;
-  }
-
-  // GET: api/Manga/ByRating/skip/{skip}/take/{take}
-  async getByRating(skip = 0, take = 25) {
-    const { data } = await api.get(`/Manga/ByRating/skip/${skip}/take/${take}`, {
-      headers: this.headers,
-    });
-    return data;
-  }
-
-  // GET: api/Manga/ByUserCount/skip/{skip}/take/{take}
-  async getByUserCount(skip = 0, take = 25) {
-    const { data } = await api.get(`/Manga/ByUserCount/skip/${skip}/take/${take}`, {
-      headers: this.headers,
-    });
-    return data;
-  }
-
-  // GET: api/Manga/ByPopularity/skip/{skip}/take/{take}
-  async getByPopularity(skip = 0, take = 25) {
-    const { data } = await api.get(`/Manga/ByPopularity/skip/${skip}/take/${take}`, {
-      headers: this.headers,
-    });
-    return data;
-  }
-
-  // GET: api/Manga/ByName/{title}
-  async getByTitle(title) {
-    const { data } = await api.get(`/Manga/ByName/${encodeURIComponent(title)}`, {
-      headers: this.headers,
-    });
-    return data;
-  }
-
-  // GET: api/Manga/ById/{id}
-  async getById(id) {
-    const { data } = await api.get(`/Manga/ById/${id}`, {
-      headers: this.headers,
-    });
+  // dentro do MangaService
+  async getByCatalog(catalogName, skip = 0, take = 25) {
+    const { data } = await api.get(
+      `/Manga/ByCatalog/skip/${skip}/take/${take}?catalogName=${catalogName}`,
+      { headers: this.headers }
+    );
     return data;
   }
 
@@ -73,6 +26,30 @@ export class MangaService {
     return data;
   }
 
+  // GET: api/Manga/skip/{skip}/take/{take}
+  async getAll(skip = 0, take = 25) {
+    const { data } = await api.get(`/Manga/skip/${skip}/take/${take}`, {
+      headers: this.headers,
+    });
+    return data;
+  }
+  
+  // GET: api/Manga/ByName/{title}
+  async getByTitle(title) {
+    const { data } = await api.get(`/Manga/ByName/${encodeURIComponent(title)}`, {
+      headers: this.headers,
+    });
+    return data;
+  }
+  
+  // GET: api/Manga/ById/{id}
+  async getById(id) {
+    const { data } = await api.get(`/Manga/ById/${id}`, {
+      headers: this.headers,
+    });
+    return data;
+  }
+  
   // POST: api/Manga
   async create(manga) {
     const { data } = await api.post(`/Manga`, JSON.stringify(manga), {
@@ -83,7 +60,7 @@ export class MangaService {
     });
     return data;
   }
-
+  
   // PUT: api/Manga/{id}
   async update(id, manga) {
     const { data } = await api.put(`/Manga/${id}`, JSON.stringify(manga), {
@@ -102,7 +79,7 @@ export class MangaService {
     });
     return data;
   }
-
+  
   // GET: api/Manga/ByCategory/{categoryId}
   async getByCategory(categoryId) {
     const { data } = await api.get(`/Manga/ByCategory/${categoryId}`, {
@@ -110,4 +87,41 @@ export class MangaService {
     });
     return data;
   }
+  
+  
+  // #region deletar
+
+    // GET: api/Manga/ByFavorites/skip/{skip}/take/{take}
+    async getByFavorites(skip = 0, take = 25) {
+      const { data } = await api.get(`/Manga/ByFavorites/skip/${skip}/take/${take}`, {
+        headers: this.headers,
+      });
+      return data;
+    }
+  
+    // GET: api/Manga/ByRating/skip/{skip}/take/{take}
+    async getByRating(skip = 0, take = 25) {
+      const { data } = await api.get(`/Manga/ByRating/skip/${skip}/take/${take}`, {
+        headers: this.headers,
+      });
+      return data;
+    }
+    
+    // GET: api/Manga/ByUserCount/skip/{skip}/take/{take}
+    async getByUserCount(skip = 0, take = 25) {
+      const { data } = await api.get(`/Manga/ByUserCount/skip/${skip}/take/${take}`, {
+        headers: this.headers,
+      });
+      return data;
+    }
+    
+    // GET: api/Manga/ByPopularity/skip/{skip}/take/{take}
+    async getByPopularity(skip = 0, take = 25) {
+      const { data } = await api.get(`/Manga/ByPopularity/skip/${skip}/take/${take}`, {
+        headers: this.headers,
+      });
+      return data;
+    }
+  // #endregion
+
 }

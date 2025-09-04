@@ -17,7 +17,7 @@ const anime = ref({})
 const userAuthenticated = ref(false)
 
 async function fetchAnime() {
-  const data = await animeService.OnPage(animeId)
+  const data = await animeService.getAnimeOnPage(animeId)
   anime.value = data.item
   userAuthenticated.value = data.userAuthenticated
 }
