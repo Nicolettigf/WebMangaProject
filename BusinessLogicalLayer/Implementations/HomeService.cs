@@ -1,10 +1,7 @@
 ﻿using BusinessLogicalLayer.Interfaces;
 using DataAccessLayer.UnitOfWork;
-using Shared;
-using Shared.DTOS;
 using Shared.Extensions;
-using Shared.Models.Anime;
-using Shared.Models.Manga;
+using Shared.Models;
 using Shared.Responses;
 
 namespace BusinessLogicalLayer.Implementations
@@ -34,7 +31,7 @@ namespace BusinessLogicalLayer.Implementations
                 // Mapear todo o result set sem percorrer cada item
                 if (listType.Contains("Anime"))
                 {
-                    var list = await reader.MapToListAsync<AnimeCatalog>();
+                    var list = await reader.MapToListAsync<MediaCatalog>();
 
                     // Direciona a lista correta usando switch
                     switch (listType)
@@ -47,7 +44,7 @@ namespace BusinessLogicalLayer.Implementations
                 }
                 else if (listType.Contains("Manga"))
                 {
-                    var list = await reader.MapToListAsync<MangaCatalog>();
+                    var list = await reader.MapToListAsync<MediaCatalog>();
 
                     switch (listType)
                     {

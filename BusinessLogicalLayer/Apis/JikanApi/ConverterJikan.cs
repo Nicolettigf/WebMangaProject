@@ -1,5 +1,5 @@
-﻿using Entities;
-using Entities.AnimeS;
+﻿using Entities.AnimeS;
+using Entities.Common;
 using Entities.MangaS;
 
 namespace BusinessLogicalLayer.Apis.JikanApi

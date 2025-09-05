@@ -1,4 +1,4 @@
-﻿using Entities;
+﻿using Entities.Common;
 using System.Linq.Expressions;
 
 namespace Shared.Models
@@ -12,14 +12,13 @@ namespace Shared.Models
         public string? CoverImageLarge { get; set; }
 
         // Projeção genérica pra qualquer MediaBase
-        public static Expression<Func<MediaBase, MediaCatalog>> Projection(string listType) =>
-            x => new MediaCatalog()
-            {
-                Id = x.Id,
-                CanonicalTitle = x.Title,
-                WebpLargeImageUrl = x.WebpLargeImageUrl,
-                PosterImageLarge = x.PosterImageLarge,
-                CoverImageLarge = x.CoverImageLarge,
-            };
+        public static Expression<Func<MediaBase, MediaCatalog>> Projection => x => new MediaCatalog()
+        {
+            Id = x.Id,
+            CanonicalTitle = x.Title,
+            WebpLargeImageUrl = x.WebpLargeImageUrl,
+            PosterImageLarge = x.PosterImageLarge,
+            CoverImageLarge = x.CoverImageLarge
+        };
     }
 }

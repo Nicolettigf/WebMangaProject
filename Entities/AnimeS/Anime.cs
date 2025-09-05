@@ -1,4 +1,6 @@
-﻿namespace Entities.AnimeS
+﻿using Entities.Common;
+
+namespace Entities.AnimeS
 {
     public class Anime : MediaBase
     {

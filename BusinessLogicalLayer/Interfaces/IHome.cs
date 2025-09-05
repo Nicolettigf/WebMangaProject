@@ -1,4 +1,4 @@
-﻿using Shared.DTOS;
+﻿using Shared.Models;
 using Shared.Responses;
 
 namespace BusinessLogicalLayer.Interfaces

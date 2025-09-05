@@ -1,5 +1,4 @@
 ﻿using AutoMapper;
-using BusinessLogicalLayer.Implementations.UserComentaryService;
 using BusinessLogicalLayer.Interfaces.IUserItemService;
 using Entities.MangaS;
 using Entities.UserS;
@@ -10,7 +9,7 @@ using MvcPresentationLayer.Apis.MangaProjectApi.ItemComentary.MangaComentary;
 using MvcPresentationLayer.Apis.MangaProjectApi.Mangas;
 using MvcPresentationLayer.Models.MangaModels;
 using MvcPresentationLayer.Utilities;
-using Shared.Models.Manga;
+using Shared.Models;
 using Shared.Responses;
 
 
@@ -36,9 +35,9 @@ namespace MvcPresentationLayer.Controllers
         [HttpGet, AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            DataResponse<MangaCatalog> responseFavorites = await _mangaApiService.GetByFavorites(0, 7);
-            DataResponse<MangaCatalog> responseCount = await _mangaApiService.GetByUserCount(0, 7);
-            DataResponse<MangaCatalog> responserating = await _mangaApiService.GetByRating(0, 7);
+            DataResponse<MediaCatalog> responseFavorites = await _mangaApiService.GetByFavorites(0, 7);
+            DataResponse<MediaCatalog> responseCount = await _mangaApiService.GetByUserCount(0, 7);
+            DataResponse<MediaCatalog> responserating = await _mangaApiService.GetByRating(0, 7);
 
             if (!responseFavorites.HasSuccess || !responseCount.HasSuccess || !responserating.HasSuccess)
             {
@@ -66,7 +65,7 @@ namespace MvcPresentationLayer.Controllers
         [HttpGet, AllowAnonymous]
         public async Task<IActionResult> All(string by)
         {
-            DataResponse<MangaCatalog> response;
+            DataResponse<MediaCatalog> response;
 
             switch (by)
             {

@@ -1,12 +1,6 @@
 ﻿using Entities.AnimeS;
 using Entities.UserS;
-using Shared;
-using Shared.Responses;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Shared.Interfaces;
 
 namespace BusinessLogicalLayer.Interfaces.IUserItemService
 {

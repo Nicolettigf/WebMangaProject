@@ -1,12 +1,12 @@
-﻿using Entities;
-using Entities.AnimeS;
+﻿using Entities.AnimeS;
+using Entities.Common;
 using Entities.MangaS;
 using Entities.UserS;
 using Microsoft.EntityFrameworkCore;
 using Shared;
 using Shared.Responses;
 using System.Reflection;
-using static Entities.MediaBase;
+using static Entities.Common.MediaBase;
 
 namespace DataAccessLayer
 {

@@ -1,6 +1,6 @@
 ﻿using Shared.Responses;
 
-namespace Shared
+namespace Shared.Interfaces
 {
     public interface ICrudUserItem<T,W>
     {

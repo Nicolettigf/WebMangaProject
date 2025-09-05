@@ -63,7 +63,6 @@ export class AnimeService {
     return data;
   }
 
-  
   async getByCategory(categoryId) {
     const { data } = await api.get(`/Anime/ByCategory/${categoryId}`, { headers: this.headers });
     return data;

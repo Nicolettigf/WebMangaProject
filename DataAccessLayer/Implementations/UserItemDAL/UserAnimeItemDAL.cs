@@ -1,9 +1,8 @@
 ﻿using DataAccessLayer.Interfaces.IUserItem;
-using Entities;
 using Entities.AnimeS;
+using Entities.Common;
 using Entities.UserS;
 using Microsoft.EntityFrameworkCore;
-using Shared;
 using Shared.Responses;
 
 namespace DataAccessLayer.Implementations.UserItemDAL

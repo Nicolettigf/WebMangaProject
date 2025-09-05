@@ -1,12 +1,9 @@
 ﻿using DataAccessLayer.Interfaces.IAnimeInterfaces;
-using Entities;
 using Entities.AnimeS;
 using Microsoft.EntityFrameworkCore;
-using Shared;
-using Shared.Models.Anime;
+using Shared.Models;
 using Shared.Responses;
-using System.Xml.Linq;
-using static Entities.MediaBase;
+using static Entities.Common.MediaBase;
 
 namespace DataAccessLayer.Implementations
 {
@@ -247,41 +244,41 @@ namespace DataAccessLayer.Implementations
             return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(missingIds);
         }
 
-        public async Task<DataResponse<AnimeCatalog>> GetHome(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetHome(int skip, int take)
         {
             throw new NotImplementedException();
         }
 
-        public async Task<DataResponse<AnimeCatalog>> GetByFavorites(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByFavorites(int skip, int take)
         {
             try
             {
 
-                List<AnimeCatalog> animes = await _db.Animes
+                List<MediaCatalog> animes = await _db.Animes
                     .OrderByDescending(m => m.Favorites)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)
-                    .Select(AnimeCatalog.Projection)
+                    .Select(MediaCatalog.Projection)
                     .ToListAsync();
 
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(animes);
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(ex);
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
-        public async Task<DataResponse<AnimeCatalog>> GetByRating(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByRating(int skip, int take)
         {
             try
             {
-                List<AnimeCatalog> animes = await _db.Animes.Where(w => w.Score != null && Convert.ToInt32(w.Score) != 0)
+                List<MediaCatalog> animes = await _db.Animes.Where(w => w.Score != null && Convert.ToInt32(w.Score) != 0)
                     .OrderByDescending(m => m.Score)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)
-                    .Select(AnimeCatalog.Projection)
+                    .Select(MediaCatalog.Projection)
                     .ToListAsync();
 
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(animes);
@@ -289,48 +286,48 @@ namespace DataAccessLayer.Implementations
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(ex);
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
-        public async Task<DataResponse<AnimeCatalog>> GetByUserCount(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByUserCount(int skip, int take)
         {
             try
             {
-                List<AnimeCatalog> Animes = await _db.Animes
+                List<MediaCatalog> Animes = await _db.Animes
                     .AsNoTracking()
                     .OrderByDescending(m => m.Members)
                     .Skip(skip)
                     .Take(take)
-                    .Select(AnimeCatalog.Projection)
+                    .Select(MediaCatalog.Projection)
                     .ToListAsync();
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(Animes);
 
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(ex);
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
-        public async Task<DataResponse<AnimeCatalog>> GetByPopularity(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByPopularity(int skip, int take)
         {
             try
             {
-                List<AnimeCatalog> Animes = await _db.Animes.Where(w => w.Popularity != 0)
+                List<MediaCatalog> Animes = await _db.Animes.Where(w => w.Popularity != 0)
                     .OrderBy(m => m.Popularity)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)
-                    .Select(AnimeCatalog.Projection)
+                    .Select(MediaCatalog.Projection)
                     .ToListAsync();
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(Animes);
 
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(ex);
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
-        public async Task<DataResponse<AnimeCatalog>> GetByCatalog(int skip, int take, string catalog)
+        public async Task<DataResponse<MediaCatalog>> GetByCatalog(int skip, int take, string catalog)
         {
             try
             {
@@ -373,10 +370,10 @@ namespace DataAccessLayer.Implementations
                 }
 
                 // Aplica paginação e projeção
-                List<AnimeCatalog> animes = await query
+                List<MediaCatalog> animes = await query
                     .Skip(skip)
                     .Take(take)
-                    .Select(AnimeCatalog.Projection)
+                    .Select(MediaCatalog.Projection)
                     .ToListAsync();
 
                 return ResponseFactory.CreateInstance()
@@ -385,7 +382,7 @@ namespace DataAccessLayer.Implementations
             catch (Exception ex)
             {
                 return ResponseFactory.CreateInstance()
-                    .CreateFailedDataResponse<AnimeCatalog>(ex);
+                    .CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
 

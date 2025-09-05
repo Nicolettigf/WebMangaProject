@@ -1,6 +1,6 @@
 ﻿using BusinessLogicalLayer.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Shared.DTOS;
+using Shared.Models;
 using Shared.Responses;
 
 namespace MvcPresentationLayer.Controllers.Api

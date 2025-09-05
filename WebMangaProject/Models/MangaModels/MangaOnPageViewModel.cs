@@ -1,7 +1,6 @@
-﻿using Entities;
-using Entities.Enums;
+﻿using Entities.Enums;
 using Entities.MangaS;
-using static Entities.MediaBase;
+using static Entities.Common.MediaBase;
 
 namespace MvcPresentationLayer.Models.MangaModels
 {

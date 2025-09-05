@@ -7,8 +7,8 @@
 
     <hr />
 
-    <div class="pt-config">
-      <div class="col d-flex align-about-us">
+    <div>
+      <div class="center">
         <div class="columns" v-for="(member, index) in team" :key="index">
           <img class="icon-ed" :src="member.avatar" />
           <h5>{{ member.name }}</h5>
@@ -24,8 +24,8 @@
       </div>
 
       <div>
-        <hr class="pt-config" />
-        <h3 id="OurCodeId" class="pt-config">Our Code</h3>
+        <hr />
+        <h3 id="OurCodeId">Our Code</h3>
       </div>
 
       <div class="columns">
@@ -81,4 +81,26 @@ export default {
 
 <style scoped>
 @import "/css/site.css";
+
+.pt-config {
+    margin-top: 2%;
+}
+
+.center{
+    display: flex;
+    justify-content: center;
+}
+
+.columns {
+    display: flex;
+    justify-content: center;
+    padding: 18px;
+    column-count: 3;
+    column-gap: 40px;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+}
+
 </style>

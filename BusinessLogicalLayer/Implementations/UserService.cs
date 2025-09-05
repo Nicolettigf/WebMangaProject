@@ -4,7 +4,6 @@ using BusinessLogicalLayer.Validators.User;
 using DataAccessLayer.UnitOfWork;
 using Entities.Enums;
 using Entities.UserS;
-using Shared;
 using Shared.Models.User;
 using Shared.Responses;
 using Shared.Extensions;

@@ -1,5 +1,5 @@
 ﻿using Entities.AnimeS;
-using Shared;
+using Shared.Interfaces;
 using Shared.Responses;
 
 namespace BusinessLogicalLayer.Interfaces.IUserComentaryService

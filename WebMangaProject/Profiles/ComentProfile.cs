@@ -2,7 +2,6 @@
 using Entities.MangaS;
 using MvcPresentationLayer.Models.AnimeModel;
 using MvcPresentationLayer.Models.MangaModels;
-using Shared.Models.Anime;
 
 namespace MvcPresentationLayer.Profiles
 {

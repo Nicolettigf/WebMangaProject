@@ -1,5 +1,5 @@
 ﻿using Entities.MangaS;
-using Shared;
+using Shared.Interfaces;
 
 namespace DataAccessLayer.Interfaces.IMangaInterfaces
 {

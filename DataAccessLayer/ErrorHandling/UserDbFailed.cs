@@ -1,5 +1,4 @@
-﻿using Shared;
-using Shared.Responses;
+﻿using Shared.Responses;
 
 namespace DataAccessLayer.ErrorHandling
 {

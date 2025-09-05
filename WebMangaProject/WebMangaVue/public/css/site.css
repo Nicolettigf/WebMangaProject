@@ -197,22 +197,12 @@ section .catalog {
     padding-left: 3px;
 }
 
-.align-about-us {
-    justify-content: center;
-}
-
 .page-title {
     display: flex;
     justify-content: center;
     flex-direction: column;
     align-items: center;
 }
-
-.pt-config {
-    margin-top: 2%;
-}
-
-
 
 .va-width {
     width: 7%;

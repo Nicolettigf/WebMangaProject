@@ -1,14 +1,9 @@
 ﻿using DataAccessLayer.Interfaces.IMangaInterfaces;
-using Entities;
-using Entities.AnimeS;
 using Entities.MangaS;
 using Microsoft.EntityFrameworkCore;
-using Shared;
-using Shared.Interfaces;
-using Shared.Models.Manga;
+using Shared.Models;
 using Shared.Responses;
-using System;
-using static Entities.MediaBase;
+using static Entities.Common.MediaBase;
 
 namespace DataAccessLayer.Implementations
 {
@@ -251,82 +246,82 @@ namespace DataAccessLayer.Implementations
 
 
 
-        public async Task<DataResponse<MangaCatalog>> GetByRating(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByRating(int skip, int take)
         {
             try
             {
-                List<MangaCatalog> mangas = await _db.Mangas.Where(w => w.Score != null && Convert.ToInt32(w.Score) != 0)
+                List<MediaCatalog> mangas = await _db.Mangas.Where(w => w.Score != null && Convert.ToInt32(w.Score) != 0)
                     .OrderByDescending(m => m.Score)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)
-                    .Select(MangaCatalog.Projection)
+                    .Select(MediaCatalog.Projection)
                     .ToListAsync();
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(mangas);
 
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MangaCatalog>(ex);
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
-        public async Task<DataResponse<MangaCatalog>> GetByPopularity(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByPopularity(int skip, int take)
         {
             try
             {
-                List<MangaCatalog> mangas = await _db.Mangas.Where(w => w.Popularity != 0)
+                List<MediaCatalog> mangas = await _db.Mangas.Where(w => w.Popularity != 0)
                     .OrderBy(m => m.Popularity)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)
-                    .Select(MangaCatalog.Projection)
+                    .Select(MediaCatalog.Projection)
                     .ToListAsync();
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(mangas);
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MangaCatalog>(ex);
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
-        public async Task<DataResponse<MangaCatalog>> GetByUserCount(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByUserCount(int skip, int take)
         {
             try
             {
-                List<MangaCatalog> mangas = await _db.Mangas
+                List<MediaCatalog> mangas = await _db.Mangas
                     .OrderByDescending(m => m.Members)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)
-                    .Select(MangaCatalog.Projection)
+                    .Select(MediaCatalog.Projection)
                     .ToListAsync();
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(mangas);
 
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MangaCatalog>(ex);
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
-        public async Task<DataResponse<MangaCatalog>> GetByFavorites(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByFavorites(int skip, int take)
         {
             try
             {
-                List<MangaCatalog> mangas = await _db.Mangas
+                List<MediaCatalog> mangas = await _db.Mangas
                     .OrderByDescending(m => m.Favorites)
                     .AsNoTracking()
                     .Skip(skip)
                     .Take(take)
-                    .Select(MangaCatalog.Projection)
+                    .Select(MediaCatalog.Projection)
                     .ToListAsync();
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(mangas);
 
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MangaCatalog>(ex);
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
-        public async Task<DataResponse<MangaCatalog>> GetByCatalog(int skip, int take, string catalog)
+        public async Task<DataResponse<MediaCatalog>> GetByCatalog(int skip, int take, string catalog)
         {
             try
             {
@@ -361,10 +356,10 @@ namespace DataAccessLayer.Implementations
                 }
 
                 // Projeção e paginação
-                List<MangaCatalog> mangas = await query
+                List<MediaCatalog> mangas = await query
                     .Skip(skip)
                     .Take(take)
-                    .Select(MangaCatalog.Projection)
+                    .Select(MediaCatalog.Projection)
                     .ToListAsync();
 
                 return ResponseFactory.CreateInstance()
@@ -373,13 +368,13 @@ namespace DataAccessLayer.Implementations
             catch (Exception ex)
             {
                 return ResponseFactory.CreateInstance()
-                    .CreateFailedDataResponse<MangaCatalog>(ex);
+                    .CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
 
 
 
-        public async Task<DataResponse<MangaCatalog>> GetHome(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetHome(int skip, int take)
         {
             throw new NotImplementedException();
         }

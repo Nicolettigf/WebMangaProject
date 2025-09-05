@@ -1,4 +1,4 @@
-﻿using Entities;
+﻿using Entities.Common;
 using System.Data.Common;
 
 namespace DataAccessLayer.Interfaces

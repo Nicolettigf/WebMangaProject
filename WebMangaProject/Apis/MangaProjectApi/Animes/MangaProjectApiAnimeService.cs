@@ -1,8 +1,6 @@
 ﻿using Entities.AnimeS;
-using Microsoft.Extensions.Caching.Distributed;
 using Newtonsoft.Json;
-using Shared;
-using Shared.Models.Anime;
+using Shared.Models;
 using Shared.Responses;
 using System.Net.Http.Headers;
 
@@ -137,7 +135,7 @@ namespace MvcPresentationLayer.Apis.MangaProjectApi.Animes
             }
         }
 
-        public async Task<DataResponse<AnimeCatalog>> GetByFavorites(int skip = 0, int take = 25)
+        public async Task<DataResponse<MediaCatalog>> GetByFavorites(int skip = 0, int take = 25)
         {
             try
             {
@@ -145,21 +143,21 @@ namespace MvcPresentationLayer.Apis.MangaProjectApi.Animes
                 using HttpResponseMessage responseHttp = await client.GetAsync($"Anime/ByFavorites/skip/{skip}/take/{take}");
                 if (!responseHttp.IsSuccessStatusCode)
                 {
-                    return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(null);
+                    return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(null);
                 }
                 var data = await responseHttp.Content.ReadAsStringAsync();
-                var dataResponse = JsonConvert.DeserializeObject<DataResponse<AnimeCatalog>>(data);
+                var dataResponse = JsonConvert.DeserializeObject<DataResponse<MediaCatalog>>(data);
 
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(dataResponse.Data);
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(ex);
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(ex);
             }
 
         }
 
-        public async Task<DataResponse<AnimeCatalog>> GetByUserCount(int skip = 0, int take = 25)
+        public async Task<DataResponse<MediaCatalog>> GetByUserCount(int skip = 0, int take = 25)
         {
             try
             {
@@ -167,20 +165,20 @@ namespace MvcPresentationLayer.Apis.MangaProjectApi.Animes
                 using HttpResponseMessage responseHttp = await client.GetAsync($"Anime/ByUserCount/skip/{skip}/take/{take}");
                 if (!responseHttp.IsSuccessStatusCode)
                 {
-                    return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(null);
+                    return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(null);
                 }
                 var data = await responseHttp.Content.ReadAsStringAsync();
-                var dataResponse = JsonConvert.DeserializeObject<DataResponse<AnimeCatalog>>(data);
+                var dataResponse = JsonConvert.DeserializeObject<DataResponse<MediaCatalog>>(data);
 
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(dataResponse.Data);
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(ex);
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
 
-        public async Task<DataResponse<AnimeCatalog>> GetByRating(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByRating(int skip, int take)
         {
             try
             {
@@ -188,21 +186,21 @@ namespace MvcPresentationLayer.Apis.MangaProjectApi.Animes
                 using HttpResponseMessage responseHttp = await client.GetAsync($"Anime/ByRating/skip/{skip}/take/{take}");
                 if (!responseHttp.IsSuccessStatusCode)
                 {
-                    return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(null);
+                    return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(null);
                 }
                 var data = await responseHttp.Content.ReadAsStringAsync();
-                var dataResponse = JsonConvert.DeserializeObject<DataResponse<AnimeCatalog>>(data);
+                var dataResponse = JsonConvert.DeserializeObject<DataResponse<MediaCatalog>>(data);
 
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(dataResponse.Data);
 
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(ex);
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
 
-        public async Task<DataResponse<AnimeCatalog>> GetByPopularity(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByPopularity(int skip, int take)
         {
             try
             {
@@ -210,16 +208,16 @@ namespace MvcPresentationLayer.Apis.MangaProjectApi.Animes
                 using HttpResponseMessage responseHttp = await client.GetAsync($"Anime/ByPopularity/skip/{skip}/take/{take}");
                 if (!responseHttp.IsSuccessStatusCode)
                 {
-                    return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(null);
+                    return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(null);
                 }
                 var data = await responseHttp.Content.ReadAsStringAsync();
-                var dataResponse = JsonConvert.DeserializeObject<DataResponse<AnimeCatalog>>(data);
+                var dataResponse = JsonConvert.DeserializeObject<DataResponse<MediaCatalog>>(data);
 
                 return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(dataResponse.Data);
             }
             catch (Exception ex)
             {
-                return ResponseFactory.CreateInstance().CreateFailedDataResponse<AnimeCatalog>(ex);
+                return ResponseFactory.CreateInstance().CreateFailedDataResponse<MediaCatalog>(ex);
             }
         }
 
@@ -279,7 +277,12 @@ namespace MvcPresentationLayer.Apis.MangaProjectApi.Animes
             throw new NotImplementedException();
         }
 
-        public Task<DataResponse<AnimeCatalog>> GetHome(int skip, int take)
+        public Task<DataResponse<MediaCatalog>> GetHome(int skip, int take)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<DataResponse<MediaCatalog>> GetByCatalog(int skip, int take, string catalog)
         {
             throw new NotImplementedException();
         }

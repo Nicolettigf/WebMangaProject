@@ -1,7 +1,5 @@
 ﻿using AutoMapper;
 using BusinessLogicalLayer.Interfaces;
-using DataAccessLayer.Interfaces.IAnimeInterfaces;
-using DataAccessLayer.Interfaces.IMangaInterfaces;
 using Entities.AnimeS;
 using Entities.MangaS;
 using Microsoft.AspNetCore.Mvc;
@@ -9,8 +7,6 @@ using MvcPresentationLayer.Models.AnimeModel;
 using MvcPresentationLayer.Models.HomePage;
 using MvcPresentationLayer.Models.MangaModels;
 using MvcPresentationLayer.Utilities;
-using Shared.Models.Manga;
-using Shared.Responses;
 using System.Diagnostics;
 using WebMangaProject.Models;
 
@@ -40,8 +36,8 @@ namespace MvcPresentationLayer.Controllers
             await _JikanApi.ConsumeMedia<Manga>();
             await _JikanApi.ConsumeMissingMedia<Anime>();
             await _JikanApi.ConsumeMissingMedia<Manga>();
-            //await _KitsuApi.BuscarECompararPorIds<Anime>();
-            //await _KitsuApi.BuscarECompararPorIds<Manga>();
+            await _KitsuApi.BuscarECompararPorIds<Anime>();
+            await _KitsuApi.BuscarECompararPorIds<Manga>();
 
             //});
 

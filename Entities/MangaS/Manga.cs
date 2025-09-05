@@ -1,4 +1,6 @@
-﻿namespace Entities.MangaS
+﻿using Entities.Common;
+
+namespace Entities.MangaS
 {
     public class Manga : MediaBase
     {

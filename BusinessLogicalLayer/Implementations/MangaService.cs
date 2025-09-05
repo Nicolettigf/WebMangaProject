@@ -1,7 +1,8 @@
 ﻿using BusinessLogicalLayer.Interfaces.IMangaInterfaces;
 using DataAccessLayer.UnitOfWork;
+using Entities.Common;
 using Entities.MangaS;
-using Shared.Models.Manga;
+using Shared.Models;
 using Shared.Responses;
 
 namespace BusinessLogicalLayer.Implementations
@@ -56,7 +57,7 @@ namespace BusinessLogicalLayer.Implementations
             return await _unitOfWork.MangaRepository.Get(name);
         }
 
-        public async Task<Response> InsertCategory(Entities.MediaBase.Genre id)
+        public async Task<Response> InsertCategory(MediaBase.Genre id)
         {
             await _unitOfWork.MangaRepository.InsertCategory(id);
             return await _unitOfWork.Commit();
@@ -75,17 +76,17 @@ namespace BusinessLogicalLayer.Implementations
         {
             return await _unitOfWork.MangaRepository.GetComplete(ID);
         }
-        public async Task<DataResponse<MangaCatalog>> GetByFavorites(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByFavorites(int skip, int take)
         {
             return await _unitOfWork.MangaRepository.GetByFavorites(skip, take);
         }
 
-        public async Task<DataResponse<MangaCatalog>> GetByUserCount(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByUserCount(int skip, int take)
         {
             return await _unitOfWork.MangaRepository.GetByUserCount(skip, take);
         }
 
-        public async Task<DataResponse<MangaCatalog>> GetByRating(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByRating(int skip, int take)
         {
             return await _unitOfWork.MangaRepository.GetByRating(skip, take);
         }
@@ -95,17 +96,17 @@ namespace BusinessLogicalLayer.Implementations
             return await _unitOfWork.MangaRepository.GetByCategory(ID);
         }
 
-        public async Task<DataResponse<MangaCatalog>> GetByPopularity(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetByPopularity(int skip, int take)
         {
             return await _unitOfWork.MangaRepository.GetByPopularity(skip, take);
         }
 
-        public async Task<DataResponse<MangaCatalog>> GetHome(int skip, int take)
+        public async Task<DataResponse<MediaCatalog>> GetHome(int skip, int take)
         {
             return await _unitOfWork.MangaRepository.GetHome(skip, take);
         }
 
-        public async Task<DataResponse<MangaCatalog>> GetByCatalog(int skip, int take, string catalog)
+        public async Task<DataResponse<MediaCatalog>> GetByCatalog(int skip, int take, string catalog)
         {
             return await _unitOfWork.MangaRepository.GetByCatalog(skip, take,catalog);
         }

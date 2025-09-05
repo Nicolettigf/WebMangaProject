@@ -1,5 +1,5 @@
 ﻿using Entities.UserS;
-using Shared;
+using Shared.Interfaces;
 using Shared.Models.User;
 using Shared.Responses;
 

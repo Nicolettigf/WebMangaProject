@@ -1,16 +1,20 @@
-﻿using Shared.Responses;
+﻿using Shared.Models;
+using Shared.Responses;
 
 namespace Shared.Interfaces
 {
-    public interface IUsualGetInterfaces<T,W>
+    public interface IUsualGetInterfaces<W>
     {
-        Task<DataResponse<T>> GetByUserCount(int skip, int take);
-        Task<DataResponse<T>> GetByFavorites(int skip, int take);
-        Task<DataResponse<T>> GetByRating(int skip, int take);
-        Task<DataResponse<T>> GetByPopularity(int skip, int take);
-        Task<DataResponse<T>> GetHome(int skip, int take);
+        Task<DataResponse<MediaCatalog>> GetByUserCount(int skip, int take);
+        Task<DataResponse<MediaCatalog>> GetByFavorites(int skip, int take);
+        Task<DataResponse<MediaCatalog>> GetByRating(int skip, int take);
+        Task<DataResponse<MediaCatalog>> GetByPopularity(int skip, int take);
+        Task<DataResponse<MediaCatalog>> GetHome(int skip, int take);
+        Task<DataResponse<MediaCatalog>> GetByCatalog(int skip, int take, string catalog);
 
-        Task<DataResponse<T>> GetByCatalog(int skip, int take, string catalog);
+
+
+
         Task<DataResponse<W>> GetByCategory(int ID);
         Task<DataResponse<W>> Get(string name);
         Task<SingleResponse<W>> GetComplete(int ID);

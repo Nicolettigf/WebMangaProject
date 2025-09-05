@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using static Entities.MediaBase;
+using static Entities.Common.MediaBase;
 
 namespace DataAccessLayer.Mappings
 {

@@ -1,5 +1,5 @@
 ﻿using DataAccessLayer.Interfaces;
-using Entities;
+using Entities.Common;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

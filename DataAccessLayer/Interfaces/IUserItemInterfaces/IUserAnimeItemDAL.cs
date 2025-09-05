@@ -1,6 +1,6 @@
 ﻿using Entities.AnimeS;
 using Entities.UserS;
-using Shared;
+using Shared.Interfaces;
 using Shared.Responses;
 
 namespace DataAccessLayer.Interfaces.IUserItem

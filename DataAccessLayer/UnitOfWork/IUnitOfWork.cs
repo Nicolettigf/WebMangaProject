@@ -4,9 +4,9 @@ using DataAccessLayer.Interfaces.IMangaInterfaces;
 using DataAccessLayer.Interfaces.IUserComentary;
 using DataAccessLayer.Interfaces.IUSerInterfaces;
 using DataAccessLayer.Interfaces.IUserItem;
-using Entities;
+using Entities.Common;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using Shared.Interfaces;
 using Shared.Responses;
 
 namespace DataAccessLayer.UnitOfWork

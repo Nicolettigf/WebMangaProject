@@ -14,7 +14,6 @@ using MvcPresentationLayer.Models.MangaModels;
 using MvcPresentationLayer.Models.User;
 using MvcPresentationLayer.Models.UserModel;
 using MvcPresentationLayer.Utilities;
-using Shared;
 using Shared.Models.User;
 using Shared.Responses;
 using System.Security.Claims;

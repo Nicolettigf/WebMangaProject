@@ -1,5 +1,5 @@
 ﻿using Shared.Responses;
-using static Entities.MediaBase;
+using static Entities.Common.MediaBase;
 
 namespace DataAccessLayer.Interfaces.IMangaInterfaces
 {

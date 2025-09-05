@@ -1,9 +1,10 @@
-﻿using Shared.Responses;
+﻿using Entities.Common;
+using Shared.Responses;
 
 namespace BusinessLogicalLayer.Interfaces.IMangaInterfaces
 {
     public interface IMangaPost
     {
-        Task<Response> InsertCategory(Entities.MediaBase.Genre id);
+        Task<Response> InsertCategory(MediaBase.Genre id);
     }
 }

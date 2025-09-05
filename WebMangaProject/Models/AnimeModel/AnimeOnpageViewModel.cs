@@ -1,8 +1,7 @@
 ﻿using DataAccessLayer.Migrations;
-using Entities;
 using Entities.AnimeS;
 using Entities.Enums;
-using static Entities.MediaBase;
+using static Entities.Common.MediaBase;
 
 namespace MvcPresentationLayer.Models.AnimeModel
 {

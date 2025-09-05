@@ -1,4 +1,5 @@
 ﻿using Entities.AnimeS;
+using Entities.Common;
 using Entities.Enums;
 
 namespace Entities.UserS

@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using BusinessLogicalLayer.Interfaces.IUserItemService;
 using Entities.AnimeS;
-using Entities.MangaS;
 using Entities.UserS;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,9 +8,8 @@ using MvcPresentationLayer.Apis.MangaProjectApi;
 using MvcPresentationLayer.Apis.MangaProjectApi.Animes;
 using MvcPresentationLayer.Apis.MangaProjectApi.ItemComentary.AnimeComentary;
 using MvcPresentationLayer.Models.AnimeModel;
-using MvcPresentationLayer.Models.MangaModels;
 using MvcPresentationLayer.Utilities;
-using Shared.Models.Anime;
+using Shared.Models;
 using Shared.Responses;
 
 namespace MvcPresentationLayer.Controllers
@@ -97,7 +95,7 @@ namespace MvcPresentationLayer.Controllers
         [HttpGet, AllowAnonymous]
         public async Task<IActionResult> All(string by)
         {
-            DataResponse<AnimeCatalog> response;
+            DataResponse<MediaCatalog> response;
 
             switch (by)
             {
@@ -145,9 +143,9 @@ namespace MvcPresentationLayer.Controllers
 
         public async Task<IActionResult> Index()
         {
-            DataResponse<AnimeCatalog> responseAnimesFavorites = await _cacheService.GetTop7AnimesCatalogByFavorites();
-            DataResponse<AnimeCatalog> responseAnimesByCount = await _cacheService.GetTop7AnimesCatalogByUserCount();
-            DataResponse<AnimeCatalog> responseAnimesByRating = await _cacheService.GetTop7AnimesCatalogByRating();
+            DataResponse<MediaCatalog> responseAnimesFavorites = await _cacheService.GetTop7AnimesCatalogByFavorites();
+            DataResponse<MediaCatalog> responseAnimesByCount = await _cacheService.GetTop7AnimesCatalogByUserCount();
+            DataResponse<MediaCatalog> responseAnimesByRating = await _cacheService.GetTop7AnimesCatalogByRating();
 
             if (!responseAnimesFavorites.HasSuccess || !responseAnimesByCount.HasSuccess || !responseAnimesByRating.HasSuccess)
             {

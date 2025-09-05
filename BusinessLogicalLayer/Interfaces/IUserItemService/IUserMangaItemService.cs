@@ -1,6 +1,6 @@
 ﻿using Entities.MangaS;
 using Entities.UserS;
-using Shared;
+using Shared.Interfaces;
 using Shared.Responses;
 using System;
 using System.Collections.Generic;

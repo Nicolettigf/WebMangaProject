@@ -2,7 +2,6 @@
 using Entities.MangaS;
 using Entities.UserS;
 using Microsoft.EntityFrameworkCore;
-using Shared;
 using Shared.Models.User;
 using Shared.Responses;
 

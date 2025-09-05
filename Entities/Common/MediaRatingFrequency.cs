@@ -1,7 +1,7 @@
 ﻿using Entities.AnimeS;
 using Entities.MangaS;
 
-namespace Entities
+namespace Entities.Common
 {
     public class MediaRatingFrequency
     {

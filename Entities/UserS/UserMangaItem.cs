@@ -1,4 +1,5 @@
-﻿using Entities.Enums;
+﻿using Entities.Common;
+using Entities.Enums;
 using Entities.MangaS;
 using System.Security.Cryptography;
 

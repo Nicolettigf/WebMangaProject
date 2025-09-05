@@ -1,4 +1,4 @@
-﻿namespace Entities
+﻿namespace Entities.Common
 {
     public abstract class Entity : AccessControl
     {
@@ -9,19 +9,19 @@
 
         public virtual void EnableEntity()
         {
-            this.CreatedAt = DateTime.Now;
-            this.Active = true;
+            CreatedAt = DateTime.Now;
+            Active = true;
         }
 
         public virtual void UpdateEntity()
         {
-            this.UpdatedAt = DateTime.Now;
-            this.Active = true;
+            UpdatedAt = DateTime.Now;
+            Active = true;
         }
 
         public virtual void DisableEntity()
         {
-            this.Active = false;
+            Active = false;
         }
     }
     public abstract class AccessControl

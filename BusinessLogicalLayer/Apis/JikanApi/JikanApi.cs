@@ -2,8 +2,8 @@
 using DataAccessLayer.Interfaces.IAnimeInterfaces;
 using DataAccessLayer.Interfaces.IMangaInterfaces;
 using DataAccessLayer.UnitOfWork;
-using Entities;
 using Entities.AnimeS;
+using Entities.Common;
 using Entities.MangaS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -147,7 +147,7 @@ namespace BusinessLogicalLayer.Apis.JikanApi
 
             foreach (var datum in genresRoot.data)
             {
-                var exists = await _unitOfWork.Query<Entities.MediaBase.Genre>().AnyAsync(c => c.Id == datum.mal_id);
+                var exists = await _unitOfWork.Query<MediaBase.Genre>().AnyAsync(c => c.Id == datum.mal_id);
 
                 if (exists) continue;
 

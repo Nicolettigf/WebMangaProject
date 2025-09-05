@@ -1,6 +1,4 @@
-﻿using Shared.Responses;
-
-namespace Shared
+﻿namespace Shared.Responses
 {
     public class ResponseFactory
     {
@@ -122,7 +120,7 @@ namespace Shared
             };
         }
 
-        public SingleResponseWToken<T> CreateFailedSingleResponseWToken<T>(String message, Exception? ex = null)
+        public SingleResponseWToken<T> CreateFailedSingleResponseWToken<T>(string message, Exception? ex = null)
         {
             return new SingleResponseWToken<T>()
             {

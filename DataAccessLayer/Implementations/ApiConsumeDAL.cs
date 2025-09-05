@@ -1,6 +1,6 @@
 ﻿using DataAccessLayer.Interfaces;
-using Entities;
 using Entities.AnimeS;
+using Entities.Common;
 using Entities.MangaS;
 using Microsoft.EntityFrameworkCore;
 

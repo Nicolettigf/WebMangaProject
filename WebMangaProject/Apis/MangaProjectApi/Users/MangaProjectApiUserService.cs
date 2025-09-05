@@ -1,6 +1,5 @@
 ﻿using Entities.UserS;
 using Newtonsoft.Json;
-using Shared;
 using Shared.Models.User;
 using Shared.Responses;
 using System.Net.Http.Headers;

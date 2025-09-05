@@ -1,6 +1,6 @@
 ﻿// Root myDeserializedClass = JsonConvert.Deserializeobject?<Root>(myJsonResponse);
-using Entities;
 using Entities.AnimeS;
+using Entities.Common;
 using Entities.MangaS;
 using Newtonsoft.Json;
 using Shared.Extensions;

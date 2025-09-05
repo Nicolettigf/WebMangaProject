@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using Shared;
 using Shared.Responses;
 using System.Net.Http.Headers;
 

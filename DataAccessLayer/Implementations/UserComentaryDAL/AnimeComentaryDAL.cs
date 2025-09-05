@@ -1,7 +1,6 @@
 ﻿using DataAccessLayer.Interfaces.IUserComentary;
 using Entities.AnimeS;
 using Microsoft.EntityFrameworkCore;
-using Shared;
 using Shared.Responses;
 
 namespace DataAccessLayer.Implementations.UserComentaryDAL

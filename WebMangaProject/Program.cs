@@ -33,7 +33,7 @@ using MvcPresentationLayer.Apis.MangaProjectApi.Mangas;
 using MvcPresentationLayer.Apis.MangaProjectApi.UserItem.UserAnimeItem;
 using MvcPresentationLayer.Apis.MangaProjectApi.UserItem.UserMangaItem;
 using MvcPresentationLayer.Utilities;
-using Shared;
+using Shared.Interfaces;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);

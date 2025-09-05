@@ -2,7 +2,7 @@
 using Entities.MangaS;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Entities
+namespace Entities.Common
 {
     // Entidade base para elementos comuns entre Anime e Manga
     public abstract class MediaBase : Entity
