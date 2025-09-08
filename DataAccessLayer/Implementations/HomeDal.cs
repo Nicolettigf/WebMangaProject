@@ -28,7 +28,7 @@ namespace DataAccessLayer.Implementations
             searchData.Mangas = await _db.Mangas
                 .Where(m => m.Title.Contains(name) || (m.TitleEnglish != null && m.TitleEnglish.Contains(name)))
                 .OrderBy(m => m.Title) // opcional, ordena alfabeticamente
-                .Take(2)
+                .Take(12)
                 .Select(MediaCatalog.Projection)
                 .ToListAsync();
 
@@ -36,7 +36,7 @@ namespace DataAccessLayer.Implementations
             searchData.Animes = await _db.Animes
                 .Where(m => m.Title.Contains(name) || (m.TitleEnglish != null && m.TitleEnglish.Contains(name)))
                 .OrderBy(a => a.Title)
-                .Take(2)
+                .Take(12)
                 .Select(MediaCatalog.Projection)
                 .ToListAsync();
 

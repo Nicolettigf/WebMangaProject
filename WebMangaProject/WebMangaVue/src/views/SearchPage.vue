@@ -2,76 +2,79 @@
   <div
     class="search-page"
     :class="{ 'has-results': searchQuery.length >= 3 && (filteredMangas.length || filteredAnimes.length) }"
-  >
+  > 
     <h2 v-if="searchQuery.length >= 3">Resultados da busca para: "{{ searchQuery }}"</h2>
     <h2 v-else>Digite pelo menos 3 letras para buscar</h2>
 
-    <!-- Dual Column -->
-    <transition name="slide-fade">
-      <div
-        v-if="filteredMangas.length && filteredAnimes.length && searchQuery.length >= 3"
-        class="dual-column"
-      >
-        <div class="search-column">
-          <h3>Mangás</h3>
-          <div class="card-wrapper">
-            <router-link
-              v-for="item in filteredMangas"
-              :key="item.id"
-              class="card-item custom-link"
-              :to="`/MangaOnPage/${item.id}`"
-            >
-              <img :src="item.image" />
-              <div class="card-content"><h5>{{ item.name }}</h5></div>
-            </router-link>
+    <!-- Envolvemos tudo em uma div para usar transitions -->
+    <div>
+      <!-- Dual Column -->
+      <transition name="slide-fade">
+        <div
+          v-if="filteredMangas.length && filteredAnimes.length && searchQuery.length >= 3"
+          class="dual-column"
+        >
+          <div class="search-column">
+            <h3>Mangás</h3>
+            <div class="card-wrapper">
+              <router-link
+                v-for="item in filteredMangas"
+                :key="item.id"
+                class="card-item custom-link"
+                :to="`/MangaOnPage/${item.id}`"
+              >
+                <img :src="item.posterImageLarge || item.webpLargeImageUrl || item.jpgLargeImageUrl " />
+                <div class="card-content"><h5>{{ item.canonicalTitle }}</h5></div>
+              </router-link>
+            </div>
           </div>
-        </div>
 
-        <div class="search-column">
-          <h3>Animes</h3>
-          <div class="card-wrapper">
-            <router-link
-              v-for="item in filteredAnimes"
-              :key="item.id"
-              class="card-item custom-link"
-              :to="`/AnimeOnPage/${item.id}`"
-            >
-              <img :src="item.image" />
-              <div class="card-content"><h5>{{ item.name }}</h5></div>
-            </router-link>
+          <div class="search-column">
+            <h3>Animes</h3>
+            <div class="card-wrapper">
+              <router-link
+                v-for="item in filteredAnimes"
+                :key="item.id"
+                class="card-item custom-link"
+                :to="`/AnimeOnPage/${item.id}`"
+              >
+                <img :src="item.posterImageLarge || item.webpLargeImageUrl ||  item.jpgLargeImageUrl" />
+                <div class="card-content"><h5>{{ item.canonicalTitle }}</h5></div>
+              </router-link>
+            </div>
           </div>
         </div>
-      </div>
-    </transition>
+      </transition>
 
-    <!-- Single Column -->
-    <transition name="slide-fade">
-      <div
-        v-if="(filteredMangas.length || filteredAnimes.length) && searchQuery.length >= 3 && !(filteredMangas.length && filteredAnimes.length)"
-        class="single-column"
-      >
-        <div class="search-column">
-          <h3>{{ filteredMangas.length ? 'Mangás' : 'Animes' }}</h3>
-          <div class="card-wrapper">
-            <router-link
-              v-for="item in filteredMangas.length ? filteredMangas : filteredAnimes"
-              :key="item.id"
-              class="card-item custom-link"
-              :to="item.type === 'manga' ? `/MangaOnPage/${item.id}` : `/AnimeOnPage/${item.id}`"
-            >
-              <img :src="item.image" />
-              <div class="card-content"><h5>{{ item.name }}</h5></div>
-            </router-link>
+      <!-- Single Column -->
+      <transition name="slide-fade">
+        <div
+          v-if="(filteredMangas.length || filteredAnimes.length) && searchQuery.length >= 3 && !(filteredMangas.length && filteredAnimes.length)"
+          class="single-column"
+        >
+          <div class="search-column">
+            <h3>{{ filteredMangas.length ? 'Mangás' : 'Animes' }}</h3>
+            <div class="card-wrapper">
+              <router-link
+                v-for="item in filteredMangas.length ? filteredMangas : filteredAnimes"
+                :key="item.id"
+                class="card-item custom-link"
+                :to="item.type === 'manga' ? `/MangaOnPage/${item.id}` : `/AnimeOnPage/${item.id}`"
+              >
+                <img :src="item.image" />
+                <div class="card-content"><h5>{{ item.name }}</h5></div>
+              </router-link>
+            </div>
           </div>
         </div>
-      </div>
-    </transition>
+      </transition>
+    </div>
   </div>
 </template>
 
 
 <script>
-import { ref, watch, onMounted, computed } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { HomeService } from "../services/HomeService";
 
@@ -80,19 +83,21 @@ export default {
   setup() {
     const route = useRoute();
     const router = useRouter();
+    const homeService = new HomeService();
+
     const searchQuery = ref(route.query.q || "");
-    const searchResults = ref({ animes: [], mangas: [] });
+    const searchResults = ref({ mangas: [], animes: [] });
     const isLoading = ref(false);
     const message = ref("Digite pelo menos 3 letras para buscar");
-
-    const homeService = new HomeService();
 
     const filteredMangas = computed(() => searchResults.value.mangas || []);
     const filteredAnimes = computed(() => searchResults.value.animes || []);
 
+    let debounceTimer;
+
     const fetchSearchResults = async (query) => {
       if (!query || query.length < 3) {
-        searchResults.value = { animes: [], mangas: [] };
+        searchResults.value = { mangas: [], animes: [] };
         message.value = "Digite pelo menos 3 letras para buscar";
         return;
       }
@@ -101,7 +106,7 @@ export default {
       message.value = "";
 
       try {
-        const data = await homeService.GetByName(query);
+        const data = await homeService.GetByName(query); // Chama a API
         if (data?.hasSuccess) {
           searchResults.value = data.item;
           if (!searchResults.value.animes.length && !searchResults.value.mangas.length) {
@@ -110,53 +115,36 @@ export default {
         } else {
           message.value = "Erro ao buscar dados";
         }
-      } catch (error) {
-        console.error("Erro na busca:", error);
+      } catch (err) {
+        console.error(err);
         message.value = "Erro ao buscar dados";
       } finally {
         isLoading.value = false;
       }
     };
 
-    // 🔹 Debounce de 1 segundo
-    let debounceTimer;
     watch(searchQuery, (newQuery) => {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
-        if (newQuery.length >= 3) {
-          fetchSearchResults(newQuery);
-          router.replace({ query: { q: newQuery } }); // atualiza URL
-        } else {
-          searchResults.value = { animes: [], mangas: [] };
-          message.value = "Digite pelo menos 3 letras para buscar";
-        }
-      }, 1000);
+        fetchSearchResults(newQuery);
+        router.replace({ query: { q: newQuery } }); // atualiza URL
+      }, 500); // debounce de 500ms
     });
 
-    const handleEsc = (event) => {
-      if (event.key === "Escape") {
-        searchQuery.value = "";
-        router.push({ path: "/" });
+    // Mantém a query sincronizada com a URL
+    watch(() => route.query.q, (newQ) => {
+      if (newQ !== searchQuery.value) {
+        searchQuery.value = newQ || "";
       }
-    };
+    });
 
     onMounted(() => {
-      window.addEventListener("keydown", handleEsc);
-
-      // 🔹 Busca inicial apenas se houver query
       if (searchQuery.value.length >= 3) {
         fetchSearchResults(searchQuery.value);
       }
     });
 
-    return {
-      searchQuery,
-      searchResults,
-      isLoading,
-      message,
-      filteredMangas,
-      filteredAnimes
-    };
+    return { searchQuery, filteredMangas, filteredAnimes, isLoading, message };
   },
 };
 </script>

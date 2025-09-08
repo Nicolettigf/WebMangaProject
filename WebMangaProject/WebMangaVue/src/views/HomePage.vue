@@ -22,7 +22,7 @@
             class="card-item custom-link"
             :to="section.type === 'anime' ? `/AnimeOnPage/${item.id}` : `/MangaOnPage/${item.id}`"
           > 
-              <img :src="item.posterImageLarge || item.webpLargeImageUrl" />
+              <img :src="item.webpLargeImageUrl || item.posterImageLarge" />
               <div class="card-content">
                 <h5>{{ item.canonicalTitle }}</h5>
               </div>

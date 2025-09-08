@@ -7,9 +7,9 @@ namespace Shared.Models
     {
         public int Id { get; set; }
         public string CanonicalTitle { get; set; }
-        public string? WebpLargeImageUrl { get; set; }
         public string? PosterImageLarge { get; set; }
-        public string? CoverImageLarge { get; set; }
+        public string? WebpLargeImageUrl { get; set; }
+        public string? JpgLargeImageUrl { get; set; }
 
         // Projeção genérica pra qualquer MediaBase
         public static Expression<Func<MediaBase, MediaCatalog>> Projection => x => new MediaCatalog()
@@ -18,7 +18,7 @@ namespace Shared.Models
             CanonicalTitle = x.Title,
             WebpLargeImageUrl = x.WebpLargeImageUrl,
             PosterImageLarge = x.PosterImageLarge,
-            CoverImageLarge = x.CoverImageLarge
+            JpgLargeImageUrl = x.JpgLargeImageUrl
         };
     }
 }
