@@ -30,9 +30,7 @@ import MangaOnPage from "./views/manga/MangaOnPage.vue";
 
 // User
 // import UserIndex from "../views/user/UserIndex.vue";
-import Login from "./views/user/UserLogin.vue";
-//import Logout from "./views/user/Logout.vue";
-import Profile from "./views/user/UserProfile.vue";
+// import Login from "./views/user/UserLogin.vue";
 import CreateUser from "./views/user/CreateUser.vue";
 import EditUser from "./views/user/EditUser.vue";
 //import DeleteUser from "./views/user/DeleteUser.vue";
@@ -78,7 +76,7 @@ const routes = [
       // CatalogHome unificado
       { path: "anime/Home", name: "AnimeHome", component: CatalogHome, props: { entityType: "anime" } },
       { path: "manga/Home", name: "MangaHome", component: CatalogHome, props: { entityType: "manga" } },
-
+      { path: '/search',    name: 'SearchPage',component: () => import('../src/views/SearchPage.vue') },
 
       // AnimeController
       { path: "anime/all", name: "AnimeAll", component: Catalog, props: { entityType: "anime", type: "all" } },
@@ -108,9 +106,6 @@ const routes = [
 
       // UserController
       //{ path: "user", name: "UserIndex", component: UserIndex },
-      //{ path: "user/login", name: "Login", component: UserLogin },
-      //{ path: "user/logout", name: "Logout", component: Logout },
-      //{ path: "user/profile", name: "Profile", component: UserProfile },
       { path: "user/create", name: "CreateUser", component: CreateUser },
       { path: "user/edit/:id", name: "EditUser", component: EditUser },
       //{ path: "user/delete/:id", name: "DeleteUser", component: DeleteUser },

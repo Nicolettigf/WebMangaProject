@@ -278,11 +278,6 @@ namespace MvcPresentationLayer.Apis.MangaProjectApi.Mangas
             throw new NotImplementedException();
         }
 
-        public Task<DataResponse<MediaCatalog>> GetHome(int skip, int take)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<DataResponse<MediaCatalog>> GetByCatalog(int skip, int take, string catalog)
         {
             throw new NotImplementedException();

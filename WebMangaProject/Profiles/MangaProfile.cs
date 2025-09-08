@@ -12,7 +12,6 @@ namespace MvcPresentationLayer.Profiles
             CreateMap<MangaShortViewModel, MediaCatalog>();
             CreateMap<MediaCatalog, MangaShortViewModel>();
 
-
             CreateMap<MangaShortViewModel, Manga>();
             CreateMap<Manga, MangaShortViewModel>();
 

@@ -98,11 +98,6 @@ namespace BusinessLogicalLayer.Implementations
             return await _unitOfWork.AnimeRepository.GetByPopularity(skip, take);
         }
 
-        public async Task<DataResponse<MediaCatalog>> GetHome(int skip, int take)
-        {
-            return await _unitOfWork.AnimeRepository.GetHome(skip, take);
-        }
-
         public async Task<DataResponse<MediaCatalog>> GetByCatalog(int skip, int take, string catalog)
         {
             return await _unitOfWork.AnimeRepository.GetByCatalog(skip, take, catalog);

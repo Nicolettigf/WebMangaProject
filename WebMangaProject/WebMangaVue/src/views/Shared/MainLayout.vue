@@ -56,7 +56,7 @@
 
     <!-- Main Content -->
     <div class="home_content">
-      <Navbar :username="currentUser" />
+      <Navbar :username="'currentUser'" />
 
       <!-- Conteúdo da página -->
       <main>

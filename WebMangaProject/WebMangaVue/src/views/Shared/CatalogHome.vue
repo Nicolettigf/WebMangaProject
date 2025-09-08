@@ -7,7 +7,7 @@
     >
       <div class="idiv-config">
         <h3 class="section-title">{{ section.title }}</h3>
-        <div class="va-div">
+        <div class="va-div" v-if="section.viewAllLink">
           <router-link class="custom-link va-width" :to="section.viewAllLink">
             View All
           </router-link>
@@ -32,66 +32,66 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed } from "vue";
-import { AnimeService } from "../../services/AnimeService";
-import { MangaService } from "../../services/MangaService";
+import { ref, onMounted, computed, watch } from "vue";
+import { HomeService } from "../../services/HomeService";
 
 const props = defineProps({
   entityType: { type: String, required: true } // "anime" ou "manga"
 });
 
 const token = localStorage.getItem("token") || "";
-const itemsFavorites = ref([]);
-const itemsByCount = ref([]);
-const itemsByRating = ref([]);
+const homeService = new HomeService(token);
 
-// função que devolve o service correto
-function getService() {
-  return props.entityType === "anime"
-    ? new AnimeService(token)
-    : new MangaService(token);
-}
+// listas do retorno
+const topByScoredBy = ref([]);
+const topByPopularity = ref([]);
+const topByFavorites = ref([]);
+const topByMembers = ref([]);
+const topByScore = ref([]);
+const topByRank = ref([]);
+const latest = ref([]);
 
-// sections dinâmicas
-const sections = computed(() => {
-  return [
-    {
-      title: "All Time Favorites",
-      viewAllLink: `/${props.entityType}/favorites`,
-      items: itemsFavorites.value
-    },
-    {
-      title: "Most Popular",
-      viewAllLink: `/${props.entityType}/popularity`,
-      items: itemsByCount.value
-    },
-    {
-      title: "All Time By Score",
-      viewAllLink: `/${props.entityType}/score`,
-      items: itemsByRating.value
-    }
-  ];
-});
+// títulos dinâmicos baseados nas listas do backend
+const sections = computed(() => [
+  { title: "Top Popularity", viewAllLink: `/${props.entityType}/popularity`, items: topByPopularity.value },
+  { title: "Top Favorites", viewAllLink: `/${props.entityType}/favorites`, items: topByFavorites.value },
+  { title: "Top Members", viewAllLink: `/${props.entityType}/members`, items: topByMembers.value },
+  { title: "Top Score", viewAllLink: `/${props.entityType}/score`, items: topByScore.value },
+  { title: "Top Rank", viewAllLink: `/${props.entityType}/rank`, items: topByRank.value },
+  { title: "Top ScoredBy", viewAllLink: `/${props.entityType}/scoredby`, items: topByScoredBy.value },
+  { title: "Latest", viewAllLink: `/${props.entityType}/latest`, items: latest.value },
+]);
 
 // função de carregamento
 async function load() {
-  itemsFavorites.value = [];
-  itemsByCount.value = [];
-  itemsByRating.value = [];
+  // reset
+  
+  topByScoredBy.value = [];
+  topByPopularity.value = [];
+  topByFavorites.value = [];
+  topByMembers.value = [];
+  topByScore.value = [];
+  topByRank.value = [];
+  latest.value = [];
 
-  const service = getService();
-  const favorites = await service.getByFavorites();
-  const count = await service.getByUserCount();
-  const rating = await service.getByRating();
+  const data = await homeService.GetHomeMedia(0, 7, props.entityType);
 
-  itemsFavorites.value = favorites.data;
-  itemsByCount.value = count.data;
-  itemsByRating.value = rating.data;
+  if (!data) return;
+
+  // popular as listas do frontend com base no retorno do backend
+  topByPopularity.value = data.item.topByPopularity || [];
+  topByScoredBy.value = data.item.topByScoredBy || [];
+  topByFavorites.value = data.item.topByFavorites || [];
+  topByMembers.value = data.item.topByMembers || [];
+  topByScore.value = data.item.topByScore || [];
+  topByRank.value = data.item.topByRank || [];
+  latest.value = data.item.latest || [];
 }
 
+// chama ao montar
 onMounted(load);
 
-// sempre que trocar de anime → manga (ou o contrário), recarrega
+// chama toda vez que a prop entityType mudar
 watch(() => props.entityType, () => {
   load();
 });

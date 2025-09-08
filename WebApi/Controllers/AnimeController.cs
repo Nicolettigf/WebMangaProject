@@ -33,24 +33,6 @@ namespace WebApi.Controllers
             return Ok(responseUsers);
         }
 
-        [HttpGet(template: "GetHome/skip/{skip}/take/{take}"), AllowAnonymous]
-        public async Task<IActionResult> GetHome([FromRoute] int skip = 0, [FromRoute] int take = 25)
-        {
-            if (take >= 100)
-            {
-                return BadRequest("take < 100");
-            }
-            var responseUsers = await _animeService.GetHome(skip, take);
-            if (!responseUsers.HasSuccess)
-            {
-                return BadRequest(responseUsers);
-            }
-
-            return Ok(responseUsers);
-        }
-
-
-
         [HttpGet("ById/{id}"), AllowAnonymous]
         public async Task<IActionResult> GetByIdAsync(int id)
         {

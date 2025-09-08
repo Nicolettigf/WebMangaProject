@@ -1,5 +1,6 @@
 ﻿using BusinessLogicalLayer.Interfaces;
 using DataAccessLayer.UnitOfWork;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Shared.Extensions;
 using Shared.Models;
 using Shared.Responses;
@@ -13,6 +14,58 @@ namespace BusinessLogicalLayer.Implementations
         public HomeService(IUnitOfWork unitOfWork)
         {
             this._unitOfWork = unitOfWork;
+        }
+
+        public async Task<SingleResponse<SearchData>> GetByName(string name)
+        {
+            return await _unitOfWork.HomeRepository.GetByName(name);
+        }
+
+        public async Task<SingleResponse<ItemPageData>> GetHomeMedia(int skip, int take, string tableName)
+        {
+            using var reader = await _unitOfWork.HomeRepository.GetHomeMedia(skip, take, tableName);
+            var pageData = new ItemPageData();
+
+            do
+            {
+                // Lê a primeira linha do result set para pegar o ListType
+                var hasRow = await reader.ReadAsync();
+                if (!hasRow) continue;
+
+                var listType = reader["ListType"].ToString();
+
+                // Mapear todo o result set
+                var list = await reader.MapToListAsync<MediaCatalog>();
+
+                // Direciona a lista correta
+                switch (listType)
+                {
+                    case "TopByPopularity":
+                        pageData.TopByPopularity = list;
+                        break;
+                    case "TopByFavorites":
+                        pageData.TopByFavorites = list;
+                        break;
+                    case "TopByMembers":
+                        pageData.TopByMembers = list;
+                        break;
+                    case "TopByRank":
+                        pageData.TopByRank = list;
+                        break;
+                    case "TopByScore":
+                        pageData.TopByScore = list;
+                        break;
+                    case "TopByScoredBy":
+                        pageData.TopByScoredBy = list;
+                        break;
+                    case "Latest":
+                        pageData.Latest = list;
+                        break;
+                }
+
+            } while (await reader.NextResultAsync());
+
+            return ResponseFactory.CreateInstance().CreateSuccessSingleResponse(pageData);
         }
 
         public async Task<SingleResponse<HomePageData>> GetTopAnimeManga(int skip, int take)

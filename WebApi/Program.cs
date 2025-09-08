@@ -112,6 +112,7 @@ if (db.Database.EnsureCreated())
 {
     // O banco acabou de ser criado, criar as procedures
     db.Database.ExecuteSqlRaw(Procedures.GetTopAnimeManga);
+    db.Database.ExecuteSqlRaw(Procedures.GetHomeMedia);
 }
 
 app.Run();

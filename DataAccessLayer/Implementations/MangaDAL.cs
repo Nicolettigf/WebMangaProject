@@ -334,7 +334,7 @@ namespace DataAccessLayer.Implementations
                         query = query.OrderByDescending(m => m.Favorites);
                         break;
                     case "popularity":
-                        query = query.Where(w => w.Popularity != 0).OrderBy(m => m.Popularity);
+                        query = query.Where(w => w.Popularity != 0).OrderBy(m => m.Popularity); 
                         break;
                     case "score":
                         query = query.Where(m => m.Score != null && m.Score != 0).OrderByDescending(m => m.Score);
@@ -349,6 +349,9 @@ namespace DataAccessLayer.Implementations
                     case "rank":
                         query = query.Where(a => a.Rank != null && Convert.ToInt32(a.Rank) != 0)
                                      .OrderByDescending(a => a.Rank);
+                        break;
+                    case "latest": // Aqui pegamos os últimos itens adicionados pelo Id
+                        query = query.OrderByDescending(m => m.Id);
                         break;
                     default:
                         query = query.OrderBy(m => m.Title); // ou qualquer ordem padrão
@@ -370,13 +373,6 @@ namespace DataAccessLayer.Implementations
                 return ResponseFactory.CreateInstance()
                     .CreateFailedDataResponse<MediaCatalog>(ex);
             }
-        }
-
-
-
-        public async Task<DataResponse<MediaCatalog>> GetHome(int skip, int take)
-        {
-            throw new NotImplementedException();
         }
     }
 }

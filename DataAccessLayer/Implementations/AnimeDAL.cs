@@ -219,9 +219,6 @@ namespace DataAccessLayer.Implementations
                 return ResponseFactory.CreateInstance().CreateFailedDataResponse<Anime>(ex);
             }
         }
-
-
-
         public async Task<DataResponse<int>> GetMissingMalIds()
         {
             // Pega todos os MalIds já salvos no banco
@@ -243,12 +240,6 @@ namespace DataAccessLayer.Implementations
 
             return ResponseFactory.CreateInstance().CreateResponseBasedOnCollectionData(missingIds);
         }
-
-        public async Task<DataResponse<MediaCatalog>> GetHome(int skip, int take)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<DataResponse<MediaCatalog>> GetByFavorites(int skip, int take)
         {
             try
@@ -362,6 +353,10 @@ namespace DataAccessLayer.Implementations
                     case "rank":
                         query = query.Where(a => a.Rank != null && Convert.ToInt32(a.Rank) != 0)
                                      .OrderByDescending(a => a.Rank);
+                        break;
+
+                    case "latest": // Aqui pegamos os últimos itens adicionados pelo Id
+                        query = query.OrderByDescending(m => m.Id);
                         break;
 
                     default:
